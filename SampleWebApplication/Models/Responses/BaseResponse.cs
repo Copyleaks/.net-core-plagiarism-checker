@@ -22,7 +22,6 @@
  SOFTWARE.
 ********************************************************************************/
 
-
 namespace Copyleaks.SDK.Demo.Models.Responses
 {
     public class BaseResponse
