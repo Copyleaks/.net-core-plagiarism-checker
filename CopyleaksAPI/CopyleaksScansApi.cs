@@ -52,8 +52,8 @@ namespace Copyleaks.SDK.V3.API
         public CopyleaksScansApi(string product, string token, X509Certificate2 clientCertificate = null) : base(clientCertificate)
         {
             this.CopyleaksApiServer = ConfigurationManager.Configuration["apiEndPoint"];
-            this.Product = product;
-            this.Token = token;
+			this.Product = product;
+			this.Token = token;
         }
 
         /// <summary>

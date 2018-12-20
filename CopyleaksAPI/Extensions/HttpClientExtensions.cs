@@ -42,6 +42,7 @@ namespace Copyleaks.SDK.V3.API.Extensions
 
         public static void SetCopyleaksClient(this HttpClient client)
         {
+			// CR : If you depend on user-configuration file, it must be written somewhere. Maybe it should be const?
             client.Timeout = TimeSpan.FromMilliseconds(int.Parse(ConfigurationManager.Configuration["RequestsTimeout"]));
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.UserAgent.ParseAdd($"copyleaks-core-sdk/{ASSEMBLY_VERSION}");

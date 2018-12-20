@@ -24,7 +24,8 @@
 
 namespace Copyleaks.SDK.V3.API.Models.Types
 {
-    public enum eErrorHandling
+	// CR : Documentation
+	public enum eErrorHandling
     {
         Cancel = 0,
         Ignore = 1

@@ -29,5 +29,8 @@ namespace Copyleaks.SDK.V3.API.Models.Callbacks
     /// <summary>
     /// The object that is returned from Copyleaks API for a new result callback
     /// </summary>
-    public class NewResultCallback : ResultsSection{ }
+    public class NewResultCallback : ResultsSection
+	{
+
+	}
 }

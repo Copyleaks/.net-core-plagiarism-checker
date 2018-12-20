@@ -27,7 +27,8 @@ using System;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses
 {
-    public class LoginResponse
+	// CR : Documentation
+	public class LoginResponse
     {
         public LoginResponse(string token, DateTime issued, DateTime expire)
         {

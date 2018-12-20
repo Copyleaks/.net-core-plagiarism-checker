@@ -24,7 +24,8 @@
 
 namespace Copyleaks.SDK.V3.API.Models.Types
 {
-    public enum eDomainsFilteringMode
+	// CR : Documentation
+	public enum eDomainsFilteringMode
     {
         BlackList = 0,
         WhiteList = 1

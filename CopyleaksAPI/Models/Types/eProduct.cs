@@ -24,7 +24,8 @@
 
 namespace Copyleaks.SDK.V3.API.Models.Types
 {
-    public enum eProduct
+	// CR : Documentation
+	public enum eProduct
     {
         /// <summary>
 		/// Bests for: publishers, blogger, writers...

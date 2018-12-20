@@ -26,43 +26,49 @@ SOFTWARE.
 @model Copyleaks.SDK.Demo.Models.Responses.LoginResponse
 
 @{
-    ViewData["Title"] = "Copyleaks API test";
+    ViewData["Title"] = "Copyleaks API Demo - Step 1 - Login";
 }
-
 <div class="row">
     <div class="col-xs-12">
+        @await Html.PartialAsync("_GeneralNotePartial")
+        @await Html.PartialAsync("_Step1Partial")
+    </div>
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        @if (Model != null && Model.ErrorMessage != null)
+        {
+            <div class="error-message">
+                <h4>Login error:</h4>
+                @Model.ErrorMessage
+                @if (Model.CopyleaksErrorCode.HasValue)
+                {
+                    <div>
+                        Copyleaks error code: @Model.CopyleaksErrorCode.Value
+                    </div>
+                }
+            </div>
+        }
         <div class="panel panel-default">
             <div class="panel-heading">
-                Step 1: Login
+                <h3 style="margin:0px;">
+                    Login
+                </h3>
             </div>
             <div class="panel-body">
                 <form action="/login" method="post">
                     <div>
-                        <label for="email">Email:</label>
+                        <label for="email">Copyleaks Account Email:</label>
                         <input name="email" id="email" type="email" class="form-control" placeholder="Your-Email@address.com" />
                     </div>
                     <div style="margin-top: 20px;">
                         <label for="key">API Key:</label>
                         <input name="key" id="key" type="text" class="form-control" placeholder="@Guid.Empty" />
                     </div>
-                    <button class="btn btn-primary" type="Submit" style="margin-top: 30px;">Login</button>
-                </form>
-                @if (Model != null && Model.ErrorMessage != null)
-                {
-                    <div class="error-message">
-                        <h4>Login error:</h4>
-                        @Model.ErrorMessage
-                        @if (Model.CopyleaksErrorCode.HasValue)
-                        {
-                            <div>
-
-                                Copyleaks error code: @Model.CopyleaksErrorCode.Value
-                            </div>
-
-                        }
-
+                    <div class="text-center">
+                        <button class="btn btn-primary" type="Submit" style="margin-top: 30px;">Login</button>
                     </div>
-                }
+                </form>
             </div>
         </div>
     </div>

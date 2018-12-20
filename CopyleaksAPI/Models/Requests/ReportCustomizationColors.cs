@@ -25,7 +25,8 @@
 
 namespace Copyleaks.SDK.V3.API.Models.Requests
 {
-    public class ReportCustomizationColors
+	// CR : Documentation is missing. 
+	public class ReportCustomizationColors
     {
         public string MainStrip { get; set; }
 

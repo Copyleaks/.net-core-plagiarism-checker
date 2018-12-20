@@ -26,7 +26,8 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests
 {
-    public class Document
+	// CR : Documentation is missing. 
+	public class Document
     {
         [JsonProperty("properties")]
         public ScanProperties PropertiesSection { get; set; }

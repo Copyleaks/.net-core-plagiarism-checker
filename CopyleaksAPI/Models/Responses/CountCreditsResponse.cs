@@ -24,7 +24,8 @@
 
 namespace Copyleaks.SDK.V3.API.Models.Responses
 {
-    public class CountCreditsResponse
+	// CR : Documentation
+	public class CountCreditsResponse
     {
         public uint Amount { get; set; }
     }

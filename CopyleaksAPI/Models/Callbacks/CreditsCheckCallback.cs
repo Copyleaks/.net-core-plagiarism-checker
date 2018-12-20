@@ -27,7 +27,8 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Callbacks
 {
-    public class CreditsCheckCallback : BaseResponse
+	// CR : Documentation is missing. 
+	public class CreditsCheckCallback : BaseResponse
     {
         [JsonProperty("credits")]
         public uint Credits { get; set; }

@@ -1,109 +1,133 @@
 ﻿@*********************************************************************************
-The MIT License(MIT)
+    The MIT License(MIT)
 
-Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
+    Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*********************************************************************************@
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE.
+    *********************************************************************************@
 
 @using Copyleaks.SDK.V3.API.Models.Types;
 @model Copyleaks.SDK.Demo.Models.Responses.CheckResultsResponse
 @{
-    ViewData["Title"] = "Copyleaks API test";
+    
+    ViewData["Title"] = "Copyleaks API Demo - Step 3 - Get Results";
 }
+
+<div class="row">
+    <div class="col-xs-12">
+        @await Html.PartialAsync("_GeneralNotePartial")
+        @await Html.PartialAsync("_Step3Partial")
+    </div>
+</div>
 
 <div class="row">
     <div class="col-xs-12">
         <div class="panel panel-default">
             <div class="panel-heading">
-                Step3: Check results
+                <h3 style="margin:0px;">
+                    Check Results
+                </h3>
             </div>
             <div class="panel-body">
-                <form action="/@Model.ScanId/checkResult" method="post">
-                    <button class="btn btn-primary" type="Submit" style="margin-top: 30px;">Check results</button>
-                </form>
-
-                @if (Model != null && Model.CompletedCallback != null)
-                {
-                    @if (Model.CompletedCallback.Status == eScanStatus.Error)
+                <form id="check-result-form" action="/@Model.ScanId/checkResult" method="post">
+                    @if (Model != null && Model.CompletedCallback != null)
                     {
-                        <div class="error-message">
-                            <h4>Process failed</h4>
-                            @Model.CompletedCallback.Error.Message
-                            <div>
-                                Copyleaks error code: @Model.CompletedCallback.Error.Code
+                        @if (Model.CompletedCallback.Status == eScanStatus.Error)
+                        {
+                            <div class="error-message">
+                                <h4>Process failed</h4>
+                                @Model.CompletedCallback.Error.Message
+                                <div>
+                                    Copyleaks error code: @Model.CompletedCallback.Error.Code
+                                </div>
                             </div>
-                        </div>
 
-                    }
-                    else
-                    {
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>
-                                        Title
-                                    </th>
-                                    <th>
-                                        Copied Words
-                                    </th>
-                                    <th>
-                                        Comparison report
-                                    </th>
-                                    <th>
-                                        Suspected result
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var result in @Model.CompletedCallback.Results.Internet)
-                                {
+                        }
+                        else
+                        {
+                            <table class="table table-striped">
+                                <thead>
                                     <tr>
-                                        <td>
-                                            @result.Title
-                                        </td>
-                                        <td>
-                                            @result.MatchedWords
-                                        </td>
-                                        <td>
-                                            <a href="@result.Comparison">Download comparison report</a>
-                                        </td>
-                                        <td>
-                                            <a href="@result.Url">
-                                                Suspected text
-                                            </a>
-                                        </td>
+                                        <th>
+                                            Title
+                                        </th>
+                                        <th>
+                                            Copied Words
+                                        </th>
+                                        <th>
+                                            Comparison report
+                                        </th>
+                                        <th>
+                                            Suspected result
+                                        </th>
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach (var result in @Model.CompletedCallback.Results.Internet)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @result.Title
+                                            </td>
+                                            <td>
+                                                @result.MatchedWords
+                                            </td>
+                                            <td>
+                                                <a href="@result.Comparison">Download comparison report</a>
+                                            </td>
+                                            <td>
+                                                <a href="@result.Url">
+                                                    Suspected text
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
                     }
-                }
-                else if (Model != null && Model.ScanId != null)
-                {
-                    <div class="waiting-message">
-                        <h4>Still processing, click <i>check results</i> to refresh</h4>
-                    </div>
+                    else if (Model != null && Model.ScanId != null)
+                    {
+                            <div class="text-center">
+                                <p class="lead">
+                                    <i class="glyphicon glyphicon-hourglass"></i>
+                                    Scan is in progress...
+                                </p>
+                                <p class="lead">
+                                    Next check in <span id="seconds-to-next-refresh"></span> seconds
+                                </p>
+                            </div>
+                        <script>
+                            setTimeout(function () {
+                                document.forms["check-result-form"].submit();
+                            }, 5000);
 
-                }
+                            seconds = 5;
+                            document.getElementById("seconds-to-next-refresh").innerText = seconds;
+                            setInterval(function () {
+                                seconds -= 1;
+                                document.getElementById("seconds-to-next-refresh").innerText = seconds;
+                            }, 1000);
+                        </script>
+                    }
+                </form>
             </div>
         </div>
     </div>
-
 </div>

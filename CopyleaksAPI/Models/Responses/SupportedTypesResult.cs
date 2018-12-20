@@ -26,7 +26,8 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses
 {
-    public class SupportedTypesResult
+	// CR : Documentation
+	public class SupportedTypesResult
     {
         /// <summary>
         /// List of textal file types supported.

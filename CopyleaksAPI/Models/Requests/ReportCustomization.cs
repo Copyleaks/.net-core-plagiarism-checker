@@ -25,7 +25,6 @@
 namespace Copyleaks.SDK.V3.API.Models.Requests
 {
 	// CR : Documentation is missing. 
-
 	public class ReportCustomization
     {
         public string Title { get; set; }
