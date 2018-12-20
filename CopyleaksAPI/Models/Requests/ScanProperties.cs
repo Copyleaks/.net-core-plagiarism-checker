@@ -29,9 +29,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests
 {
-    public class ScanProperties
+	// CR : Documentation is missing. 
+	public class ScanProperties
     {
-
         /// <summary>
 		/// Define which type of task it is.
 		/// </summary>
@@ -87,6 +87,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
 
     }
 
+	// CR : Seperate to diffrent file.
     /// <summary>
     /// Defines which mediums to scan.
     /// </summary>
@@ -106,7 +107,9 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
         public bool CopyleaksInternalDB { get; set; } = true;
     }
 
-    public class Exclude
+	// CR : Seperate to diffrent file.
+	// CR : Documentation
+	public class Exclude
     {
         /// <summary>
         /// Exclude references from the scan.
@@ -134,7 +137,9 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
 
     }
 
-    public class Filters
+	// CR : Seperate to diffrent file.
+	// CR : Documentation
+	public class Filters
     {
         [JsonProperty("idenitcalEnabled")]
         public bool IdenitcalEnabled { get; set; } = true;
@@ -152,14 +157,16 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
         public bool SafeSearch { get; set; } = false;
 
         [JsonProperty("domains")]
-        //[DomainListsValidator(MaxLength = 512)]
+        //[DomainListsValidator(MaxLength = 512)] // CR : Remove
         public string[] Domains { get; set; } = new string[] { };
 
         [JsonProperty("domainsMode")]
         public eDomainsFilteringMode DomainsFilteringMode { get; set; } = eDomainsFilteringMode.WhiteList;
     }
 
-    public class Callbacks
+	// CR : Seperate to diffrent file.
+	// CR : Documentation
+	public class Callbacks
     {
         [JsonProperty("completion")]
         public Uri Completion { get; set; }
@@ -168,9 +175,11 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
         public Uri NewResult { get; set; }
     }
 
-    public class AuthorEntity
+	// CR : Seperate to diffrent file.
+	// CR : Documentation
+	public class AuthorEntity
     {
-        [StringLength(36)]
+        [StringLength(36)] // CR : Needed?
         [JsonProperty("id")]
         public string Id { get; set; } = null;
     }

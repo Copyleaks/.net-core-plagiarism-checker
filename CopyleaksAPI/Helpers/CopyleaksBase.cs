@@ -30,7 +30,8 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Copyleaks.SDK.V3.API.Helpers
 {
-    public abstract class CopyleaksBase : IDisposable
+	// CR : Documentation is missing. 
+	public abstract class CopyleaksBase : IDisposable
     {
         public HttpClient Client { get; private set; }
 

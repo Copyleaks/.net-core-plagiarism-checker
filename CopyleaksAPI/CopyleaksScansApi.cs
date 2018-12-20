@@ -35,10 +35,11 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-
+// CR : Async Tasks should be called "[prefix]Async"
 namespace Copyleaks.SDK.V3.API
 {
-    public class CopyleaksScansApi: CopyleaksBase
+	// CR : Documentation
+	public class CopyleaksScansApi: CopyleaksBase
     {
         public string Product { get; private set; }
 
@@ -50,7 +51,6 @@ namespace Copyleaks.SDK.V3.API
 
         public CopyleaksScansApi(string product, string token, X509Certificate2 clientCertificate = null) : base(clientCertificate)
         {
-
             this.CopyleaksApiServer = ConfigurationManager.Configuration["apiEndPoint"];
             this.Product = product;
             this.Token = token;

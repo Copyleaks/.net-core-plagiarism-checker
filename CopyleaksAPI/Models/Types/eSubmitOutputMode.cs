@@ -24,7 +24,8 @@
 
 namespace Copyleaks.SDK.V3.API.Models.Types
 {
-    public enum eSubmitOutputMode
+	// CR : Documentation
+	public enum eSubmitOutputMode
     {
         TXT = 0,
 		HTML = 1

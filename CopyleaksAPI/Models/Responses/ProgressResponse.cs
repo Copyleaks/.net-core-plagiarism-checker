@@ -26,7 +26,8 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses
 {
-    class ProgressResponse
+	// CR : Documentation
+	class ProgressResponse
     {
         [JsonProperty("percents")]
         public ushort Percents { get; set; }

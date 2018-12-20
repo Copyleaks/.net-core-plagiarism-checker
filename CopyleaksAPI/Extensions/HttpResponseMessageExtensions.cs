@@ -29,7 +29,8 @@ using System.Threading.Tasks;
 
 namespace Copyleaks.SDK.V3.API.Extensions
 {
-    public static class HttpResponseMessageExtensions
+	// CR : Documentation is missing. 
+	public static class HttpResponseMessageExtensions
     {
         public static async Task<string> ExtractStringResultsAsync(this HttpResponseMessage message)
         {

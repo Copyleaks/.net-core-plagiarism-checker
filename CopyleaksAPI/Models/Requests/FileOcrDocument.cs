@@ -27,14 +27,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests
 {
-    public class FileOcrDocument :FileDocument
+	// CR : Documentation is missing. 
+	public class FileOcrDocument :FileDocument
     {
         /// <summary>
         /// The langugage code of the text in the picture.
         /// </summary>
         [JsonProperty("langCode")]
-        //[Required, OcrLanguageValidator]
-        [Required]
-        public string Language { get; set; }
+        //[Required, OcrLanguageValidator] // CR : Delete?
+        [Required]  // CR : Why needed? Where checked?
+		public string Language { get; set; }
     }
 }

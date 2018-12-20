@@ -31,6 +31,8 @@ using System.Net.Http;
 
 namespace Copyleaks.SDK.V3.API.Exceptions
 {
+	// CR : Documentation is missing. 
+	// CR : CopyleaksErrorCode\Message is still in use?
     public class CommandFailedException : ApplicationException
     {
         const short UNDEFINED_COPYLEAKS_HEADER_ERROR_CODE = 9999;
@@ -76,19 +78,17 @@ namespace Copyleaks.SDK.V3.API.Exceptions
                 return error.Message;
         }
 
-        private static short parseCopyleaksErrorCode(HttpResponseMessage response)
+		// CR : "parseCopyleaksErrorCode" -> "ParseCopyleaksErrorCode"
+		private static short parseCopyleaksErrorCode(HttpResponseMessage response)
         {
             const string COPYLEAKS_ERROR_CODE_HEADER_NAME = "Copyleaks-Error-Code";
             if (response.Headers.Contains(COPYLEAKS_ERROR_CODE_HEADER_NAME))
             {
                 string[] values = response.Headers.GetValues(COPYLEAKS_ERROR_CODE_HEADER_NAME).ToArray();
-                short code;
-                if (values != null && values.Length > 0 && short.TryParse(values[0], out code))
-                    return code;
-            }
+				if (values != null && values.Length > 0 && short.TryParse(values[0], out short code))
+					return code;
+			}
             return UNDEFINED_COPYLEAKS_HEADER_ERROR_CODE;
         }
-
-        
     }
 }

@@ -28,13 +28,14 @@ using System.IO;
 
 namespace Copyleaks.SDK.V3.API.Helpers
 {
-    public static class ConfigurationManager
+	// CR : Documentation is missing. 
+	public static class ConfigurationManager
     {
         static ConfigurationManager()
         {
             string configPath = "config.json";
             if (!File.Exists(configPath))
-                throw new ConfigurationException($"Configuration file '{configPath}' is missing, Copy 'https://github.com/Copyleaks/.NET-Core-Plagiarism-Checker/{configPath}' to your projects root directory");
+                throw new ConfigurationException($"Configuration file '{configPath}' is missing, Copy 'https://github.com/Copyleaks/.NET-Core-Plagiarism-Checker/{configPath}' to your projects root directory"); // CR: Change the URL
             Configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile(configPath, optional: true, reloadOnChange: true)
@@ -42,10 +43,9 @@ namespace Copyleaks.SDK.V3.API.Helpers
         }
 
         public static IConfiguration Configuration { get; set; }
-
-        
     }
 
+	// CR: Really needed? Maybe just throw generic error?
     public class ConfigurationException : Exception
     {
         public ConfigurationException(string msg): base(msg) { }

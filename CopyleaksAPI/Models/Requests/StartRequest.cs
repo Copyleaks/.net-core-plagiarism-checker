@@ -1,11 +1,12 @@
-﻿
+﻿// CR : License missing
 using Copyleaks.SDK.V3.API.Models.Types;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests
 {
-    public class StartRequest
+	// CR : Documentation
+	public class StartRequest
     {
         [JsonProperty("trigger")]
         [Required]
@@ -15,7 +16,9 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
         public eErrorHandling ErrorHandlingMode { get; set; } = eErrorHandling.Cancel;
     }
 
-    public class StartBatchRequest : StartRequest
+	// CR : Seperate to diffrent file.
+	// CR : Documentation
+	public class StartBatchRequest : StartRequest
     {
         [JsonProperty("include")]
         public string[] Include { get; set; }

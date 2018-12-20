@@ -26,7 +26,8 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses
 {
-    public class StartResponse
+	// CR : Documentation
+	public class StartResponse
     {
         [JsonProperty("success")]
         public StartRow[] Success { get; set; }
@@ -35,7 +36,9 @@ namespace Copyleaks.SDK.V3.API.Models.Responses
         public StartRow[] Failed { get; set; }
     }
 
-    public class StartRow
+	// CR : Documentation
+	// CR : Split
+	public class StartRow
     {
         [JsonProperty("id")]
         public string Id { get; set; }

@@ -32,19 +32,21 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-
+// CR : Async Tasks should be called "[prefix]Async"
 namespace Copyleaks.SDK.V3.API
 {
     public class CopyleaksIdentityApi: CopyleaksBase
     {
-        public string CopyleaksIdServer { get; private set; }
+		// CR : Documentation
+		public string CopyleaksIdServer { get; private set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="clientCertificate">Optional: client certificate to be checked against in Copyleaks API
-        /// When registering a client certificate</param>
-        public CopyleaksIdentityApi(X509Certificate2 clientCertificate = null): base(clientCertificate)
+		// CR : Documentation
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="clientCertificate">Optional: client certificate to be checked against in Copyleaks API
+		/// When registering a client certificate</param>
+		public CopyleaksIdentityApi(X509Certificate2 clientCertificate = null): base(clientCertificate)
         {
             this.CopyleaksIdServer = ConfigurationManager.Configuration["idEndPoint"];
         }
@@ -95,7 +97,6 @@ namespace Copyleaks.SDK.V3.API
         /// The task result contains the read only key</returns>
         public async Task<string> RegenerateReadonlyKey(string token, string scanId)
         {
-            
             string requestUri = $"{this.CopyleaksIdServer}{this.ApiVersion}/account/permissions/{scanId}/readonly";
             Client.AddAuthentication(token);
             var response = await Client.PostAsync(requestUri, null);

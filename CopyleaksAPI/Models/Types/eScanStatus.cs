@@ -24,7 +24,8 @@
 
 namespace Copyleaks.SDK.V3.API.Models.Types
 {
-    public enum eScanStatus
+	// CR : Documentation
+	public enum eScanStatus
     {
         CompletedSuccessfully = 0,
         Error = 1,

@@ -29,13 +29,14 @@ using System.Net.Http;
 
 namespace Copyleaks.SDK.V3.API.Extensions
 {
-    public static class HttpClientExtensions
+	// CR : Documentation is missing. 
+	public static class HttpClientExtensions
     {
         static readonly string ASSEMBLY_VERSION = AssemblyHelper.GetVersion();
 
         public static void AddAuthentication(this HttpClient client, string token)
         {
-            if(!client.DefaultRequestHeaders.Contains("Authorization"))
+            if(!client.DefaultRequestHeaders.Contains("Authorization")) // CR : Extract into const.
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
         }
 
@@ -43,7 +44,7 @@ namespace Copyleaks.SDK.V3.API.Extensions
         {
             client.Timeout = TimeSpan.FromMilliseconds(int.Parse(ConfigurationManager.Configuration["RequestsTimeout"]));
             client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.UserAgent.ParseAdd($"Copyleaks-.NET-SDK/{ASSEMBLY_VERSION}");
+            client.DefaultRequestHeaders.UserAgent.ParseAdd($"copyleaks-core-sdk/{ASSEMBLY_VERSION}");
         }
     }
 }

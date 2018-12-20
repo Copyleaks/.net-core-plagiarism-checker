@@ -27,7 +27,8 @@ using System.Reflection;
 
 namespace Copyleaks.SDK.V3.API.Helpers
 {
-    public static class AssemblyHelper
+	// CR : Documentation is missing. 
+	public static class AssemblyHelper
     {
         public static string GetVersion()
         {
