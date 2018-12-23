@@ -32,21 +32,21 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-// CR : Async Tasks should be called "[prefix]Async"
 namespace Copyleaks.SDK.V3.API
 {
     public class CopyleaksIdentityApi: CopyleaksBase
     {
-		// CR : Documentation
+		/// <summary>
+        /// This class alows you the get the API token from Copyleaks API and manage your scans permissions
+        /// </summary>
 		public string CopyleaksIdServer { get; private set; }
 
-		// CR : Documentation
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="clientCertificate">Optional: client certificate to be checked against in Copyleaks API
-		/// When registering a client certificate</param>
-		public CopyleaksIdentityApi(X509Certificate2 clientCertificate = null): base(clientCertificate)
+        /// <summary>
+        /// Connection to Copyleaks identity API
+        /// </summary>
+        /// <param name="clientCertificate">Optional: client certificate to be checked against in Copyleaks API.
+        /// Configure you client's certificate at https://copyleaks.com/Manage </param>
+        public CopyleaksIdentityApi(X509Certificate2 clientCertificate = null): base(clientCertificate)
         {
             this.CopyleaksIdServer = ConfigurationManager.Configuration["idEndPoint"];
         }
@@ -57,7 +57,7 @@ namespace Copyleaks.SDK.V3.API
         /// <param name="email">Your email address</param>
         /// <param name="key">Copyleaks API key</param>
         /// <returns>LoginToken.Token that can be used in order to invoke copyleaks api methods</returns>
-        public async Task<LoginResponse> Login(string email, string key)
+        public async Task<LoginResponse> LoginAsync(string email, string key)
         {
             if (string.IsNullOrEmpty(email))
                 throw new ArgumentException("Email is mandatory.", nameof(email));
@@ -80,7 +80,7 @@ namespace Copyleaks.SDK.V3.API
         /// <param name="scanId">A completed scan Id</param>
         /// <returns>A task that represents the asynchronous operation.
         /// The task result contains the read only key</returns>
-        public async Task<string> GetReadonlyKey(string token, string scanId)
+        public async Task<string> GetReadonlyKeyAsync(string token, string scanId)
         {
             string requestUri = $"{this.CopyleaksIdServer}{this.ApiVersion}/account/permissions/{scanId}/readonly";
             Client.AddAuthentication(token);
@@ -95,7 +95,7 @@ namespace Copyleaks.SDK.V3.API
         /// <param name="scanId">A completed scan Id</param>
         /// <returns>A task that represents the asynchronous operation.
         /// The task result contains the read only key</returns>
-        public async Task<string> RegenerateReadonlyKey(string token, string scanId)
+        public async Task<string> RegenerateReadonlyKeyAsync(string token, string scanId)
         {
             string requestUri = $"{this.CopyleaksIdServer}{this.ApiVersion}/account/permissions/{scanId}/readonly";
             Client.AddAuthentication(token);
@@ -109,7 +109,7 @@ namespace Copyleaks.SDK.V3.API
         /// <param name="token">Login Token string</param>
         /// <param name="scanId">A completed scan Id that has a readonly key</param>
         /// <returns>A task that represents the asynchronous delete operation.</returns>
-        public async Task DeleteReadonlyKey(string token, string scanId)
+        public async Task DeleteReadonlyKeyAsync(string token, string scanId)
         {
             string requestUri = $"{this.CopyleaksIdServer}{this.ApiVersion}/account/permissions/{scanId}/readonly";
             Client.AddAuthentication(token);

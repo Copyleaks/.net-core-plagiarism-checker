@@ -27,9 +27,14 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Callbacks
 {
-	// CR : Documentation is missing. 
+    /// <summary>
+    /// The callback that will be called from Copyleaks API once an `check credits` request is completed
+    /// </summary>
 	public class CreditsCheckCallback : BaseResponse
     {
+        /// <summary>
+        /// The amount of credits to be consumed by the scan request
+        /// </summary>
         [JsonProperty("credits")]
         public uint Credits { get; set; }
     }

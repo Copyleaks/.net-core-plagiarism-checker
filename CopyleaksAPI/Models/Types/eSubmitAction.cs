@@ -24,7 +24,9 @@
 
 namespace Copyleaks.SDK.V3.API.Models.Types
 {
-	// CR : Documentation
+	/// <summary>
+    /// The possible actions when submitting a new Scan
+    /// </summary>
 	public enum eSubmitAction
     {
         Scan = 0,

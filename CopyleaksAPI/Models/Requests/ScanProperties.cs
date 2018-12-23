@@ -23,14 +23,16 @@
 ********************************************************************************/
 
 using Copyleaks.SDK.V3.API.Models.Types;
+using Copyleaks.SDK.V3.API.Models.Requests.Properties;
 using Newtonsoft.Json;
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests
 {
-	// CR : Documentation is missing. 
-	public class ScanProperties
+    /// <summary>
+    /// The scan request properties
+    /// </summary>
+    public class ScanProperties
     {
         /// <summary>
 		/// Define which type of task it is.
@@ -61,7 +63,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
         /// Getting the client notify changes on server.
         /// </summary>
         [JsonProperty("callbacks")]
-        public Callbacks CallbacksSection { get; set; } = new Callbacks();
+        public CallbacksSection CallbacksSection { get; set; } = new CallbacksSection();
 
         /// <summary>
         /// How much time, in hours, to store the scan on the database.
@@ -85,102 +87,5 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
         [JsonProperty("reportExport")]
         public ReportCustomization ReportSection { get; set; } = null;
 
-    }
-
-	// CR : Seperate to diffrent file.
-    /// <summary>
-    /// Defines which mediums to scan.
-    /// </summary>
-    public class ProtectionLayers
-    {
-        /// <summary>
-        /// Scan agianst the internet?
-        /// </summary>
-        [JsonProperty("internet")]
-        public bool Internet { get; set; } = true;
-
-        /// <summary>
-        /// Scan agianst copyleaks internal database?
-        /// If specified true, it will also index the scanned document into the database.
-        /// </summary>
-        [JsonProperty("copyleaksDB")]
-        public bool CopyleaksInternalDB { get; set; } = true;
-    }
-
-	// CR : Seperate to diffrent file.
-	// CR : Documentation
-	public class Exclude
-    {
-        /// <summary>
-        /// Exclude references from the scan.
-        /// </summary>
-        [JsonProperty("references")]
-        public bool References { get; set; } = false;
-
-        /// <summary>
-        /// Exclude quotes from the scan.
-        /// </summary>
-        [JsonProperty("quotes")]
-        public bool Quotes { get; set; } = false;
-
-        /// <summary>
-        /// Exclude titles from the scan.
-        /// </summary>
-        [JsonProperty("titles")]
-        public bool Titles { get; set; } = false;
-
-        /// <summary>
-        /// When HTML document, exlude the document template from the scan. 
-        /// </summary>
-        [JsonProperty("htmlTemplate")]
-        public bool HtmlTemplate { get; set; } = false;
-
-    }
-
-	// CR : Seperate to diffrent file.
-	// CR : Documentation
-	public class Filters
-    {
-        [JsonProperty("idenitcalEnabled")]
-        public bool IdenitcalEnabled { get; set; } = true;
-
-        [JsonProperty("minorChangedEnabled")]
-        public bool MinorChangedEnabled { get; set; } = true;
-
-        [JsonProperty("relatedMeaningEnabled")]
-        public bool RelatedMeaningEnabled { get; set; } = true;
-
-        [JsonProperty("minCopiedWords")]
-        public ushort? minCopiedWords { get; set; } = null;
-
-        [JsonProperty("safeSearch")]
-        public bool SafeSearch { get; set; } = false;
-
-        [JsonProperty("domains")]
-        //[DomainListsValidator(MaxLength = 512)] // CR : Remove
-        public string[] Domains { get; set; } = new string[] { };
-
-        [JsonProperty("domainsMode")]
-        public eDomainsFilteringMode DomainsFilteringMode { get; set; } = eDomainsFilteringMode.WhiteList;
-    }
-
-	// CR : Seperate to diffrent file.
-	// CR : Documentation
-	public class Callbacks
-    {
-        [JsonProperty("completion")]
-        public Uri Completion { get; set; }
-
-        [JsonProperty("onNewResult")]
-        public Uri NewResult { get; set; }
-    }
-
-	// CR : Seperate to diffrent file.
-	// CR : Documentation
-	public class AuthorEntity
-    {
-        [StringLength(36)] // CR : Needed?
-        [JsonProperty("id")]
-        public string Id { get; set; } = null;
     }
 }

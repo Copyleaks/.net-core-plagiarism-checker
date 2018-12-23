@@ -22,15 +22,37 @@
  SOFTWARE.
 ********************************************************************************/
 
-using Copyleaks.SDK.V3.API.Models.Responses.Result;
 
-namespace Copyleaks.SDK.V3.API.Models.Callbacks
+namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
-	/// <summary>
-    /// The callback that will be called from Copyleaks API once an `index only` request is completed
+    /// <summary>
+    /// Customizable colors for Copyleaks scan result report
     /// </summary>
-	public class IndexOnlyCallback : BaseResponse
-	{
+    public class ReportCustomizationColors
+    {
+        /// <summary>
+        /// The color of the main strip in the header
+        /// </summary>
+        public string MainStrip { get; set; }
 
-	}
+        /// <summary>
+        /// The color for titles in copyleaks result report
+        /// </summary>
+        public string titles { get; set; }
+
+        /// <summary>
+        /// The color for identical matches
+        /// </summary>
+        public string Identical { get; set; }
+
+        /// <summary>
+        /// The color for minor changes matches
+        /// </summary>
+        public string MinorChanges { get; set; }
+
+        /// <summary>
+        /// The color for related meaning matches
+        /// </summary>
+        public string RelatedMeaning { get; set; }
+    }
 }

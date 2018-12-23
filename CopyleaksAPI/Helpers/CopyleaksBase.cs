@@ -30,13 +30,20 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Copyleaks.SDK.V3.API.Helpers
 {
-	// CR : Documentation is missing. 
+	/// <summary>
+    /// An HTTP connection to Copyleaks API
+    /// </summary>
 	public abstract class CopyleaksBase : IDisposable
     {
         public HttpClient Client { get; private set; }
 
         protected string ApiVersion { get; set; }
 
+        /// <summary>
+        /// A new dispoable HTTP Connection to Copyleaks API
+        /// </summary>
+        /// <param name="clientCertificate">Optional Client certificate to be checked against.
+        /// Configure you client's certificate at https://copyleaks.com/Manage </param>
         public CopyleaksBase(X509Certificate2 clientCertificate = null)
         {
             if (clientCertificate != null)

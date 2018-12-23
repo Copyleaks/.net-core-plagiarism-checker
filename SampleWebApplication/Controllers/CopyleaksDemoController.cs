@@ -29,6 +29,7 @@ using Copyleaks.SDK.V3.API;
 using Copyleaks.SDK.V3.API.Exceptions;
 using Copyleaks.SDK.V3.API.Models.Callbacks;
 using Copyleaks.SDK.V3.API.Models.Requests;
+using Copyleaks.SDK.V3.API.Models.Requests.Properties;
 using Copyleaks.SDK.V3.API.Models.Types;
 using Microsoft.AspNetCore.Mvc;
 using SampleWebApplication.Models;
@@ -66,7 +67,7 @@ namespace Copyleaks.SDK.Demo.Controllers
                     Guid temp;
                     var validOrEmptyKey = Guid.TryParse(loginModel.Key, out temp) ? loginModel.Key : Guid.Empty.ToString();
                     // Request an API token from https://id.copyleaks.com/
-                    var loginResponse = await identity.Login(loginModel.Email, validOrEmptyKey);
+                    var loginResponse = await identity.LoginAsync(loginModel.Email, validOrEmptyKey);
                     var submitResponse = new SubmitResponse()
                     {
                         Token = loginResponse.Token
@@ -103,7 +104,7 @@ namespace Copyleaks.SDK.Demo.Controllers
                 using (var api = new CopyleaksScansApi(submitModel.Product, submitModel.Token))
                 {
                     // Submit a file for scan in https://api.copyleaks.com
-                    await api.SubmitFile(scanId, new FileDocument
+                    await api.SubmitFileAsync(scanId, new FileDocument
                     {
                         // The text to scan in base64 format
                         Base64 = TextToBase64(submitModel.Text),
@@ -120,7 +121,7 @@ namespace Copyleaks.SDK.Demo.Controllers
                             // 3. Index - Upload the submitted text to Copyleaks internal database to be compared against feture scans
                             //            The Result of the request will be returned to the 'Completion' callback
                             Action = eSubmitAction.Scan,
-                            CallbacksSection = new Callbacks
+                            CallbacksSection = new CallbacksSection
                             {
                                 // Copyleaks API will POST the scan results to the 'completed' callback
                                 // See 'CompletedProcess' method for more details

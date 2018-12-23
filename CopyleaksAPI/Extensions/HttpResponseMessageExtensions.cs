@@ -29,9 +29,16 @@ using System.Threading.Tasks;
 
 namespace Copyleaks.SDK.V3.API.Extensions
 {
-	// CR : Documentation is missing. 
-	public static class HttpResponseMessageExtensions
+    /// <summary>
+    /// Extensions for HttpResponseMessage class
+    /// </summary>
+    public static class HttpResponseMessageExtensions
     {
+        /// <summary>
+        /// Extract a string from the message body 
+        /// </summary>
+        /// <param name="message">The response message</param>
+        /// <returns>The body of the response as string</returns>
         public static async Task<string> ExtractStringResultsAsync(this HttpResponseMessage message)
         {
             if (!message.IsSuccessStatusCode)
@@ -39,6 +46,12 @@ namespace Copyleaks.SDK.V3.API.Extensions
             return await message.Content.ReadAsStringAsync();
         }
 
+        /// <summary>
+        /// Extract type T from the response body
+        /// </summary>
+        /// <typeparam name="T">The expected result type</typeparam>
+        /// <param name="message">The response</param>
+        /// <returns>A deserialized object from the response</returns>
         public static async Task<T> ExtractJsonResultsAsync<T>(this HttpResponseMessage message)
         {
             if(!message.IsSuccessStatusCode)

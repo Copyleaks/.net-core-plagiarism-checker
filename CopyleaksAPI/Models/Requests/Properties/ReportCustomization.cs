@@ -22,15 +22,39 @@
  SOFTWARE.
 ********************************************************************************/
 
-using Copyleaks.SDK.V3.API.Models.Responses.Result;
-
-namespace Copyleaks.SDK.V3.API.Models.Callbacks
+namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
-	/// <summary>
-    /// The callback that will be called from Copyleaks API once an `index only` request is completed
+    /// <summary>
+    /// Specify customized attributes for Copyleaks scan results report
     /// </summary>
-	public class IndexOnlyCallback : BaseResponse
-	{
+    public class ReportCustomization
+    {
+        /// <summary>
+        /// Customizable title
+        /// </summary>
+        public string Title { get; set; }
 
-	}
+        /// <summary>
+        /// Customizable logo for the header of the report.
+        /// The logo should be in string base64 format
+        /// </summary>
+        public string LargeLogo { get; set; }
+
+        /// <summary>
+        /// Customizable logo for the footer of the report.
+        /// The logo should be in string base64 format
+        /// </summary>
+        public string SmallLogo { get; set; }
+
+        /// <summary>
+        /// Customizable direction of text.
+        /// When set to true the direction of the text will be from right to lef
+        /// </summary>
+        public bool RTL { get; set; }
+
+        /// <summary>
+        /// Customizable colors
+        /// </summary>
+        public ReportCustomizationColors Colors { get; set; }
+    }
 }

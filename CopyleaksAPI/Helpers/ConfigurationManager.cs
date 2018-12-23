@@ -23,32 +23,40 @@
 ********************************************************************************/
 
 using Microsoft.Extensions.Configuration;
-using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Copyleaks.SDK.V3.API.Helpers
 {
-	// CR : Documentation is missing. 
-	public static class ConfigurationManager
+    /// <summary>
+    /// Copyleaks configuration manager
+    /// </summary>
+    public static class ConfigurationManager
     {
         static ConfigurationManager()
         {
             string configPath = "config.json";
-            if (!File.Exists(configPath))
-                throw new ConfigurationException($"Configuration file '{configPath}' is missing, Copy 'https://github.com/Copyleaks/.NET-Core-Plagiarism-Checker/{configPath}' to your projects root directory"); // CR: Change the URL
-            Configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile(configPath, optional: true, reloadOnChange: true)
-            .Build();
+            // If config file exists it is the default
+            if (File.Exists(configPath))
+                Configuration = new ConfigurationBuilder()
+                    .SetBasePath(Directory.GetCurrentDirectory())
+                    .AddJsonFile(configPath, optional: true, reloadOnChange: true)
+                    .Build();
+            // no config file, using the constants
+            else
+                Configuration = new ConfigurationBuilder()
+                    .AddInMemoryCollection(new Dictionary<string, string>()
+                    {
+                        { "apiEndPoint", SdkConsts.ApiEndPoint },
+                        { "idEndPoint",  SdkConsts.IdEndPoint },
+                        {  "RequestsTimeout", SdkConsts.RequestsTimeout},
+                        { "apiVersion", SdkConsts.apiVersion }
+                    }).Build();
         }
 
+        /// <summary>
+        /// The configuration object, Example usage: ConfigurationManager.Configuration["apiEndPoint"]
+        /// </summary>
         public static IConfiguration Configuration { get; set; }
-    }
-
-	// CR: Really needed? Maybe just throw generic error?
-    public class ConfigurationException : Exception
-    {
-        public ConfigurationException(string msg): base(msg) { }
-
     }
 }

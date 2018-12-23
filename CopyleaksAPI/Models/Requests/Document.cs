@@ -26,9 +26,15 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests
 {
-	// CR : Documentation is missing. 
+	
+    /// <summary>
+    /// This class represent a document to be submitted to scan in Copyleaks API 
+    /// </summary>
 	public class Document
     {
+        /// <summary>
+        /// The scan request properties
+        /// </summary>
         [JsonProperty("properties")]
         public ScanProperties PropertiesSection { get; set; }
     }

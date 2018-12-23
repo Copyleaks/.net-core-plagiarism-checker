@@ -27,36 +27,36 @@ using System;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses
 {
-	// CR : Documentation
-	public class LoginResponse
+    /// <summary>
+    /// Login response from `CopyleaksIdentityApi.LoginAsync`
+    /// </summary>
+    public class LoginResponse
     {
-        public LoginResponse(string token, DateTime issued, DateTime expire)
-        {
-            this.Token = token;
-            this.Issued = issued;
-            this.Expire = expire;
-        }
-
-        #region Members & Properties
-
+        /// <summary>
+        /// The API login token to be used with `CopyleaksScansApi` methods
+        /// </summary>
         [JsonProperty(PropertyName = "access_token")]
         public string Token { get; private set; }
 
+        /// <summary>
+        /// The date on which the token was issued
+        /// </summary>
         [JsonProperty(PropertyName = ".issued")]
         public DateTime Issued { get; private set; }
 
+        /// <summary>
+        /// The token's expiry date
+        /// </summary>
         [JsonProperty(PropertyName = ".expires")]
         public DateTime Expire { get; private set; }
 
-        #endregion
-
         /// <summary>
-        /// Validate that the token is valid. If unvalid, throw UnauthorizedAccessException.
+        /// Validate that the token is valid. If unvalid, throws UnauthorizedAccessException.
         /// </summary>
         /// <exception cref="UnauthorizedAccessException">This token is expired</exception>
         public void Validate()
         {
-            if (DateTime.UtcNow > this.Expire)
+            if (DateTime.UtcNow > this.Expire.ToUniversalTime())
                 throw new UnauthorizedAccessException(string.Format("This token expired on {0}", this.Expire));
         }
 

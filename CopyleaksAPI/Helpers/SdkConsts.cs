@@ -22,15 +22,16 @@
  SOFTWARE.
 ********************************************************************************/
 
-using Copyleaks.SDK.V3.API.Models.Responses.Result;
-
-namespace Copyleaks.SDK.V3.API.Models.Callbacks
+namespace Copyleaks.SDK.V3.API.Helpers
 {
-	/// <summary>
-    /// The callback that will be called from Copyleaks API once an `index only` request is completed
-    /// </summary>
-	public class IndexOnlyCallback : BaseResponse
-	{
+    public class SdkConsts
+    {
+        public const string ApiEndPoint = "https://api.copyleaks.com/";
 
-	}
+        public const string IdEndPoint = "https://id.copyleaks.com/";
+
+        public const string RequestsTimeout = "60000";
+
+        public const string apiVersion = "v3";
+    }
 }

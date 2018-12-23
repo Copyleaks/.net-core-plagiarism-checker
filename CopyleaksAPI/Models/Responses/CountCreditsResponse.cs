@@ -24,9 +24,14 @@
 
 namespace Copyleaks.SDK.V3.API.Models.Responses
 {
-	// CR : Documentation
-	public class CountCreditsResponse
+    /// <summary>
+    /// Response for `CopyleaksScansApi.CreditBalanceAsync` request
+    /// </summary>
+    public class CountCreditsResponse
     {
+        /// <summary>
+        /// The number of creidts you have 
+        /// </summary>
         public uint Amount { get; set; }
     }
 }

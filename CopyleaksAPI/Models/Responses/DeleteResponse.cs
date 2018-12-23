@@ -26,21 +26,15 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses
 {
-	// CR : Documentation
+	/// <summary>
+    /// The response for a scan delete request
+    /// </summary>
 	public class DeleteResponse
     {
+        /// <summary>
+        /// A list of scan id's that were failed to be deleted
+        /// </summary>
         [JsonProperty(PropertyName = "failures")]
         public Failure [] Failures { get; set; }
-    }
-
-	// CR : Documentation
-	// CR : Split
-	public class Failure
-    {
-        [JsonProperty(PropertyName = "id")]
-        public string Id { get; set; }
-
-        [JsonProperty(PropertyName = "description")]
-        public string Description { get; set; }
     }
 }

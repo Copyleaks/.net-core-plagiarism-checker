@@ -31,29 +31,29 @@ using System.Net.Http;
 
 namespace Copyleaks.SDK.V3.API.Exceptions
 {
-	// CR : Documentation is missing. 
-	// CR : CopyleaksErrorCode\Message is still in use?
+    /// <summary>
+    /// This class is returned in case an error response was received from Copyleaks API
+    /// </summary>
     public class CommandFailedException : ApplicationException
     {
-        const short UNDEFINED_COPYLEAKS_HEADER_ERROR_CODE = 9999;
-
+        /// <summary>
+        /// The Http status code
+        /// </summary>
         public HttpStatusCode HttpErrorCode { get; private set; }
 
+        /// <summary>
+        /// Copyleaks error code, see https://api.copyleaks.com/documentation/errors#Managed-Errors for a full list of error codes
+        /// </summary>
         public short CopyleaksErrorCode { get; private set; }
 
-        public bool IsManagedError
-        {
-            get
-            {
-                return CopyleaksErrorCode != UNDEFINED_COPYLEAKS_HEADER_ERROR_CODE;
-            }
-        }
-
+        /// <summary>
+        /// A new error response from Copyleaks API
+        /// </summary>
+        /// <param name="response">The error response from Copyleaks API</param>
         public CommandFailedException(HttpResponseMessage response) :
             base(GetMessage(response))
         {
             this.HttpErrorCode = response.StatusCode;
-            this.CopyleaksErrorCode = parseCopyleaksErrorCode(response);
         }
 
         private static string GetMessage(HttpResponseMessage response)
@@ -61,15 +61,14 @@ namespace Copyleaks.SDK.V3.API.Exceptions
 
             string errorResponse = response.Content.ReadAsStringAsync().Result;
 
-            BadResponse error = null;
+            CopyleaksErrorResponse error = null;
             try
             {
-                error = JsonConvert.DeserializeObject<BadResponse>(errorResponse);
+                error = JsonConvert.DeserializeObject<CopyleaksErrorResponse>(errorResponse);
             }
             catch (JsonReaderException)
             {
-                if (parseCopyleaksErrorCode(response) != UNDEFINED_COPYLEAKS_HEADER_ERROR_CODE)
-                    return errorResponse;
+                return errorResponse;
             }
 
             if (error == null)
@@ -78,17 +77,5 @@ namespace Copyleaks.SDK.V3.API.Exceptions
                 return error.Message;
         }
 
-		// CR : "parseCopyleaksErrorCode" -> "ParseCopyleaksErrorCode"
-		private static short parseCopyleaksErrorCode(HttpResponseMessage response)
-        {
-            const string COPYLEAKS_ERROR_CODE_HEADER_NAME = "Copyleaks-Error-Code";
-            if (response.Headers.Contains(COPYLEAKS_ERROR_CODE_HEADER_NAME))
-            {
-                string[] values = response.Headers.GetValues(COPYLEAKS_ERROR_CODE_HEADER_NAME).ToArray();
-				if (values != null && values.Length > 0 && short.TryParse(values[0], out short code))
-					return code;
-			}
-            return UNDEFINED_COPYLEAKS_HEADER_ERROR_CODE;
-        }
     }
 }

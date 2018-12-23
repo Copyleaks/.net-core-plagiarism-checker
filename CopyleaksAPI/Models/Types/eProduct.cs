@@ -24,8 +24,10 @@
 
 namespace Copyleaks.SDK.V3.API.Models.Types
 {
-	// CR : Documentation
-	public enum eProduct
+    /// <summary>
+    /// The product for scanning the documents
+    /// </summary>
+    public enum eProduct
     {
         /// <summary>
 		/// Bests for: publishers, blogger, writers...

@@ -22,15 +22,15 @@
  SOFTWARE.
 ********************************************************************************/
 
-using Copyleaks.SDK.V3.API.Models.Responses.Result;
-
-namespace Copyleaks.SDK.V3.API.Models.Callbacks
+namespace Copyleaks.SDK.V3.API.Models.Responses
 {
-	/// <summary>
-    /// The callback that will be called from Copyleaks API once an `index only` request is completed
-    /// </summary>
-	public class IndexOnlyCallback : BaseResponse
-	{
+    public class CopyleaksErrorResponse
+    {
+        public short CopyleaksErrorCode { get; private set; }
 
-	}
+        public int httpStatusCode { get; set; }
+        
+        public string Message { get; set; }
+
+    }
 }

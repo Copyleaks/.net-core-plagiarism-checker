@@ -35,20 +35,41 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-// CR : Async Tasks should be called "[prefix]Async"
 namespace Copyleaks.SDK.V3.API
 {
-	// CR : Documentation
-	public class CopyleaksScansApi: CopyleaksBase
+    /// <summary>
+    /// This class allows you to connect to Copyleaks API, 
+    /// scan for plagiarism and get your scan results. 
+    /// </summary>
+    public class CopyleaksScansApi: CopyleaksBase
     {
+        /// <summary>
+        /// The product for scanning the documents
+        /// </summary>
         public string Product { get; private set; }
 
+        /// <summary>
+        /// Login Token, aquire a login token by invoking by using `CopyleaksIdentityApi.LoginAsync`
+        /// </summary>
         public string Token { private get; set; }
 
         public string CopyleaksApiServer { get; }
 
+        /// <summary>
+        /// Conection to Copyleaks scan API
+        /// </summary>
+        /// <param name="product">The product for scanning the documents</param>
+        /// <param name="token">Login Token, aquire a login token by invoking by using `CopyleaksIdentityApi.LoginAsync`</param>
+        /// <param name="clientCertificate">Optional Client certificate to be checked against.
+        /// Configure you client's certificate at https://copyleaks.com/Manage </param>
         public CopyleaksScansApi(eProduct product, string token, X509Certificate2 clientCertificate = null) : this(product.ToString().ToLower(), token, clientCertificate) { }
 
+        /// <summary>
+        /// Conection to Copyleaks scan API
+        /// </summary>
+        /// <param name="product">The product for scanning the documents</param>
+        /// <param name="token">Login Token, aquire a login token by invoking by using `CopyleaksIdentityApi.LoginAsync`</param>
+        /// <param name="clientCertificate">Optional Client certificate to be checked against.
         public CopyleaksScansApi(string product, string token, X509Certificate2 clientCertificate = null) : base(clientCertificate)
         {
             this.CopyleaksApiServer = ConfigurationManager.Configuration["apiEndPoint"];
@@ -59,9 +80,8 @@ namespace Copyleaks.SDK.V3.API
         /// <summary>
         /// Get your current credit balance
         /// </summary>
-        /// <param name="token">Login Token string</param>
         /// <returns>Current credit balance</returns>
-        public async Task<uint> CreditBalance()
+        public async Task<uint> CreditBalanceAsync()
         {
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/credits";
             Client.AddAuthentication(this.Token);
@@ -70,7 +90,7 @@ namespace Copyleaks.SDK.V3.API
             return credits.Amount;
         }
 
-        private async Task Submit(Document model, string requestUri)
+        private async Task SubmitAsync(Document model, string requestUri)
         {
             Client.AddAuthentication(this.Token);
             var response = await Client.PutAsync(requestUri,
@@ -84,26 +104,24 @@ namespace Copyleaks.SDK.V3.API
         /// <summary>
         /// Submitting URL to plagiarism scan
         /// </summary>
-        /// <param name="token">Login Token string</param>
         /// <param name="scanId">A unique scan Id</param>
         /// <param name="documentModel">The url and scan properties</param>
         /// <returns>A task that represents the asynchronous submit operation.</returns>
-        public async Task SubmitUrl(string scanId, UrlDocument documentModel)
+        public async Task SubmitUrlAsync(string scanId, UrlDocument documentModel)
         {
             if(documentModel.Url == null)
                 throw new ArgumentException("Url is mandatory.", nameof(documentModel.Url));
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/submit/url/{scanId}";
-            await Submit(documentModel, requestUri);
+            await SubmitAsync(documentModel, requestUri);
         }
 
         /// <summary>
         /// Submitting local file or free text to plagiarism scan
         /// </summary>
-        /// <param name="token">Login Token string</param>
         /// <param name="scanId">A unique scan Id</param>
         /// <param name="documentModel">The file or free text encoded in base64 and scan properties</param>
         /// <returns>A task that represents the asynchronous submit operation.</returns>
-        public async Task SubmitFile(string scanId, FileDocument documentModel)
+        public async Task SubmitFileAsync(string scanId, FileDocument documentModel)
         {
             if (documentModel.Base64 == null)
                 throw new ArgumentException("Base64 is mandatory.", nameof(documentModel.Base64));
@@ -111,17 +129,16 @@ namespace Copyleaks.SDK.V3.API
                 throw new ArgumentException("Filename is mandatory.", nameof(documentModel.Filename));
 
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/submit/file/{scanId}";
-            await Submit(documentModel, requestUri);
+            await SubmitAsync(documentModel, requestUri);
         }
 
         /// <summary>
         /// Submitting an image containing textual content to plagiarism scan
         /// </summary>
-        /// <param name="token">Login Token string</param>
         /// <param name="scanId">A unique scan Id</param>
         /// <param name="documentModel">The image file encoded in base64 and scan properties</param>
         /// <returns>A task that represents the asynchronous submit operation.</returns>
-        public async Task SubmitImageOCR(string scanId, FileOcrDocument documentModel)
+        public async Task SubmitImageOCRAsync(string scanId, FileOcrDocument documentModel)
         {
             if (documentModel.Base64 == null)
                 throw new ArgumentException("Base64 is mandatory.", nameof(documentModel.Base64));
@@ -131,17 +148,16 @@ namespace Copyleaks.SDK.V3.API
                 throw new ArgumentException("Language is mandatory.", nameof(documentModel.Language));
 
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/submit/ocr/{scanId}";
-            await Submit(documentModel, requestUri);
+            await SubmitAsync(documentModel, requestUri);
         }
 
         /// <summary>
         /// Get the perecent progress of the scan
         /// </summary>
-        /// <param name="token">Login Token string</param>
         /// <param name="scanId">The scan Id</param>
         /// <returns>A task that represents the asynchronous operation.
         /// The task result contains the perecent progress of the scan </returns>
-        public async Task<uint> Progress(string scanId)
+        public async Task<uint> ProgressAsync(string scanId)
         {
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/{scanId}/progress";
             Client.AddAuthentication(this.Token);
@@ -153,11 +169,10 @@ namespace Copyleaks.SDK.V3.API
         /// <summary>
         /// Deletes the process once it has finished running 
         /// </summary>
-        /// <param name="token">Login Token string</param>
         /// <param name="scanIds">A list of completed scan id's to be deleted</param>
         /// <returns>A task that represents the asynchronous operation.
         /// The task result contains a list of errors by scan id if errors have occurred</returns>
-        public async Task<DeleteResponse> Delete(string [] scanIds)
+        public async Task<DeleteResponse> DeleteAsync(string [] scanIds)
         {
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/delete";
             Client.AddAuthentication(this.Token);
@@ -172,11 +187,11 @@ namespace Copyleaks.SDK.V3.API
         /// <summary>
         /// Start processes which are in 'price checked' status
         /// </summary>
-        /// <param name="token">Login Token string</param>
+        /// <param name="token">Login Token, aquire a login token by invoking by using `CopyleaksIdentityApi.LoginAsync`</param>
         /// <param name="model">A model with the list of scan id's to start and error handeling defenition in case one or more scans have a starting error</param>
         /// <returns>A task that represents the asynchronous operation.
         /// The task result contains a list of successfully started scans and a list of scans that have failed starting</returns>
-        public async Task<StartResponse> Start(StartRequest model)
+        public async Task<StartResponse> StartAsync(StartRequest model)
         {
             if (model.Trigger == null)
                 throw new ArgumentException("Trigger is mandatory.", nameof(model.Trigger));
@@ -191,12 +206,11 @@ namespace Copyleaks.SDK.V3.API
         /// <summary>
         /// Starts a batch scan for a list of 'proceChecked' scans 
         /// </summary>
-        /// <param name="token">Login Token string</param>
         /// <param name="model">A model with the list of scan id's to start and error handeling defenition in case one or more scans have a starting error.
         /// The Model also contains an include list of completed scans that will be compared against</param>
         /// <returns>A task that represents the asynchronous operation.
         /// The task result contains a list of successfully started scans and a list of scans that have failed starting </returns>
-        public async Task<StartResponse> StartBatch(StartBatchRequest model)
+        public async Task<StartResponse> StartBatchAsync(StartBatchRequest model)
         {
             if (model.Trigger == null)
                 throw new ArgumentException("Trigger is mandatory.", nameof(model.Trigger));
@@ -211,11 +225,10 @@ namespace Copyleaks.SDK.V3.API
         /// <summary>
         /// Get the scan results from Copyleaks servers.
         /// </summary>
-        /// <param name="token">Login Token string</param>
         /// <param name="scanId">A completed scan Id</param>
         /// <returns>A task that represents the asynchronous operation.
         /// The task result contains a model of the scan result</returns>
-        public async Task<Result> Result(string scanId)
+        public async Task<Result> ResultAsync(string scanId)
         {
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/{scanId}/result";
             Client.AddAuthentication(this.Token);
@@ -227,7 +240,7 @@ namespace Copyleaks.SDK.V3.API
         /// Get a list of the supported file types.
         /// </summary>
         /// <returns>List of textal file types supported and list of file types supported using OCR </returns>
-        public async Task<SupportedTypesResult> GetSupportedFileTypes()
+        public async Task<SupportedTypesResult> GetSupportedFileTypesAsync()
         {
             string requestUri = $"{this.CopyleaksApiServer}v1/miscellaneous/supported-file-types";
             var response = await Client.GetAsync(requestUri);
@@ -238,7 +251,7 @@ namespace Copyleaks.SDK.V3.API
         /// Get OCR Supported Langauges
         /// </summary>
         /// <returns>List of OCR Supported Langauges</returns>
-        public async Task<string[]> GetOcrLanguageList()
+        public async Task<string[]> GetOcrLanguageListAsync()
         {
             string requestUri = $"{this.CopyleaksApiServer}v1/miscellaneous/ocr-languages-list";
             var response = await Client.GetAsync(requestUri);

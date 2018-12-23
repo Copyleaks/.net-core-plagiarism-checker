@@ -22,15 +22,35 @@
  SOFTWARE.
 ********************************************************************************/
 
-using Copyleaks.SDK.V3.API.Models.Responses.Result;
+using Copyleaks.SDK.V3.API.Models.Types;
+using Newtonsoft.Json;
 
-namespace Copyleaks.SDK.V3.API.Models.Callbacks
+namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
-	/// <summary>
-    /// The callback that will be called from Copyleaks API once an `index only` request is completed
+    /// <summary>
+    /// Customizeable filters
     /// </summary>
-	public class IndexOnlyCallback : BaseResponse
-	{
+    public class Filters
+    {
+        [JsonProperty("idenitcalEnabled")]
+        public bool IdenitcalEnabled { get; set; } = true;
 
-	}
+        [JsonProperty("minorChangedEnabled")]
+        public bool MinorChangedEnabled { get; set; } = true;
+
+        [JsonProperty("relatedMeaningEnabled")]
+        public bool RelatedMeaningEnabled { get; set; } = true;
+
+        [JsonProperty("minCopiedWords")]
+        public ushort? minCopiedWords { get; set; } = null;
+
+        [JsonProperty("safeSearch")]
+        public bool SafeSearch { get; set; } = false;
+
+        [JsonProperty("domains")]
+        public string[] Domains { get; set; } = new string[] { };
+
+        [JsonProperty("domainsMode")]
+        public eDomainsFilteringMode DomainsFilteringMode { get; set; } = eDomainsFilteringMode.WhiteList;
+    }
 }

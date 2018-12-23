@@ -26,21 +26,21 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses
 {
-	// CR : Documentation
+    /// <summary>
+    /// Copyleaks API response for `Start` request
+    /// </summary>
 	public class StartResponse
     {
+        /// <summary>
+        /// A list of succesfully started scan id's
+        /// </summary>
         [JsonProperty("success")]
         public StartRow[] Success { get; set; }
 
+        /// <summary>
+        /// A list of failed started scans id's
+        /// </summary>
         [JsonProperty("failed")]
         public StartRow[] Failed { get; set; }
-    }
-
-	// CR : Documentation
-	// CR : Split
-	public class StartRow
-    {
-        [JsonProperty("id")]
-        public string Id { get; set; }
     }
 }

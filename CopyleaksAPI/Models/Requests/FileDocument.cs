@@ -27,14 +27,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests
 {
-	// CR : Documentation is missing. 
-	public class FileDocument: Document
+    /// <summary>
+    /// This class represent a file to be submitted to scan in Copyleaks API 
+    /// </summary>
+    public class FileDocument: Document
     {
         /// <summary>
         /// Base64 file content. Bytes -> base64 string
         /// </summary>
         [JsonProperty("base64")]
-        [Required] // CR : Why needed? Where checked?
         public string Base64 { get; set; }
 
         /// <summary>
@@ -44,7 +45,6 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
         /// file.pdf
         /// </example>
         [JsonProperty("filename")]
-        [Required]  // CR : Why needed? Where checked?
 		public string Filename { get; set; }
     }
 }

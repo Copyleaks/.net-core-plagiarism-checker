@@ -24,8 +24,15 @@
 
 namespace Copyleaks.SDK.V3.API.Models.Types
 {
-	// CR : Documentation
-	public enum eScanStatus
+    /// <summary>
+    /// The status of the scan request
+    /// CompletedSuccessfully: The scan request has completed successfully
+    /// Error: The scan request has completed in error
+    /// CreditsChecked: The check scan credits request has completed successfully
+    /// Indexed: The Scaned content has been indexed in Copyleaks internal database
+    /// InProgress: The Scan is in progress
+    /// </summary>
+    public enum eScanStatus
     {
         CompletedSuccessfully = 0,
         Error = 1,

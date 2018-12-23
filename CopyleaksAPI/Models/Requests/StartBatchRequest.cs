@@ -22,15 +22,19 @@
  SOFTWARE.
 ********************************************************************************/
 
-using Copyleaks.SDK.V3.API.Models.Responses.Result;
+using Newtonsoft.Json;
 
-namespace Copyleaks.SDK.V3.API.Models.Callbacks
+namespace Copyleaks.SDK.V3.API.Models.Requests
 {
-	/// <summary>
-    /// The callback that will be called from Copyleaks API once an `index only` request is completed
+    /// <summary>
+    /// Request a new batch scan
     /// </summary>
-	public class IndexOnlyCallback : BaseResponse
-	{
-
-	}
+    public class StartBatchRequest : StartRequest
+    {
+        /// <summary>
+        /// Add previously scanned content to be compared against
+        /// </summary>
+        [JsonProperty("include")]
+        public string[] Include { get; set; }
+    }
 }

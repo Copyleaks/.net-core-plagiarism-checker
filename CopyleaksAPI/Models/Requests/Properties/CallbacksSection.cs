@@ -22,16 +22,26 @@
  SOFTWARE.
 ********************************************************************************/
 
-namespace Copyleaks.SDK.V3.API.Models.Responses
-{
-	// CR : Documentation
-    public class BadResponse
-    {
-        public string Message { get; set; }
+using Newtonsoft.Json;
+using System;
 
-        public override string ToString()
-        {
-            return this.Message;
-        }
+namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
+{
+    /// <summary>
+    /// Register your HTTP callback endpoints with Copyleaks API
+    /// </summary>
+    public class CallbacksSection
+    {
+        /// <summary>
+        /// The callback that Copyleaks API will return to once the scan is completed
+        /// </summary>
+        [JsonProperty("completion")]
+        public Uri Completion { get; set; }
+
+        /// <summary>
+        /// The callback that Copyleaks API will return to every time the a new result is founs for the scan
+        /// </summary>
+        [JsonProperty("onNewResult")]
+        public Uri NewResult { get; set; }
     }
 }

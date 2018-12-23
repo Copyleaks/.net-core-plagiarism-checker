@@ -22,19 +22,19 @@
  SOFTWARE.
 ********************************************************************************/
 
-namespace Copyleaks.SDK.V3.API.Models.Requests
+using Newtonsoft.Json;
+
+namespace Copyleaks.SDK.V3.API.Models.Responses
 {
-	// CR : Documentation is missing. 
-	public class ReportCustomization
+    /// <summary>
+    /// A started scan id
+    /// </summary>
+    public class StartRow
     {
-        public string Title { get; set; }
-
-        public string LargeLogo { get; set; }
-
-        public string SmallLogo { get; set; }
-
-        public bool RTL { get; set; }
-
-        public ReportCustomizationColors Colors { get; set; }
+        /// <summary>
+        /// The scan id
+        /// </summary>
+        [JsonProperty("id")]
+        public string Id { get; set; }
     }
 }

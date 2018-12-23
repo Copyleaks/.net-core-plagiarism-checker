@@ -29,20 +29,32 @@ using System.Net.Http;
 
 namespace Copyleaks.SDK.V3.API.Extensions
 {
-	// CR : Documentation is missing. 
+    /// <summary>
+    /// Http client extensions
+    /// </summary>
 	public static class HttpClientExtensions
     {
-        static readonly string ASSEMBLY_VERSION = AssemblyHelper.GetVersion();
+        private const string AUTHORIZATION = "Authorization";
 
+        static readonly string ASSEMBLY_VERSION = AssemblyHelper.GetVersion();
+        
+        /// <summary>
+        /// Add authentication token to HTTP request
+        /// </summary>
+        /// <param name="client">The HTTPClient that is used the issue requests to Copyleaks API</param>
+        /// <param name="token"></param>
         public static void AddAuthentication(this HttpClient client, string token)
         {
-            if(!client.DefaultRequestHeaders.Contains("Authorization")) // CR : Extract into const.
-                client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+            if(!client.DefaultRequestHeaders.Contains(AUTHORIZATION))
+                client.DefaultRequestHeaders.Add(AUTHORIZATION, $"Bearer {token}");
         }
 
+        /// <summary>
+        /// Set HTTPClient with request timouet and Copyleaks SDK version
+        /// </summary>
+        /// <param name="client"></param>
         public static void SetCopyleaksClient(this HttpClient client)
         {
-			// CR : If you depend on user-configuration file, it must be written somewhere. Maybe it should be const?
             client.Timeout = TimeSpan.FromMilliseconds(int.Parse(ConfigurationManager.Configuration["RequestsTimeout"]));
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.UserAgent.ParseAdd($"copyleaks-core-sdk/{ASSEMBLY_VERSION}");

@@ -24,8 +24,12 @@
 
 namespace Copyleaks.SDK.V3.API.Models.Types
 {
-	// CR : Documentation
-	public enum eErrorHandling
+    /// <summary>
+    /// Configure what to do incase one or more scan id's have failed
+    /// Cancel: cancel the entire request
+    /// Ignore: start non failed scan id's
+    /// </summary>
+    public enum eErrorHandling
     {
         Cancel = 0,
         Ignore = 1

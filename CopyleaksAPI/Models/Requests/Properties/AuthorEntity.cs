@@ -22,20 +22,19 @@
  SOFTWARE.
 ********************************************************************************/
 
+using Newtonsoft.Json;
 
-namespace Copyleaks.SDK.V3.API.Models.Requests
+namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
-	// CR : Documentation is missing. 
-	public class ReportCustomizationColors
+    /// <summary>
+    /// Represent the author of the submitted content
+    /// </summary>
+    public class AuthorEntity
     {
-        public string MainStrip { get; set; }
-
-        public string titles { get; set; }
-
-        public string Identical { get; set; }
-
-        public string MinorChanges { get; set; }
-
-        public string RelatedMeaning { get; set; }
+        /// <summary>
+        /// A unique ID of the submitted content's author
+        /// </summary>
+        [JsonProperty("id")]
+        public string Id { get; set; } = null;
     }
 }

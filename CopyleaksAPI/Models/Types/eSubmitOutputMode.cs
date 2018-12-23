@@ -24,7 +24,11 @@
 
 namespace Copyleaks.SDK.V3.API.Models.Types
 {
-	// CR : Documentation
+	/// <summary>
+    /// Configure the scan output mode
+    /// TXT: The scan results will be in text format
+    /// HTML: The scan results will be in HTML format when possible, i.e.: when submitting a url for scan
+    /// </summary>
 	public enum eSubmitOutputMode
     {
         TXT = 0,

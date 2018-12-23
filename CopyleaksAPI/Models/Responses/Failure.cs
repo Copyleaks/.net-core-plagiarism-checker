@@ -22,15 +22,25 @@
  SOFTWARE.
 ********************************************************************************/
 
-using Copyleaks.SDK.V3.API.Models.Responses.Result;
+using Newtonsoft.Json;
 
-namespace Copyleaks.SDK.V3.API.Models.Callbacks
+namespace Copyleaks.SDK.V3.API.Models.Responses
 {
-	/// <summary>
-    /// The callback that will be called from Copyleaks API once an `index only` request is completed
+    /// <summary>
+    /// Detils of scan id's that deletion has failed for
     /// </summary>
-	public class IndexOnlyCallback : BaseResponse
-	{
+    public class Failure
+    {
+        /// <summary>
+        /// The scan id
+        /// </summary>
+        [JsonProperty(PropertyName = "id")]
+        public string Id { get; set; }
 
-	}
+        /// <summary>
+        /// The failure description
+        /// </summary>
+        [JsonProperty(PropertyName = "description")]
+        public string Description { get; set; }
+    }
 }
