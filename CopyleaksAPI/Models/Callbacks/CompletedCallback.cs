@@ -27,7 +27,7 @@ using Copyleaks.SDK.V3.API.Models.Responses.Result;
 namespace Copyleaks.SDK.V3.API.Models.Callbacks
 {
     /// <summary>
-    /// The object that is returned from Copyleaks API for a completed callback
+    /// The callback that will be called from Copyleaks API once the scan request is completed
     /// </summary>
     public class CompletedCallback : Result
 	{
