@@ -33,7 +33,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses
     public class SupportedTypesResult
     {
         /// <summary>
-        /// List of textal file types supported.
+        /// List of textual file types supported.
         /// </summary>
         [JsonProperty("textual")]
         public string[] Textual { get; set; }

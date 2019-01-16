@@ -32,7 +32,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses
 	public class DeleteResponse
     {
         /// <summary>
-        /// A list of scan id's that were failed to be deleted
+        /// A list of scan id's that have failed to be deleted
         /// </summary>
         [JsonProperty(PropertyName = "failures")]
         public Failure [] Failures { get; set; }

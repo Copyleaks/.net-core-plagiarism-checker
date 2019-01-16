@@ -33,25 +33,26 @@ namespace Copyleaks.SDK.V3.API.Helpers
     /// </summary>
     public static class ConfigurationManager
     {
+        #region Constants
+        public const string ApiEndPoint = "https://api.copyleaks.com/";
+
+        public const string IdEndPoint = "https://id.copyleaks.com/";
+
+        public const string RequestsTimeout = "60000";
+
+        public const string apiVersion = "v3";
+        #endregion
+
         static ConfigurationManager()
         {
-            string configPath = "config.json";
-            // If config file exists it is the default
-            if (File.Exists(configPath))
-                Configuration = new ConfigurationBuilder()
-                    .SetBasePath(Directory.GetCurrentDirectory())
-                    .AddJsonFile(configPath, optional: true, reloadOnChange: true)
-                    .Build();
-            // no config file, using the constants
-            else
-                Configuration = new ConfigurationBuilder()
-                    .AddInMemoryCollection(new Dictionary<string, string>()
-                    {
-                        { "apiEndPoint", SdkConsts.ApiEndPoint },
-                        { "idEndPoint",  SdkConsts.IdEndPoint },
-                        {  "RequestsTimeout", SdkConsts.RequestsTimeout},
-                        { "apiVersion", SdkConsts.apiVersion }
-                    }).Build();
+            Configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(new Dictionary<string, string>()
+                {
+                    { "apiEndPoint", ApiEndPoint },
+                    { "idEndPoint",  IdEndPoint },
+                    {  "RequestsTimeout", RequestsTimeout},
+                    { "apiVersion", apiVersion }
+                }).Build();
         }
 
         /// <summary>

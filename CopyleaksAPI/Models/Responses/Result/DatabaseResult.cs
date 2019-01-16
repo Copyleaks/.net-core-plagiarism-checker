@@ -29,7 +29,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
     public class DatabaseResult : BasicInternalResult
     {
         /// <summary>
-        /// TODO: document
+        /// Return true if the content was uploaded by me, false if was uploaded by another user
         /// </summary>
         [JsonIgnore]
         public bool IsUploadedByMe {

@@ -41,17 +41,17 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         public string titles { get; set; }
 
         /// <summary>
-        /// The color for identical matches
+        /// The highlight color for identical matches
         /// </summary>
         public string Identical { get; set; }
 
         /// <summary>
-        /// The color for minor changes matches
+        /// The highlight color for minor changes matches
         /// </summary>
         public string MinorChanges { get; set; }
 
         /// <summary>
-        /// The color for related meaning matches
+        /// The highlight color for related meaning matches
         /// </summary>
         public string RelatedMeaning { get; set; }
     }

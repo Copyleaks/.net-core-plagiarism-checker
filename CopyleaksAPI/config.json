@@ -1,6 +1,0 @@
-{
-  "apiEndPoint": "https://api.copyleaks.com/",
-  "idEndPoint":  "https://id.copyleaks.com/",
-  "RequestsTimeout": 60000,
-  "apiVersion": "v3"
-}

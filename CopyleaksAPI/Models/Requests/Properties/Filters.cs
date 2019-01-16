@@ -32,24 +32,46 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
     /// </summary>
     public class Filters
     {
+        /// <summary>
+        /// Enable/disable identical matches
+        /// </summary>
         [JsonProperty("idenitcalEnabled")]
         public bool IdenitcalEnabled { get; set; } = true;
 
+        /// <summary>
+        /// Enable/disable minor changes matches
+        /// </summary>
         [JsonProperty("minorChangedEnabled")]
         public bool MinorChangedEnabled { get; set; } = true;
 
+        /// <summary>
+        /// Enable/disable related meaning matches
+        /// </summary>
         [JsonProperty("relatedMeaningEnabled")]
         public bool RelatedMeaningEnabled { get; set; } = true;
 
+        /// <summary>
+        /// Set the minimum copied words to be considered as plagiarized content 
+        /// </summary>
         [JsonProperty("minCopiedWords")]
         public ushort? minCopiedWords { get; set; } = null;
 
+        /// <summary>
+        /// When set to true the result will not include explicit results.
+        /// Safe search is not 100% accurate but it can help avoid explicit and inappropriate search results
+        /// </summary>
         [JsonProperty("safeSearch")]
         public bool SafeSearch { get; set; } = false;
 
+        /// <summary>
+        /// A list of domain to include or exclude from sources
+        /// </summary>
         [JsonProperty("domains")]
         public string[] Domains { get; set; } = new string[] { };
 
+        /// <summary>
+        /// Treat `domains` as inclide or exclude list
+        /// </summary>
         [JsonProperty("domainsMode")]
         public eDomainsFilteringMode DomainsFilteringMode { get; set; } = eDomainsFilteringMode.WhiteList;
     }

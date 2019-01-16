@@ -89,7 +89,7 @@ namespace Copyleaks.SDK.V3.API
         }
 
         /// <summary>
-        /// Regenerate or create a readonly key for scan
+        /// Get or create a readonly key for scan
         /// </summary>
         /// <param name="token">Login Token string</param>
         /// <param name="scanId">A completed scan Id</param>

@@ -27,7 +27,7 @@ using Newtonsoft.Json;
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
     /// <summary>
-    /// Exclude from scan preferences
+    /// Exclude properties from scan
     /// </summary>
     public class Exclude
     {
@@ -50,7 +50,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         public bool Titles { get; set; } = false;
 
         /// <summary>
-        /// When HTML document, exlude the document template from the scan. 
+        /// When HTML document, exclude the HTML tags and attribute metadata from the scan. 
         /// </summary>
         [JsonProperty("htmlTemplate")]
         public bool HtmlTemplate { get; set; } = false;

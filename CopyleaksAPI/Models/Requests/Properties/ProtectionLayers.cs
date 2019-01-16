@@ -8,13 +8,13 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
     public class ProtectionLayers
     {
         /// <summary>
-        /// Scan agianst the internet?
+        /// Scan against the internet?
         /// </summary>
         [JsonProperty("internet")]
         public bool Internet { get; set; } = true;
 
         /// <summary>
-        /// Scan agianst copyleaks internal database?
+        /// Scan against copyleaks internal database?
         /// If specified true, it will also index the scanned document into the database.
         /// </summary>
         [JsonProperty("copyleaksDB")]

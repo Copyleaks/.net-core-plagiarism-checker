@@ -28,12 +28,12 @@ using System.ComponentModel.DataAnnotations;
 namespace Copyleaks.SDK.V3.API.Models.Requests
 {
     /// <summary>
-    /// This class represent an OCR file to be submitted to scan in Copyleaks API 
+    /// This class represent an OCR image file to be submitted to scan in Copyleaks API 
     /// </summary>
     public class FileOcrDocument :FileDocument
     {
         /// <summary>
-        /// The langugage code of the text in the picture.
+        /// The language code of the text in the picture.
         /// </summary>
         [JsonProperty("langCode")]
 		public string Language { get; set; }
