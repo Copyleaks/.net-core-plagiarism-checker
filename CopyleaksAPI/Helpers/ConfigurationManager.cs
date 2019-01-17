@@ -50,7 +50,7 @@ namespace Copyleaks.SDK.V3.API.Helpers
                 {
                     { "apiEndPoint", ApiEndPoint },
                     { "idEndPoint",  IdEndPoint },
-                    {  "RequestsTimeout", RequestsTimeout},
+                    { "RequestsTimeout", RequestsTimeout},
                     { "apiVersion", apiVersion }
                 }).Build();
         }
