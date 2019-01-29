@@ -73,52 +73,5 @@ namespace Copyleaks.SDK.V3.API
             return await response.ExtractJsonResultsAsync<LoginResponse>();
         }
 
-        /// <summary>
-        /// Get an existing readonly key for scan
-        /// </summary>
-        /// <param name="token">Login Token string</param>
-        /// <param name="scanId">A completed scan Id</param>
-        /// <returns>A task that represents the asynchronous operation.
-        /// The task result contains the read only key</returns>
-        public async Task<string> GetReadonlyKeyAsync(string token, string scanId)
-        {
-            string requestUri = $"{this.CopyleaksIdServer}{this.ApiVersion}/account/permissions/{scanId}/readonly";
-            Client.AddAuthentication(token);
-            var response = await Client.GetAsync(requestUri);
-            return await response.ExtractStringResultsAsync();
-        }
-
-        /// <summary>
-        /// Get or create a readonly key for scan
-        /// </summary>
-        /// <param name="token">Login Token string</param>
-        /// <param name="scanId">A completed scan Id</param>
-        /// <returns>A task that represents the asynchronous operation.
-        /// The task result contains the read only key</returns>
-        public async Task<string> RegenerateReadonlyKeyAsync(string token, string scanId)
-        {
-            string requestUri = $"{this.CopyleaksIdServer}{this.ApiVersion}/account/permissions/{scanId}/readonly";
-            Client.AddAuthentication(token);
-            var response = await Client.PostAsync(requestUri, null);
-            return await response.ExtractStringResultsAsync();
-        }
-
-        /// <summary>
-        /// Delete a readonly key for scan
-        /// </summary>
-        /// <param name="token">Login Token string</param>
-        /// <param name="scanId">A completed scan Id that has a readonly key</param>
-        /// <returns>A task that represents the asynchronous delete operation.</returns>
-        public async Task DeleteReadonlyKeyAsync(string token, string scanId)
-        {
-            string requestUri = $"{this.CopyleaksIdServer}{this.ApiVersion}/account/permissions/{scanId}/readonly";
-            Client.AddAuthentication(token);
-            var response = await Client.DeleteAsync(requestUri);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new CommandFailedException(response);
-            }
-        }
     }
 }

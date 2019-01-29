@@ -27,6 +27,7 @@ using Copyleaks.SDK.V3.API.Extensions;
 using Copyleaks.SDK.V3.API.Helpers;
 using Copyleaks.SDK.V3.API.Models.Requests;
 using Copyleaks.SDK.V3.API.Models.Responses;
+using Copyleaks.SDK.V3.API.Models.Responses.Download;
 using Copyleaks.SDK.V3.API.Models.Responses.Result;
 using Copyleaks.SDK.V3.API.Models.Types;
 using Newtonsoft.Json;
@@ -35,6 +36,7 @@ using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+
 namespace Copyleaks.SDK.V3.API
 {
     /// <summary>
@@ -238,6 +240,21 @@ namespace Copyleaks.SDK.V3.API
             Client.AddAuthentication(this.Token);
             var response = await Client.GetAsync(requestUri);
             return await response.ExtractJsonResultsAsync<Result>();
+        }
+
+        /// <summary>
+        /// Get a suspected result by result id and scan id
+        /// </summary>
+        /// <param name="scanId">The scan id</param>
+        /// <param name="resultId">The result id (can be taken from ResultAsync method)</param>
+        /// <returns>A task that represents the asynchronous operation.
+        /// The task result contains a model of the result</returns>
+        public async Task<DownloadResponse> DownloadReportAsync(string scanId, string resultId)
+        {
+            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/downloads/{scanId}/results/{resultId}";
+            Client.AddAuthentication(this.Token);
+            var response = await Client.GetAsync(requestUri);
+            return await response.ExtractJsonResultsAsync<DownloadResponse>();
         }
 
         /// <summary>

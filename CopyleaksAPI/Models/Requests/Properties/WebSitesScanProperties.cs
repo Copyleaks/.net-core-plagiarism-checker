@@ -22,16 +22,12 @@
  SOFTWARE.
 ********************************************************************************/
 
-namespace Copyleaks.SDK.V3.API.Models.Types
+namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
-	/// <summary>
-    /// Configure the scan output mode
-    /// TXT: The scan results will be in text format
-    /// HTML: The scan results will be in HTML format when possible, i.e.: when submitting a url for scan
+    /// <summary>
+    /// The scan request properties for requests to Websites product
     /// </summary>
-	public enum eSubmitOutputMode
+    public class WebsitesScanProperties : ScanProperties
     {
-        TXT = 0,
-		HTML = 1
     }
 }

@@ -22,6 +22,7 @@
  SOFTWARE.
 ********************************************************************************/
 
+using Copyleaks.SDK.V3.API.Models.Requests.Properties;
 using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests

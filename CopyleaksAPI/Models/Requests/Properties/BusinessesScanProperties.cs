@@ -22,16 +22,17 @@
  SOFTWARE.
 ********************************************************************************/
 
-namespace Copyleaks.SDK.V3.API.Models.Types
+using Newtonsoft.Json;
+
+namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
+
     /// <summary>
-    /// Filter result domains mode
-    /// Include: Include the domains
-    /// Exclude: Exclude the domains
+    /// The scan request properties for requests to Businesses product
     /// </summary>
-    public enum eDomainsFilteringMode
+    public class BusinessesScanProperties : ScanProperties
     {
-        Include = 0,
-        Exclude = 1
+        [JsonProperty("scanning")]
+        public ProtectionLayers ProtectionLayersSection { get; set; } = new ProtectionLayers();
     }
 }

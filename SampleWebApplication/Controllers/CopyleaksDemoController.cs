@@ -110,26 +110,7 @@ namespace Copyleaks.SDK.Demo.Controllers
                         Base64 = TextToBase64(submitModel.Text),
                         // The file name is it will appear in the scan result
                         Filename = "text.txt",
-                        PropertiesSection = new ScanProperties
-                        {
-                            // The action to perform
-                            // Possible values:
-                            // 1. checkCredits - return the number of credits that will be consumed by the scan.
-                            //                   The Result of the request will be returned to the 'Completion' callback
-                            // 2. Scan - Scan the submitted text
-                            //           The Result of the request will be returned to the 'Completion' callback
-                            // 3. Index - Upload the submitted text to Copyleaks internal database to be compared against feture scans
-                            //            The Result of the request will be returned to the 'Completion' callback
-                            Action = eSubmitAction.Scan,
-                            CallbacksSection = new CallbacksSection
-                            {
-                                // Copyleaks API will POST the scan results to the 'completed' callback
-                                // See 'CompletedProcess' method for more details
-                                Completion = new Uri($"{Request.Host}/{scanId}/completed")
-                            },
-                            // Sandbox mode does not take any credits
-                            Sandbox = submitModel.Sandbox
-                        }
+                        PropertiesSection = GetScanPropertiesByProduct(scanId, submitModel)
                     });
                 }
                 var checkResult = new CheckResultsResponse
@@ -150,6 +131,38 @@ namespace Copyleaks.SDK.Demo.Controllers
             }
             return View(response);
         }
+
+        private ScanProperties GetScanPropertiesByProduct(string scanId, SubmitModel submitModel)
+        {
+            ScanProperties scanProperties;
+            if(submitModel.Product == eProduct.Websites)
+                scanProperties = new WebsitesScanProperties();
+            else if(submitModel.Product == eProduct.Businesses)
+                scanProperties = new BusinessesScanProperties();
+            else
+                scanProperties = new EducationScanProperties();
+
+            // The action to perform
+            // Possible values:
+            // 1. checkCredits - return the number of credits that will be consumed by the scan.
+            //                   The Result of the request will be returned to the 'Completion' callback
+            // 2. Scan - Scan the submitted text
+            //           The Result of the request will be returned to the 'Completion' callback
+            // 3. Index - Upload the submitted text to Copyleaks internal database to be compared against feture scans
+            //            The Result of the request will be returned to the 'Completion' callback
+            scanProperties.Action = eSubmitAction.Scan;
+            scanProperties.CallbacksSection = new CallbacksSection
+            {
+                // Copyleaks API will POST the scan results to the 'completed' callback
+                // See 'CompletedProcess' method for more details
+                Completion = new Uri($"{Request.Host}/{scanId}/completed")
+            };
+            // Sandbox mode does not take any credits
+            scanProperties.Sandbox = submitModel.Sandbox;
+            
+            return scanProperties;
+        }
+
 
         [HttpPost]
         [Route("/{scanId}/checkResult")]

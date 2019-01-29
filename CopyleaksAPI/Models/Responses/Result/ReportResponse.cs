@@ -22,16 +22,19 @@
  SOFTWARE.
 ********************************************************************************/
 
-namespace Copyleaks.SDK.V3.API.Models.Types
+using Copyleaks.SDK.V3.API.Models.Types;
+using Newtonsoft.Json;
+using System;
+
+namespace Copyleaks.SDK.V3.API.Models.Responses.Result
 {
-    /// <summary>
-    /// Filter result domains mode
-    /// Include: Include the domains
-    /// Exclude: Exclude the domains
-    /// </summary>
-    public enum eDomainsFilteringMode
+    public class ReportResponse
     {
-        Include = 0,
-        Exclude = 1
+        [JsonProperty("report")]
+        public Uri DownloadEndPoint { get; set; }
+
+        [JsonProperty("status")]
+        public eReportStatus Status { get; set; }
     }
+
 }

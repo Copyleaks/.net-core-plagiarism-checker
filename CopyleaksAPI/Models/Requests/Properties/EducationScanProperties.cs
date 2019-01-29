@@ -22,16 +22,35 @@
  SOFTWARE.
 ********************************************************************************/
 
-namespace Copyleaks.SDK.V3.API.Models.Types
+using Newtonsoft.Json;
+using System;
+
+namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
     /// <summary>
-    /// Filter result domains mode
-    /// Include: Include the domains
-    /// Exclude: Exclude the domains
+    /// The scan request properties for requests to Education product
     /// </summary>
-    public enum eDomainsFilteringMode
+    public class EducationScanProperties : ScanProperties
     {
-        Include = 0,
-        Exclude = 1
+        protected EducationExclude _excludeSection = new EducationExclude();
+
+        [JsonProperty("scanning")]
+        public EducationProtectionLayers ProtectionLayersSection { get; set; } = new EducationProtectionLayers();
+
+        [JsonProperty("exclude")]
+        public override Exclude ExcludeSection
+        {
+            get { return this._excludeSection; }
+            set
+            {
+                if (value is EducationExclude)
+                    this._excludeSection = value as EducationExclude;
+                else
+                    throw new ArgumentException($"Education exclude section must be of type {nameof(EducationExclude)}");
+            }
+        }
+
+        [JsonProperty("reportExport")]
+        public ReportCustomization ReportSection { get; set; } = null;
     }
 }

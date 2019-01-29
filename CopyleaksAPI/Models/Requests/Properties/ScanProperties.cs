@@ -27,12 +27,12 @@ using Copyleaks.SDK.V3.API.Models.Requests.Properties;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
-namespace Copyleaks.SDK.V3.API.Models.Requests
+namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
     /// <summary>
     /// The scan request properties
     /// </summary>
-    public class ScanProperties
+    public abstract class ScanProperties
     {
         /// <summary>
 		/// Define which type of task it is.
@@ -43,8 +43,8 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
         /// <summary>
         /// Define in which format to return the results. 
         /// </summary>
-        [JsonProperty("outputMode")]
-        public eSubmitOutputMode OutputMode { get; set; } = eSubmitOutputMode.TXT;
+        [JsonProperty("includeHtml")]
+        public bool IncludeHtml{ get; set; } = false;
 
         /// <summary>
         /// Developer payload string.
@@ -52,6 +52,12 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
         [JsonProperty("developerPayload")]
         [StringLength(512)]
         public string DeveloperPayload { get; set; }
+
+        /// <summary>
+		/// Scan priority
+		/// </summary>
+		[JsonProperty("priority")]
+        public eScanPriority Priority { get; set; } = eScanPriority.Normal;
 
         /// <summary>
         /// Enable sandbox scan.
@@ -68,24 +74,17 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
         /// <summary>
         /// How much time, in hours, to store the scan on the database.
         /// </summary>
-        [JsonProperty("experation")]
-        [Range(1, 2880)] // Up to 4 months
-        public uint Experation { get; set; } = 2880;
-
-        [JsonProperty("scanning")]
-        public ProtectionLayers ProtectionLayersSection { get; set; } = new ProtectionLayers();
+        [JsonProperty("expiration")]
+        public uint Expiration { get; set; } = 2880;
 
         [JsonProperty("exclude")]
-        public Exclude ExcludeSection { get; set; } = new Exclude();
+        public virtual Exclude ExcludeSection { get; set; } = new Exclude();
 
         [JsonProperty("filters")]
         public Filters FiltersSection { get; set; } = new Filters();
 
         [JsonProperty("author")]
         public AuthorEntity Author { get; set; } = new AuthorEntity();
-
-        [JsonProperty("reportExport")]
-        public ReportCustomization ReportSection { get; set; } = null;
 
     }
 }

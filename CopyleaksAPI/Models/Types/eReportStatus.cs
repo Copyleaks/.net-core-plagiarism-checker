@@ -21,17 +21,11 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 ********************************************************************************/
-
 namespace Copyleaks.SDK.V3.API.Models.Types
 {
-    /// <summary>
-    /// Filter result domains mode
-    /// Include: Include the domains
-    /// Exclude: Exclude the domains
-    /// </summary>
-    public enum eDomainsFilteringMode
+    public enum eReportStatus
     {
-        Include = 0,
-        Exclude = 1
+        Success = 0,
+        InternalError = 1
     }
 }

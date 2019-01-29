@@ -73,6 +73,6 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         /// Treat `domains` as inclide or exclude list
         /// </summary>
         [JsonProperty("domainsMode")]
-        public eDomainsFilteringMode DomainsFilteringMode { get; set; } = eDomainsFilteringMode.WhiteList;
+        public eDomainsFilteringMode DomainsFilteringMode { get; set; } = eDomainsFilteringMode.Exclude;
     }
 }

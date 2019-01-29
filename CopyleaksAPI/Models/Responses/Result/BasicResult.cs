@@ -53,11 +53,6 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
         [JsonProperty("matchedWords")]
         public uint MatchedWords { get; set; }
 
-        /// <summary>
-        /// Link to full comparison report
-        /// </summary>
-        [JsonProperty("comparison")]
-        public Uri Comparison { get; set; }
     }
 
 }

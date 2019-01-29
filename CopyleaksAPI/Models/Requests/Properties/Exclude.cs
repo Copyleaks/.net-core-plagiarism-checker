@@ -32,12 +32,6 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
     public class Exclude
     {
         /// <summary>
-        /// Exclude references from the scan.
-        /// </summary>
-        [JsonProperty("references")]
-        public bool References { get; set; } = false;
-
-        /// <summary>
         /// Exclude quotes from the scan.
         /// </summary>
         [JsonProperty("quotes")]
@@ -55,5 +49,17 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         [JsonProperty("htmlTemplate")]
         public bool HtmlTemplate { get; set; } = false;
 
+    }
+
+    /// <summary>
+    /// Exclude properties from scan for Education product
+    /// </summary>
+    public class EducationExclude : Exclude
+    {
+        /// <summary>
+        /// Exclude references from the scan.
+        /// </summary>
+        [JsonProperty("references")]
+        public bool References { get; set; } = false;
     }
 }

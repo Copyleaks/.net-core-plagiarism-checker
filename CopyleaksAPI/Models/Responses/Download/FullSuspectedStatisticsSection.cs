@@ -22,16 +22,19 @@
  SOFTWARE.
 ********************************************************************************/
 
-namespace Copyleaks.SDK.V3.API.Models.Types
+using Newtonsoft.Json;
+
+namespace Copyleaks.SDK.V3.API.Models.Responses.Download
 {
-    /// <summary>
-    /// Filter result domains mode
-    /// Include: Include the domains
-    /// Exclude: Exclude the domains
-    /// </summary>
-    public enum eDomainsFilteringMode
+    public class FullSuspectedStatisticsSection
     {
-        Include = 0,
-        Exclude = 1
+        [JsonProperty("identical")]
+        public int Identical { get; set; }
+
+        [JsonProperty("minorChanges")]
+        public int MinorChanges { get; set; }
+
+        [JsonProperty("relatedMeaning")]
+        public int RelatedMeaning { get; set; }
     }
 }

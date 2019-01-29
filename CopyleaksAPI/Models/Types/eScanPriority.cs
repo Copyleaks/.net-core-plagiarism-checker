@@ -24,14 +24,10 @@
 
 namespace Copyleaks.SDK.V3.API.Models.Types
 {
-    /// <summary>
-    /// Filter result domains mode
-    /// Include: Include the domains
-    /// Exclude: Exclude the domains
-    /// </summary>
-    public enum eDomainsFilteringMode
+    public enum eScanPriority
     {
-        Include = 0,
-        Exclude = 1
+        Low = 1,
+        Normal = 2,
+        High = 3
     }
 }
