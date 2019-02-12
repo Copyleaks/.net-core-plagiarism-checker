@@ -30,8 +30,10 @@ using Copyleaks.SDK.V3.API.Models.Responses;
 using Copyleaks.SDK.V3.API.Models.Responses.Download;
 using Copyleaks.SDK.V3.API.Models.Responses.Result;
 using Copyleaks.SDK.V3.API.Models.Types;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -55,7 +57,7 @@ namespace Copyleaks.SDK.V3.API
         /// </summary>
         public string Token { private get; set; }
 
-        public string CopyleaksApiServer { get; }
+        public string CopyleaksApiServer { get; private set; }
 
         /// <summary>
         /// Conection to Copyleaks scan API
@@ -70,13 +72,29 @@ namespace Copyleaks.SDK.V3.API
         /// Conection to Copyleaks scan API
         /// </summary>
         /// <param name="product">The product for scanning the documents</param>
+        /// <param name="token">Login Token, aquire a login token by invoking by using `Copyle
+        /// <param name="client">Override the underlying http client with custom settings</param>
+        public CopyleaksScansApi(string product, string token, HttpClient client) : base(client)
+        {
+            SetUpService(product, token);
+        }
+
+        /// <summary>
+        /// Conection to Copyleaks scan API
+        /// </summary>
+        /// <param name="product">The product for scanning the documents</param>
         /// <param name="token">Login Token, aquire a login token by invoking by using `CopyleaksIdentityApi.LoginAsync`</param>
         /// <param name="clientCertificate">Optional Client certificate to be checked against.
         public CopyleaksScansApi(string product, string token, X509Certificate2 clientCertificate = null) : base(clientCertificate)
         {
+            SetUpService(product, token);
+        }
+
+        private void SetUpService(string product, string token)
+        {
             this.CopyleaksApiServer = ConfigurationManager.Configuration["apiEndPoint"];
-			this.Product = product;
-			this.Token = token;
+            this.Product = product;
+            this.Token = token;
         }
 
         /// <summary>
@@ -243,18 +261,50 @@ namespace Copyleaks.SDK.V3.API
         }
 
         /// <summary>
-        /// Get a suspected result by result id and scan id
+        /// Get a suspected result comparison report
         /// </summary>
         /// <param name="scanId">The scan id</param>
         /// <param name="resultId">The result id (can be taken from ResultAsync method)</param>
         /// <returns>A task that represents the asynchronous operation.
-        /// The task result contains a model of the result</returns>
-        public async Task<DownloadResponse> DownloadReportAsync(string scanId, string resultId)
+        /// The task result contains a model of the result comparison report</returns>
+        public async Task<DownloadResultResponse> DownloadResultAsync(string scanId, string resultId)
         {
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/downloads/{scanId}/results/{resultId}";
             Client.AddAuthentication(this.Token);
             var response = await Client.GetAsync(requestUri);
-            return await response.ExtractJsonResultsAsync<DownloadResponse>();
+            return await response.ExtractJsonResultsAsync<DownloadResultResponse>();
+        }
+
+        /// <summary>
+        /// Get the your source content comparison report 
+        /// </summary>
+        /// <param name="scanId">The scan id</param>
+        /// <returns>A task that represents the asynchronous operation.
+        /// The task result contains a model of your source content comparison report</returns>
+        public async Task<DownloadSourceResponse> DownloadSourceReportAsync(string scanId)
+        {
+            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/downloads/{scanId}";
+            Client.AddAuthentication(this.Token);
+            var response = await Client.GetAsync(requestUri);
+            return await response.ExtractJsonResultsAsync<DownloadSourceResponse>();
+        }
+
+        /// <summary>
+        /// Get a pdf report for your scan request
+        /// </summary>
+        /// <param name="scanId">The scan id</param>
+        /// <returns>A task that represents the asynchronous operation.
+        /// The task result contains a stream of the pdf report</returns>
+        public async Task<Stream> DownloadPdfReportAsync(string scanId)
+        {
+            if (this.Product != eProduct.Education.ToString())
+                throw new InvalidOperationException($"A pdf report is only available for {eProduct.Education} product");
+            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/downloads/{scanId}/report.pdf";
+            Client.AddAuthentication(this.Token);
+            var response = await Client.GetAsync(requestUri);
+            var reportStream = await response.Content.ReadAsStreamAsync();
+            reportStream.Seek(0, SeekOrigin.Begin);
+            return reportStream;
         }
 
         /// <summary>

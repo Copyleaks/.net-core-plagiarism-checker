@@ -26,18 +26,18 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.Download
 {
-    public class DownloadResultResponse
+    public class DownloadSourceResponse
     {
-            [JsonProperty("statistics")]
-            public FullSuspectedStatisticsSection StatisticsSection { get; set; }
+        [JsonProperty("metadata")]
+        public MetadataSection Metadata { get; set; }
 
-            [JsonProperty("text")]
-            public FullSuspectedVersionSection Text { get; set; }
+        [JsonProperty("html")]
+        public FullSourceSubVersionSection Html { get; set; }
 
-            [JsonProperty("html")]
-            public FullSuspectedVersionSection Html { get; set; }
+        [JsonProperty("text")]
+        public FullSourceSubVersionSection Text { get; set; }
 
-            [JsonProperty("version")]
-            public uint Version { get; set; }
+        [JsonProperty("version")]
+        public uint Version { get; set; }
     }
 }

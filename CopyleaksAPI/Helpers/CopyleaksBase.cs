@@ -42,6 +42,16 @@ namespace Copyleaks.SDK.V3.API.Helpers
         /// <summary>
         /// A new dispoable HTTP Connection to Copyleaks API
         /// </summary>
+        /// <param name="client">Override the underlying http client with custom settings</param>
+        public CopyleaksBase(HttpClient client)
+        {
+            this.Client = client ?? throw new ArgumentNullException(nameof(client));
+            SetCopyleaksHeaders();
+        }
+
+        /// <summary>
+        /// A new dispoable HTTP Connection to Copyleaks API
+        /// </summary>
         /// <param name="clientCertificate">Optional Client certificate to be checked against.
         /// Configure you client's certificate at https://copyleaks.com/Manage </param>
         public CopyleaksBase(X509Certificate2 clientCertificate = null)
@@ -56,9 +66,14 @@ namespace Copyleaks.SDK.V3.API.Helpers
             }
             else
                 this.Client = new HttpClient();
+            SetCopyleaksHeaders();   
+            
+        }
+
+        private void SetCopyleaksHeaders()
+        {
             this.Client.SetCopyleaksClient();
             this.ApiVersion = ConfigurationManager.Configuration["apiVersion"];
-            
         }
 
         public void Dispose()

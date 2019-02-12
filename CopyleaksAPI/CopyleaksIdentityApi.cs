@@ -48,6 +48,20 @@ namespace Copyleaks.SDK.V3.API
         /// Configure you client's certificate at https://copyleaks.com/Manage </param>
         public CopyleaksIdentityApi(X509Certificate2 clientCertificate = null): base(clientCertificate)
         {
+            SetServerEndpoint();
+        }
+
+        /// <summary>
+        /// Connection to Copyleaks identity API
+        /// </summary>
+        /// <param name="client">Override the underlying http client with custom settings</param>
+        public CopyleaksIdentityApi(HttpClient client) : base(client)
+        {
+            SetServerEndpoint();
+        }
+
+        private void SetServerEndpoint()
+        {
             this.CopyleaksIdServer = ConfigurationManager.Configuration["idEndPoint"];
         }
 

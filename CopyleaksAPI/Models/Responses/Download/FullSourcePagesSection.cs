@@ -26,18 +26,9 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.Download
 {
-    public class DownloadResultResponse
+    public class FullSourcePagesSection
     {
-            [JsonProperty("statistics")]
-            public FullSuspectedStatisticsSection StatisticsSection { get; set; }
-
-            [JsonProperty("text")]
-            public FullSuspectedVersionSection Text { get; set; }
-
-            [JsonProperty("html")]
-            public FullSuspectedVersionSection Html { get; set; }
-
-            [JsonProperty("version")]
-            public uint Version { get; set; }
+        [JsonProperty("startPosition")]
+        public uint[] StartPosition { get; set; }
     }
 }
