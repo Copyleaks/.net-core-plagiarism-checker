@@ -30,6 +30,11 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
     public class ReportCustomization
     {
         /// <summary>
+        /// When set to true a pdf report will be generated
+        /// </summary>
+        public bool Create { get; set; } = false;
+
+        /// <summary>
         /// Customizable title
         /// </summary>
         public string Title { get; set; }

@@ -50,7 +50,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
             }
         }
 
-        [JsonProperty("reportExport")]
-        public ReportCustomization ReportSection { get; set; } = null;
+        [JsonProperty("pdf")]
+        public ReportCustomization ReportSection { get; set; } = new ReportCustomization();
     }
 }

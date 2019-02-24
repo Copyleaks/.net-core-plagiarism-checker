@@ -30,7 +30,6 @@ using Copyleaks.SDK.V3.API.Models.Responses;
 using Copyleaks.SDK.V3.API.Models.Responses.Download;
 using Copyleaks.SDK.V3.API.Models.Responses.Result;
 using Copyleaks.SDK.V3.API.Models.Types;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.IO;
