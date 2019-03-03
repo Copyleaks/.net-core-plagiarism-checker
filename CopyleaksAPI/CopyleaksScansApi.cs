@@ -289,7 +289,7 @@ namespace Copyleaks.SDK.V3.API
         }
 
         /// <summary>
-        /// Get a pdf report for your scan request
+        /// Get the pdf report for your scan request
         /// </summary>
         /// <param name="scanId">The scan id</param>
         /// <returns>A task that represents the asynchronous operation.
