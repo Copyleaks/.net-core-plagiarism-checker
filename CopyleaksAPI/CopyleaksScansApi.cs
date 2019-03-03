@@ -240,7 +240,7 @@ namespace Copyleaks.SDK.V3.API
 
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/batch/start";
             Client.AddAuthentication(this.Token);
-            var response = await Client.PostAsync(requestUri,
+            var response = await Client.PatchAsync(requestUri,
                 new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
             return await response.ExtractJsonResultsAsync<StartResponse>();
         }
