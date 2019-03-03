@@ -296,8 +296,6 @@ namespace Copyleaks.SDK.V3.API
         /// The task result contains a stream of the pdf report</returns>
         public async Task<Stream> DownloadPdfReportAsync(string scanId)
         {
-            if (this.Product == eProduct.Businesses.ToString() || this.Product == eProduct.Websites.ToString())
-                throw new InvalidOperationException($"A pdf report is only available for {eProduct.Education} product");
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/downloads/{scanId}/report.pdf";
             Client.AddAuthentication(this.Token);
             var response = await Client.GetAsync(requestUri);
