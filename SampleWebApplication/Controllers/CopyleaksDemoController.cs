@@ -135,9 +135,7 @@ namespace Copyleaks.SDK.Demo.Controllers
         private ScanProperties GetScanPropertiesByProduct(string scanId, SubmitModel submitModel)
         {
             ScanProperties scanProperties;
-            if(submitModel.Product == eProduct.Websites)
-                scanProperties = new WebsitesScanProperties();
-            else if(submitModel.Product == eProduct.Businesses)
+            if(submitModel.Product == eProduct.Businesses)
                 scanProperties = new BusinessesScanProperties();
             else
                 scanProperties = new EducationScanProperties();
@@ -151,11 +149,11 @@ namespace Copyleaks.SDK.Demo.Controllers
             // 3. Index - Upload the submitted text to Copyleaks internal database to be compared against feture scans
             //            The Result of the request will be returned to the 'Completion' callback
             scanProperties.Action = eSubmitAction.Scan;
-            scanProperties.CallbacksSection = new CallbacksSection
+            scanProperties.Webhooks = new Webhooks
             {
                 // Copyleaks API will POST the scan results to the 'completed' callback
                 // See 'CompletedProcess' method for more details
-                Completion = new Uri($"{Request.Host}/{scanId}/completed")
+                Status = new Uri($"{Request.Host}/{scanId}/completed")
             };
             // Sandbox mode does not take any credits
             scanProperties.Sandbox = submitModel.Sandbox;

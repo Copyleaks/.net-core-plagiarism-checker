@@ -36,10 +36,6 @@ namespace Copyleaks.SDK.V3.API.Models.Types
         /// <summary>
         /// Bests for Education purposes (schools, universities, students, ...).
         /// </summary>
-        Education,
-        /// <summary>
-        /// Bests for scanning random HTML URLs.
-        /// </summary>
-        Websites
+        Education
     }
 }

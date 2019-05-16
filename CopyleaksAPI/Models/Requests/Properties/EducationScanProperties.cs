@@ -38,7 +38,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         public EducationProtectionLayers ProtectionLayersSection { get; set; } = new EducationProtectionLayers();
 
         [JsonProperty("exclude")]
-        public override Exclude ExcludeSection
+        public override Exclude Exclude
         {
             get { return this._excludeSection; }
             set

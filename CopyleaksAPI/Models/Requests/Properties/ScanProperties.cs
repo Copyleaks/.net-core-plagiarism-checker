@@ -68,8 +68,8 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         /// <summary>
         /// Getting the client notify changes on server.
         /// </summary>
-        [JsonProperty("callbacks")]
-        public CallbacksSection CallbacksSection { get; set; } = new CallbacksSection();
+        [JsonProperty("webhooks")]
+        public Webhooks Webhooks { get; set; } = new Webhooks();
 
         /// <summary>
         /// How much time, in hours, to store the scan on the database.
@@ -78,10 +78,10 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         public uint Expiration { get; set; } = 2880;
 
         [JsonProperty("exclude")]
-        public virtual Exclude ExcludeSection { get; set; } = new Exclude();
+        public virtual Exclude Exclude { get; set; } = new Exclude();
 
         [JsonProperty("filters")]
-        public Filters FiltersSection { get; set; } = new Filters();
+        public Filters Filters { get; set; } = new Filters();
 
         [JsonProperty("author")]
         public AuthorEntity Author { get; set; } = new AuthorEntity();

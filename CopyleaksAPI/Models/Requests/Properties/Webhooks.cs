@@ -22,12 +22,26 @@
  SOFTWARE.
 ********************************************************************************/
 
+using Newtonsoft.Json;
+using System;
+
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
     /// <summary>
-    /// The scan request properties for requests to Websites product
+    /// Register your HTTP callback endpoints with Copyleaks API
     /// </summary>
-    public class WebsitesScanProperties : ScanProperties
+    public class Webhooks
     {
+        /// <summary>
+        /// The callback that Copyleaks API will return to once the scan is completed
+        /// </summary>
+        [JsonProperty("status")]
+        public Uri Status { get; set; }
+
+        /// <summary>
+        /// The callback that Copyleaks API will return to every time the a new result is founs for the scan
+        /// </summary>
+        [JsonProperty("newResult")]
+        public Uri NewResult { get; set; }
     }
 }

@@ -144,10 +144,8 @@ namespace Copyleaks.SDK.V3.API
         {
             if (documentModel.Base64 == null)
                 throw new ArgumentException("Base64 is mandatory.", nameof(documentModel.Base64));
-            if (documentModel.Filename == null)
+            else if (documentModel.Filename == null)
                 throw new ArgumentException("Filename is mandatory.", nameof(documentModel.Filename));
-            if (this.Product == eProduct.Websites.ToString())
-                throw new ArgumentException($"File submition is not applicable for {this.Product}"); 
 
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/submit/file/{scanId}";
             await SubmitAsync(documentModel, requestUri);
@@ -163,12 +161,10 @@ namespace Copyleaks.SDK.V3.API
         {
             if (documentModel.Base64 == null)
                 throw new ArgumentException("Base64 is mandatory.", nameof(documentModel.Base64));
-            if (documentModel.Filename == null)
+            else if (documentModel.Filename == null)
                 throw new ArgumentException("Filename is mandatory.", nameof(documentModel.Filename));
-            if (documentModel.Language == null)
+            else if (documentModel.Language == null)
                 throw new ArgumentException("Language is mandatory.", nameof(documentModel.Language));
-            if (this.Product == eProduct.Websites.ToString())
-                throw new ArgumentException($"File submition is not applicable for {this.Product}");
 
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/submit/ocr/{scanId}";
             await SubmitAsync(documentModel, requestUri);
