@@ -25,7 +25,7 @@
 @using Copyleaks.SDK.V3.API.Models.Types;
 @model Copyleaks.SDK.Demo.Models.Responses.CheckResultsResponse
 @{
-    
+
     ViewData["Title"] = "Copyleaks API Demo - Step 3 - Get Results";
 }
 
@@ -46,18 +46,14 @@
             </div>
             <div class="panel-body">
                 <form id="check-result-form" action="/@Model.ScanId/checkResult" method="post">
-                    @if (Model != null && Model.CompletedCallback != null)
+                    @if (Model != null)
                     {
-                        @if (Model.CompletedCallback.Status == eScanStatus.Error)
+                        @if (Model.Error != null)
                         {
                             <div class="error-message">
                                 <h4>Process failed</h4>
-                                @Model.CompletedCallback.Error.Message
-                                <div>
-                                    Copyleaks error code: @Model.CompletedCallback.Error.Code
-                                </div>
+                                @Model.Error.ErrorMessage
                             </div>
-
                         }
                         else
                         {
@@ -79,7 +75,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var result in @Model.CompletedCallback.Results.Internet)
+                                    @foreach (var result in @Model.Success.Results.Internet)
                                     {
                                         <tr>
                                             <td>
@@ -101,15 +97,15 @@
                     }
                     else if (Model != null && Model.ScanId != null)
                     {
-                            <div class="text-center">
-                                <p class="lead">
-                                    <i class="glyphicon glyphicon-hourglass"></i>
-                                    Scan is in progress...
-                                </p>
-                                <p class="lead">
-                                    Next check in <span id="seconds-to-next-refresh"></span> seconds
-                                </p>
-                            </div>
+                        <div class="text-center">
+                            <p class="lead">
+                                <i class="glyphicon glyphicon-hourglass"></i>
+                                Scan is in progress...
+                            </p>
+                            <p class="lead">
+                                Next check in <span id="seconds-to-next-refresh"></span> seconds
+                            </p>
+                        </div>
                         <script>
                             setTimeout(function () {
                                 document.forms["check-result-form"].submit();

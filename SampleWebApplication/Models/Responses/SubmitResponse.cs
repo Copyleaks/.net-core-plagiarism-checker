@@ -24,10 +24,12 @@
 
 namespace Copyleaks.SDK.Demo.Models.Responses
 {
-    public class SubmitResponse : BaseResponse
+    public class SubmitResponse
     {
         public string ScanId { get; set; }
 
         public string Token { get; set; }
-    }
+
+		public string ErrorMessage { get; set; }
+	}
 }

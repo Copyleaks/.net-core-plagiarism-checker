@@ -22,12 +22,27 @@
  SOFTWARE.
 ********************************************************************************/
 
-namespace Copyleaks.SDK.Demo.Models.Responses
-{
-    public class LoginResponse
-    {
-        public string Token { get; set; }
+using Copyleaks.SDK.V3.API.Models.Responses.Result;
+using Copyleaks.SDK.V3.API.Models.Types;
+using Newtonsoft.Json;
 
-		public string ErrorMessage { get; set; }
-    }
+namespace Copyleaks.SDK.V3.API.Models.Webhooks
+{
+    /// <summary>
+    /// The callback that will be called from Copyleaks API once the scan request is completed
+    /// </summary>
+    public class CompletedWebhook
+	{
+		[JsonProperty("status")]
+		public eScanStatus Status { get; set; }
+
+		[JsonProperty("developerPayload")]
+		public string Payload { get; set; }
+
+		[JsonProperty("scannedDocument")]
+		public ScannedDocumentSection ScannedDocument { get; set; }
+
+		[JsonProperty("results")]
+		public ResultsSection Results { get; set; }
+	}
 }

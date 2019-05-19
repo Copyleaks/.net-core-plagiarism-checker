@@ -23,19 +23,20 @@
 ********************************************************************************/
 
 using Copyleaks.SDK.V3.API.Models.Responses.Result;
+using Copyleaks.SDK.V3.API.Models.Types;
 using Newtonsoft.Json;
 
-namespace Copyleaks.SDK.V3.API.Models.Callbacks
+namespace Copyleaks.SDK.V3.API.Models.Webhooks
 {
-    /// <summary>
-    /// The callback that will be called from Copyleaks API once an `check credits` request is completed
+	/// <summary>
+    /// The callback that will be called from Copyleaks API once an `index only` request is completed
     /// </summary>
-	public class CreditsCheckCallback : BaseResponse
-    {
-        /// <summary>
-        /// The amount of credits to be consumed by the scan request
-        /// </summary>
-        [JsonProperty("credits")]
-        public uint Credits { get; set; }
-    }
+	public class IndexOnlyWebhook
+	{
+		[JsonProperty("status")]
+		public eScanStatus Status { get; set; }
+
+		[JsonProperty("developerPayload")]
+		public string Payload { get; set; }
+	}
 }
