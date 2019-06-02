@@ -242,6 +242,20 @@ namespace Copyleaks.SDK.V3.API
         }
 
         /// <summary>
+        /// Get the scan results from Copyleaks servers.
+        /// </summary>
+        /// <param name="scanId">A completed scan Id</param>
+        /// <returns>A task that represents the asynchronous operation.
+        /// The task result contains a model of the scan result</returns>
+        public async Task<Result> ResultAsync(string scanId)
+        {
+            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/{scanId}/result";
+            Client.AddAuthentication(this.Token);
+            var response = await Client.GetAsync(requestUri);
+            return await response.ExtractJsonResultsAsync<Result>();
+        }
+
+        /// <summary>
         /// Get a suspected result comparison report
         /// </summary>
         /// <param name="scanId">The scan id</param>

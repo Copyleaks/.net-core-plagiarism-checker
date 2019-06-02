@@ -22,25 +22,14 @@
  SOFTWARE.
 ********************************************************************************/
 
-using Copyleaks.SDK.V3.API.Models.Webhooks;
+using Copyleaks.SDK.V3.API.Models.Callbacks;
 
 namespace Copyleaks.SDK.Demo.Models.Responses
 {
-    public class CheckResultsResponse
+    public class CheckResultsResponse: BaseResponse
     {
+        public CompletedCallback CompletedCallback { get; set; }
+
         public string ScanId { get; set; }
-
-		public ErrorResponse Error { get; set; }
-
-		public SuccessResponse Success { get; set; }
-	}
-
-	public class ErrorResponse
-	{
-		public string ErrorMessage { get; set; }
-	}
-
-	public class SuccessResponse: CompletedWebhook
-	{
-	}
+    }
 }

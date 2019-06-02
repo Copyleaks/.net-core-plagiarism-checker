@@ -23,14 +23,17 @@
 ********************************************************************************/
 
 using Copyleaks.SDK.V3.API.Models.Responses.Result;
+using Newtonsoft.Json;
 
-namespace Copyleaks.SDK.V3.API.Models.Webhooks
+namespace Copyleaks.SDK.V3.API.Models.Callbacks
 {
-	/// <summary>
-	/// The object that is returned from Copyleaks API for a new result callback
-	/// </summary>
-	public class NewResultWebhook : ResultsSection
+    /// <summary>
+    /// The callback that will be called from Copyleaks API once the scan request is completed
+    /// </summary>
+    public class CompletedCallback : Result
 	{
-
-	}
+        [JsonProperty("downloadableReport")]
+        public ReportResponse ReportResponse { get; set; }
+        
+    }
 }

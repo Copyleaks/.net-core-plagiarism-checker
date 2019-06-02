@@ -22,26 +22,15 @@
  SOFTWARE.
 ********************************************************************************/
 
-using Copyleaks.SDK.V3.API.Models.Types;
-using Newtonsoft.Json;
+using Copyleaks.SDK.V3.API.Models.Responses.Result;
 
-namespace Copyleaks.SDK.V3.API.Models.Webhooks
+namespace Copyleaks.SDK.V3.API.Models.Callbacks
 {
-	/// <summary>
-	/// The callback that will be called from Copyleaks API once an `check credits` request is completed
-	/// </summary>
-	public class CreditsCheckWebhook
-    {
-		[JsonProperty("status")]
-		public eScanStatus Status { get; set; }
+    /// <summary>
+    /// The object that is returned from Copyleaks API for a new result callback
+    /// </summary>
+    public class NewResultCallback : ResultsSection
+	{
 
-		[JsonProperty("developerPayload")]
-		public string Payload { get; set; }
-
-		/// <summary>
-		/// The amount of credits to be consumed by the scan request
-		/// </summary>
-		[JsonProperty("credits")]
-        public uint Credits { get; set; }
-    }
+	}
 }

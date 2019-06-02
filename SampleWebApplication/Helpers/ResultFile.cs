@@ -22,7 +22,7 @@
  SOFTWARE.
 ********************************************************************************/
 
-using Copyleaks.SDK.V3.API.Models.Webhooks;
+using Copyleaks.SDK.V3.API.Models.Callbacks;
 using Newtonsoft.Json;
 using System.IO;
 
@@ -39,13 +39,13 @@ namespace Copyleaks.SDK.Demo.Helpers
 
         private static bool HasResults(string scanId) => File.Exists(GetResultsFilePath(scanId));
         
-        public static CompletedWebhook GetResults(string scanId)
+        public static CompletedCallback GetResults(string scanId)
         {
             if (HasResults(scanId))
             {
                 string path = GetResultsFilePath(scanId);
                 var json = File.ReadAllText(path);
-                return JsonConvert.DeserializeObject<CompletedWebhook>(json);
+                return JsonConvert.DeserializeObject<CompletedCallback>(json);
             }
             else
                 return null;
@@ -58,7 +58,7 @@ namespace Copyleaks.SDK.Demo.Helpers
         //        File.Delete(path);
         //}
 
-        public static void SaveResults(CompletedWebhook completedCallback, string scanId)
+        public static void SaveResults(CompletedCallback completedCallback, string scanId)
         {
             string json = JsonConvert.SerializeObject(completedCallback);
             string resultFilePath = GetResultsFilePath(scanId);

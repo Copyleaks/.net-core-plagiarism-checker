@@ -23,23 +23,14 @@
 ********************************************************************************/
 
 using Copyleaks.SDK.V3.API.Models.Responses.Result;
-using Copyleaks.SDK.V3.API.Models.Types;
-using Newtonsoft.Json;
 
-namespace Copyleaks.SDK.V3.API.Models.Webhooks
+namespace Copyleaks.SDK.V3.API.Models.Callbacks
 {
-    /// <summary>
-    /// The callback that will be called from Copyleaks API once the scan request is completed
+	/// <summary>
+    /// The callback that will be called from Copyleaks API once an `index only` request is completed
     /// </summary>
-    public class ErrorWebhook
+	public class IndexOnlyCallback : BaseResponse
 	{
-		[JsonProperty("status")]
-		public eScanStatus Status { get; set; }
 
-		[JsonProperty("error")]
-		public ErrorSection Error { get; set; }
-
-		[JsonProperty("developerPayload")]
-		public string Payload { get; set; }
 	}
 }
