@@ -26,6 +26,7 @@
 using Copyleaks.SDK.V3.API.Helpers;
 using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Copyleaks.SDK.V3.API.Extensions
 {
@@ -58,6 +59,23 @@ namespace Copyleaks.SDK.V3.API.Extensions
             client.Timeout = TimeSpan.FromMilliseconds(int.Parse(ConfigurationManager.Configuration["RequestsTimeout"]));
             client.DefaultRequestHeaders.Accept.Clear();
             client.DefaultRequestHeaders.UserAgent.ParseAdd($"copyleaks-core-sdk/{ASSEMBLY_VERSION}");
+        }
+
+        /// <summary>
+        /// PostAsync using HttpClient
+        /// </summary>
+        /// <param name="client">The HTTPClient that is used the issue requests to Copyleaks API</param>
+        /// <param name="requestUri">The System.Uri to request</param>
+        /// <param name="content">The contents of the HTTP message</param>
+        /// <returns></returns>
+        public static Task<HttpResponseMessage> PatchAsync(this HttpClient client, string requestUri, StringContent content)
+        {
+            return client.SendAsync(new HttpRequestMessage
+            {
+                Content = content,
+                RequestUri = new Uri(requestUri),
+                Method = new HttpMethod("PATCH")
+            });
         }
     }
 }

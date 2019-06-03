@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
     <RootNamespace>Copyleaks.SDK.V3.API</RootNamespace>
     <AssemblyName>CopyleaksAPIV3</AssemblyName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -15,7 +15,7 @@
     <PackageIconUrl>https://copyleaks.com/images/nuget/copyleaks-icon-32.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/Copyleaks/.net-core-plagiarism-checker</RepositoryUrl>
     <PackageTags>plagiarism copyright copyrights Copyleaks infringement checker detector</PackageTags>
-    <Version>0.9.9</Version>
+    <Version>1.0.0</Version>
     <PackageId>Copyleaks</PackageId>
   </PropertyGroup>
 
