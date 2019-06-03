@@ -33,6 +33,11 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
     public class ScannedDocumentSection
     {
         /// <summary>
+        /// A unique scan id provided by you.
+        /// </summary>
+        [JsonProperty("scanId")]
+        public string ScanId { get; set; }
+        /// <summary>
         /// Total number of excluded words in the document
         /// </summary>
         [JsonProperty("totalWords")]
@@ -55,11 +60,5 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
         /// </summary>
         [JsonProperty("creationTime")]
         public DateTime CreationTime { get; set; }
-
-        /// <summary>
-        /// A cached version of the content, useful in case the content is changed after the scan has finished, i.e.: when scanning a URL
-        /// </summary>
-        [JsonProperty("cachedVersion")]
-        public Uri CachedVersion { get; set; }
     }
 }
