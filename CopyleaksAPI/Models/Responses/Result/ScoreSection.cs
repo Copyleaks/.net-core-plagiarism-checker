@@ -49,5 +49,12 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
         /// </summary>
         [JsonProperty("relatedMeaningWords")]
         public uint RelatedMeaningWords { get; set; }
+
+        /// <summary>
+        /// The percentage of similar words from all results. 
+        /// The calculation does not include excluded references, quotations, etc...
+        /// </summary>
+        [JsonProperty("aggreagtedScore")]
+        public double AggregatedScore { get; set; }
     }
 }
