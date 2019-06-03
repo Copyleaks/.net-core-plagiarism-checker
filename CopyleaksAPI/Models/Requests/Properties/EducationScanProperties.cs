@@ -31,24 +31,12 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
     /// The scan request properties for requests to Education product
     /// </summary>
     public class EducationScanProperties : ScanProperties
-    {
-        protected EducationExclude _excludeSection = new EducationExclude();
-
+    {        
         [JsonProperty("scanning")]
         public EducationProtectionLayers ProtectionLayersSection { get; set; } = new EducationProtectionLayers();
 
         [JsonProperty("exclude")]
-        public override Exclude Exclude
-        {
-            get { return this._excludeSection; }
-            set
-            {
-                if (value is EducationExclude)
-                    this._excludeSection = value as EducationExclude;
-                else
-                    throw new ArgumentException($"Education exclude section must be of type {nameof(EducationExclude)}");
-            }
-        }
+        public EducationExclude Exclude { get; set; } = new EducationExclude();
 
         [JsonProperty("pdf")]
         public ReportCustomization ReportSection { get; set; } = new ReportCustomization();

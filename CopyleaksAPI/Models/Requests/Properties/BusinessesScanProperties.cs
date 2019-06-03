@@ -34,5 +34,9 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
     {
         [JsonProperty("scanning")]
         public ProtectionLayers ProtectionLayersSection { get; set; } = new ProtectionLayers();
+
+        [JsonProperty("exclude")]
+        public Exclude Exclude { get; set; } = new Exclude();
+
     }
 }

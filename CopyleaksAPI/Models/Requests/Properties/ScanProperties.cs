@@ -77,9 +77,6 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         [JsonProperty("expiration")]
         public uint Expiration { get; set; } = 2880;
 
-        [JsonProperty("exclude")]
-        public virtual Exclude Exclude { get; set; } = new Exclude();
-
         [JsonProperty("filters")]
         public Filters Filters { get; set; } = new Filters();
 
