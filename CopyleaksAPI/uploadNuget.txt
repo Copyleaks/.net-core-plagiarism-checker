@@ -1,0 +1,3 @@
+# Run the following to upload nuget
+cd bin\Release
+nuget push Copyleaks.1.0.0.nupkg -Source https://api.nuget.org/v3/index.json -ApiKey oy2mhtf5o2vm4nnhsvmatgwakonmi2hehjhhnrl5g2tona
