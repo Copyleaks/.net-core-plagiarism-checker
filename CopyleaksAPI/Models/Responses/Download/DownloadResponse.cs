@@ -32,12 +32,9 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Download
             public FullSuspectedStatisticsSection StatisticsSection { get; set; }
 
             [JsonProperty("text")]
-            public FullSuspectedVersionSection Text { get; set; }
+            public FullTextSuspectedVersionSection Text { get; set; }
 
             [JsonProperty("html")]
-            public FullSuspectedVersionSection Html { get; set; }
-
-            [JsonProperty("version")]
-            public uint Version { get; set; }
+            public FullHtmlSuspectedVersionSection Html { get; set; }
     }
 }

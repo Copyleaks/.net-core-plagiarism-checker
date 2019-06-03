@@ -26,15 +26,22 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.Download
 {
-    public class FullSuspectedComparisonSection
+    public abstract class FullSuspectedComparisonSection<FULL_SUSPECTED_COMPARISON_DESCRIPTION>
     {
         [JsonProperty("identical")]
-        public FullSuspectedComparisonDescription Identical { get; set; }
+        public FULL_SUSPECTED_COMPARISON_DESCRIPTION Identical { get; set; }
 
         [JsonProperty("minorChanges")]
-        public FullSuspectedComparisonDescription MinorChanges { get; set; }
+        public FULL_SUSPECTED_COMPARISON_DESCRIPTION MinorChanges { get; set; }
 
         [JsonProperty("relatedMeaning")]
-        public FullSuspectedComparisonDescription RelatedMeaning { get; set; }
+        public FULL_SUSPECTED_COMPARISON_DESCRIPTION RelatedMeaning { get; set; }
+    }
+    public class FullTextSuspectedComparisonSection : FullSuspectedComparisonSection<FullTextSuspectedComparisonDescription>
+    {
+    }
+
+    public class FullHtmlSuspectedComparisonSection: FullSuspectedComparisonSection<FullHtmlSuspectedComparisonDescription>
+    {
     }
 }

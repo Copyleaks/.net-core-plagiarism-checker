@@ -26,7 +26,7 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.Download
 {
-    public class FullSourceExcludeSection
+    public class FullTextSourceExcludeSection
     {
         [JsonProperty("value")]
         public int[] Starts { get; set; }
@@ -36,7 +36,9 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Download
 
         [JsonProperty("reasons")]
         public int[] Reasons { get; set; }
-
+    }
+    public class FullHtmlSourceExcludeSection: FullTextSourceExcludeSection
+    {
         [JsonProperty("groupIds")]
         public int[] GroupIds { get; set; }
     }
