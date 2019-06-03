@@ -26,13 +26,24 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.Download
 {
-    public class FullSourceSubVersionSection <FULL_SOURCE_EXCLUDE_SECTION>
+    public abstract class BaseFulloSourceSubVersionSection
     {
         [JsonProperty("value")]
         public string Value { get; set; }
+    }
+
+    public class FullHtmlSourceSubVersionSection: BaseFulloSourceSubVersionSection
+    {
+        
+        [JsonProperty("exclude")]
+        public FullHtmlSourceExcludeSection Exclude { get; set; }
+    }
+
+    public class FullTextSourceSubVersionSection: BaseFulloSourceSubVersionSection
+    {
 
         [JsonProperty("exclude")]
-        public FULL_SOURCE_EXCLUDE_SECTION Exclude { get; set; }
+        public FullTextSourceExcludeSection Exclude { get; set; }
 
         [JsonProperty("pages")]
         public FullSourcePagesSection Pages { get; set; }
