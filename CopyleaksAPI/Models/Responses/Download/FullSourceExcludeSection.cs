@@ -28,7 +28,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Download
 {
     public class FullTextSourceExcludeSection
     {
-        [JsonProperty("value")]
+        [JsonProperty("starts")]
         public int[] Starts { get; set; }
 
         [JsonProperty("lengths")]
