@@ -4,6 +4,19 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>Copyleaks.SDK.V3.API</RootNamespace>
     <AssemblyName>CopyleaksAPIV3</AssemblyName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Copyleaks LTD</Authors>
+    <Company>Copyleaks LTD</Company>
+    <Product>Copyleaks</Product>
+    <Description>Copyleaks is a popular advanced online plagiarism checker. This library provides access to Copyleaks cloud and scans your content for copyright infringement.</Description>
+    <Copyright>All rights reserved to Copyleaks Ltd.</Copyright>
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <PackageProjectUrl>https://copyleaks.com/</PackageProjectUrl>
+    <PackageIconUrl>https://copyleaks.com/images/nuget/copyleaks-icon-32.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/Copyleaks/.net-core-plagiarism-checker</RepositoryUrl>
+    <PackageTags>plagiarism copyright copyrights Copyleaks infringement checker detector</PackageTags>
+    <Version>0.9.9</Version>
+    <PackageId>Copyleaks</PackageId>
   </PropertyGroup>
 
   <ItemGroup>
