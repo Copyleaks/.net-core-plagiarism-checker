@@ -3,7 +3,7 @@
 Copyleaks SDK is a simple framework that allows you to perform plagiarism scans and track content distribution around the web, using Copyleaks API.
 </p>
 <p>
-With Copyleaks SDK you can submit for scan:  
+With Copyleaks SDK you can submit a scan for:  
 <ul>
 <li>Webpages</li>
 <li>Local files - pdf, doc, docx, rtf and more <a href="https://api.copyleaks.com/GeneralDocumentation/TechnicalSpecifications#supportedfiletypes">(see full list)</a></li>
