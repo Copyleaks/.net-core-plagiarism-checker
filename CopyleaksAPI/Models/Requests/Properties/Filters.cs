@@ -35,8 +35,8 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         /// <summary>
         /// Enable/disable identical matches
         /// </summary>
-        [JsonProperty("idenitcalEnabled")]
-        public bool IdenitcalEnabled { get; set; } = true;
+        [JsonProperty("identicalEnabled")]
+        public bool IdenticalEnabled { get; set; } = true;
 
         /// <summary>
         /// Enable/disable minor changes matches

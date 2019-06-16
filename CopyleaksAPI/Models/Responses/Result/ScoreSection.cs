@@ -54,7 +54,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
         /// The percentage of similar words from all results. 
         /// The calculation does not include excluded references, quotations, etc...
         /// </summary>
-        [JsonProperty("aggreagtedScore")]
+        [JsonProperty("aggregatedScore")]
         public double AggregatedScore { get; set; }
     }
 }
