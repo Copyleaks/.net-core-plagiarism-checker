@@ -227,3 +227,4 @@ UI/Services/BatchSync/out
 UI/Website/ObsoleteReportData/
 UI/Website/find-full-text-results-directory/
 UI/Services/QueriesGenerator/QueryPredictor/.pytest_cache/v/cache/nodeids
+uploadNuget.txt
