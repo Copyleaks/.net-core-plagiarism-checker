@@ -41,8 +41,8 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         /// <summary>
         /// Enable/disable minor changes matches
         /// </summary>
-        [JsonProperty("minorChangedEnabled")]
-        public bool MinorChangedEnabled { get; set; } = true;
+        [JsonProperty("minorChangesEnabled")]
+        public bool MinorChangesEnabled { get; set; } = true;
 
         /// <summary>
         /// Enable/disable related meaning matches
