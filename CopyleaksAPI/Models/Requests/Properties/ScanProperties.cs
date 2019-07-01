@@ -83,13 +83,12 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         public AuthorEntity Author { get; set; } = new AuthorEntity();
 
         /// <summary>
-        /// The prcision level of the process.
-        /// Range of values between 1 to 5.
-        /// Setting a higher precision level will pontentially cause more precise results and the will increase the scan completion time.
+        /// Control the level of plagiarism sensitivity that will be identified according to the speed of the scan. If you prefer a faster scan with the results that contains the highest amount of plagiarism choose 1, and if a slower, more comprehensive scan, that will also detect the smallest instances choose 5.  
+        /// Range between 1 (faster ) to 5 (slower but more comprehensive)
         /// </summary>
-        [JsonProperty("precisionLevel")]
+        [JsonProperty("sensitivityLevel")]
         [Range(1,5)]
-        public int PrecisionLevel { get; set; }
+        public int SensitivityLevel { get; set; }
 
     }
 }
