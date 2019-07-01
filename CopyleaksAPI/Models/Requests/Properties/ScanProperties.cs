@@ -23,7 +23,6 @@
 ********************************************************************************/
 
 using Copyleaks.SDK.V3.API.Models.Types;
-using Copyleaks.SDK.V3.API.Models.Requests.Properties;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
@@ -82,6 +81,15 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 
         [JsonProperty("author")]
         public AuthorEntity Author { get; set; } = new AuthorEntity();
+
+        /// <summary>
+        /// The prcision level of the process.
+        /// Range of values between 1 to 5.
+        /// Setting a higher precision level will pontentially cause more precise results and the will increase the scan completion time.
+        /// </summary>
+        [JsonProperty("precisionLevel")]
+        [Range(1,5)]
+        public int PrecisionLevel { get; set; }
 
     }
 }

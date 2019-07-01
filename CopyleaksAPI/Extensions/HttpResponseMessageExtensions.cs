@@ -42,7 +42,7 @@ namespace Copyleaks.SDK.V3.API.Extensions
         public static async Task<string> ExtractStringResultsAsync(this HttpResponseMessage message)
         {
             if (!message.IsSuccessStatusCode)
-                throw new CommandFailedException(message);
+                throw new CopyleaksHttpException(message);
             return await message.Content.ReadAsStringAsync();
         }
 
@@ -55,7 +55,7 @@ namespace Copyleaks.SDK.V3.API.Extensions
         public static async Task<T> ExtractJsonResultsAsync<T>(this HttpResponseMessage message)
         {
             if(!message.IsSuccessStatusCode)
-                throw new CommandFailedException(message);
+                throw new CopyleaksHttpException(message);
             string json = await message.Content.ReadAsStringAsync();
             if (string.IsNullOrEmpty(json))
                 throw new JsonException("This request could not be processed.");

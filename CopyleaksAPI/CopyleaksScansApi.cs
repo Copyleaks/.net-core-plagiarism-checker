@@ -116,7 +116,7 @@ namespace Copyleaks.SDK.V3.API
                 new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
             if (!response.IsSuccessStatusCode)
             {
-                throw new CommandFailedException(response);
+                throw new CopyleaksHttpException(response);
             }
         }
 
@@ -191,7 +191,8 @@ namespace Copyleaks.SDK.V3.API
         /// <param name="scanIds">A list of completed scan id's to be deleted</param>
         /// <returns>A task that represents the asynchronous operation.
         /// The task result contains a list of errors by scan id if errors have occurred</returns>
-        public async Task<DeleteResponse> DeleteAsync(string [] scanIds)
+        [Obsolete]
+        public async Task<DeleteResponse> DeleteV3Async(string [] scanIds)
         {
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/delete";
             Client.AddAuthentication(this.Token);
@@ -201,6 +202,24 @@ namespace Copyleaks.SDK.V3.API
             }), Encoding.UTF8, "application/json"));
 
             return await response.ExtractJsonResultsAsync<DeleteResponse>();
+        }
+
+        /// <summary>
+        /// Deletes the process once it has finished running 
+        /// The delete process might take few minutes to complete
+        /// </summary>
+        /// <param name="scanIds">A list of completed scan id's to be deleted</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public async Task DeleteAsync(DeleteRequest model)
+        {
+            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}.1/{this.Product}/delete";
+            Client.AddAuthentication(this.Token);
+            var response = await Client.PatchAsync(requestUri, new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new CopyleaksHttpException(response);
+            }
         }
 
         /// <summary>

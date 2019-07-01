@@ -75,9 +75,8 @@ namespace Copyleaks.SDK.Demo.Controllers
                     return View("Submit", submitResponse);
                 }
             }
-            catch (CommandFailedException cfe)
+            catch (CopyleaksHttpException cfe)
             {
-                response.CopyleaksErrorCode = cfe.CopyleaksErrorCode;
                 response.ErrorMessage = cfe.Message;
             }
             catch (Exception ex)
@@ -119,15 +118,13 @@ namespace Copyleaks.SDK.Demo.Controllers
                 };
                 return View("CheckResult", checkResult);
             }
-            catch(CommandFailedException cfe)
+            catch(CopyleaksHttpException cfe)
             {
-                response.CopyleaksErrorCode = cfe.CopyleaksErrorCode;
                 response.ErrorMessage = cfe.Message;
             }
             catch(Exception ex)
             {
                 response.ErrorMessage = ex.Message;
-                response.CopyleaksErrorCode = null;
             }
             return View(response);
         }

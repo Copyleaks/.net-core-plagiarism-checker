@@ -41,12 +41,6 @@ SOFTWARE.
             <div class="error-message">
                 <h4>Login error:</h4>
                 @Model.ErrorMessage
-                @if (Model.CopyleaksErrorCode.HasValue)
-                {
-                    <div>
-                        Copyleaks error code: @Model.CopyleaksErrorCode.Value
-                    </div>
-                }
             </div>
         }
         <div class="panel panel-default">

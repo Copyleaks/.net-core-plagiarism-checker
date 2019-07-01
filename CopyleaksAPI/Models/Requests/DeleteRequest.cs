@@ -22,10 +22,42 @@
  SOFTWARE.
 ********************************************************************************/
 
-namespace Copyleaks.SDK.Demo.Models.Responses
+using Newtonsoft.Json;
+
+namespace Copyleaks.SDK.V3.API.Models.Requests
 {
-    public class BaseResponse
+    /// <summary>
+    /// Request to delete the specific scans
+    /// </summary>
+    public class DeleteRequest
     {
-        public string ErrorMessage { get; set; }
+        /// <summary>
+        /// A list of scans to be deleted
+        /// </summary>
+        [JsonProperty("scans")]
+        public DeleteScanItem[] Scans { get; set; }
+
+        /// <summary>
+        /// Delete all trace of the scan from Copyleaks server, including from internal database. 
+        /// A purged process will not be available as a result for previous scans.
+        /// </summary>
+        [JsonProperty("purge")]
+        public bool Purge { get; set; } = false;
+
     }
+
+    /// <summary>
+    /// A specific scan to be deleted
+    /// </summary>
+    public class DeleteScanItem
+    {
+        /// <summary>
+        /// The scan Id
+        /// </summary>
+        [JsonProperty("id")]
+        public int Id { get; set; } = 3;
+    }
+
 }
+    
+

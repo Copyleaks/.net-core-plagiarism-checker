@@ -20,12 +20,6 @@
                 <div class="error-message">
                     <h4>Submit error:</h4>
                     @Model.ErrorMessage
-                    @if (Model.CopyleaksErrorCode.HasValue)
-                    {
-                        <div>
-                            Copyleaks error code: @Model.CopyleaksErrorCode.Value
-                        </div>
-                    }
                 </div>
             }
             else if (Model.ScanId != null)

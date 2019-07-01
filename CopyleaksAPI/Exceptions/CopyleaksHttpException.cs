@@ -22,10 +22,7 @@
  SOFTWARE.
 ********************************************************************************/
 
-using Copyleaks.SDK.V3.API.Models.Responses;
-using Newtonsoft.Json;
 using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 
@@ -34,23 +31,18 @@ namespace Copyleaks.SDK.V3.API.Exceptions
     /// <summary>
     /// This class is returned in case an error response was received from Copyleaks API
     /// </summary>
-    public class CommandFailedException : ApplicationException
+    public class CopyleaksHttpException : ApplicationException
     {
         /// <summary>
         /// The Http status code
         /// </summary>
         public HttpStatusCode HttpErrorCode { get; private set; }
-
-        /// <summary>
-        /// Copyleaks error code, see https://api.copyleaks.com/documentation/errors#Managed-Errors for a full list of error codes
-        /// </summary>
-        public short CopyleaksErrorCode { get; private set; }
-
+        
         /// <summary>
         /// A new error response from Copyleaks API
         /// </summary>
         /// <param name="response">The error response from Copyleaks API</param>
-        public CommandFailedException(HttpResponseMessage response) :
+        public CopyleaksHttpException(HttpResponseMessage response) :
             base(GetMessage(response))
         {
             this.HttpErrorCode = response.StatusCode;
@@ -58,24 +50,11 @@ namespace Copyleaks.SDK.V3.API.Exceptions
 
         private static string GetMessage(HttpResponseMessage response)
         {
-
             string errorResponse = response.Content.ReadAsStringAsync().Result;
-
-            CopyleaksErrorResponse error = null;
-            try
-            {
-                error = JsonConvert.DeserializeObject<CopyleaksErrorResponse>(errorResponse);
-            }
-            catch (JsonReaderException)
-            {
-                return errorResponse;
-            }
-
-            if (error == null)
+            if (errorResponse == null)
                 return "The application has encountered an unknown error. Please try again later.";
             else
-                return error.Message;
+                return errorResponse;
         }
-
     }
 }
