@@ -87,8 +87,8 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         /// Range between 1 (faster ) to 5 (slower but more comprehensive)
         /// </summary>
         [JsonProperty("sensitivityLevel")]
-        [Range(1,5)]
-        public int SensitivityLevel { get; set; }
+        [Range(1, 5)]
+        public int SensitivityLevel { get; set; } = 3;
 
     }
 }
