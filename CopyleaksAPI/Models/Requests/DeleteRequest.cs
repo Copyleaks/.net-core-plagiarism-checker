@@ -55,7 +55,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
         /// The scan Id
         /// </summary>
         [JsonProperty("id")]
-        public int Id { get; set; } = 3;
+        public string Id { get; set; }
     }
 
 }
