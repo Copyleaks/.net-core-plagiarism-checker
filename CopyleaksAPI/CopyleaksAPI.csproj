@@ -15,7 +15,7 @@
     <PackageIconUrl>https://copyleaks.com/images/nuget/copyleaks-icon-32.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/Copyleaks/.net-core-plagiarism-checker</RepositoryUrl>
     <PackageTags>plagiarism copyright copyrights Copyleaks infringement checker detector</PackageTags>
-    <Version>1.0.6</Version>
+    <Version>1.0.7</Version>
     <PackageId>Copyleaks</PackageId>
   </PropertyGroup>
 
