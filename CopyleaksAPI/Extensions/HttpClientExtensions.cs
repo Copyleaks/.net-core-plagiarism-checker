@@ -26,6 +26,7 @@
 using Copyleaks.SDK.V3.API.Helpers;
 using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace Copyleaks.SDK.V3.API.Extensions
@@ -35,8 +36,6 @@ namespace Copyleaks.SDK.V3.API.Extensions
     /// </summary>
 	public static class HttpClientExtensions
     {
-        private const string AUTHORIZATION = "Authorization";
-
         static readonly string ASSEMBLY_VERSION = AssemblyHelper.GetVersion();
         
         /// <summary>
@@ -46,7 +45,7 @@ namespace Copyleaks.SDK.V3.API.Extensions
         /// <param name="token"></param>
         public static void AddAuthentication(this HttpClient client, string token)
         {
-			client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", token);
+			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
 		}
 
         /// <summary>
