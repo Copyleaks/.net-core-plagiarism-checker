@@ -46,9 +46,8 @@ namespace Copyleaks.SDK.V3.API.Extensions
         /// <param name="token"></param>
         public static void AddAuthentication(this HttpClient client, string token)
         {
-            if(!client.DefaultRequestHeaders.Contains(AUTHORIZATION))
-                client.DefaultRequestHeaders.Add(AUTHORIZATION, $"Bearer {token}");
-        }
+			client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("bearer", token);
+		}
 
         /// <summary>
         /// Set HTTPClient with request timouet and Copyleaks SDK version
