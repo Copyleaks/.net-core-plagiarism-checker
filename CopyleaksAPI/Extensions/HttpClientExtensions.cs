@@ -37,7 +37,7 @@ namespace Copyleaks.SDK.V3.API.Extensions
 	public static class HttpClientExtensions
     {
         static readonly string ASSEMBLY_VERSION = AssemblyHelper.GetVersion();
-        
+
         /// <summary>
         /// Add authentication token to HTTP request
         /// </summary>
@@ -45,19 +45,8 @@ namespace Copyleaks.SDK.V3.API.Extensions
         /// <param name="token"></param>
         public static void AddAuthentication(this HttpClient client, string token)
         {
-			client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
-		}
-
-        /// <summary>
-        /// Set HTTPClient with request timouet and Copyleaks SDK version
-        /// </summary>
-        /// <param name="client"></param>
-        public static void SetCopyleaksClient(this HttpClient client)
-        {
-            client.Timeout = TimeSpan.FromMilliseconds(int.Parse(ConfigurationManager.Configuration["RequestsTimeout"]));
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.UserAgent.ParseAdd($"copyleaks-core-sdk/{ASSEMBLY_VERSION}");
-        }
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", token);
+        }   
 
         /// <summary>
         /// PostAsync using HttpClient

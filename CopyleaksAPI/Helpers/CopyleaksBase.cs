@@ -24,16 +24,17 @@
 
 using Copyleaks.SDK.V3.API.Extensions;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Copyleaks.SDK.V3.API.Helpers
 {
-	/// <summary>
+    /// <summary>
     /// An HTTP connection to Copyleaks API
     /// </summary>
-	public abstract class CopyleaksBase : IDisposable
+    public abstract class CopyleaksBase : IDisposable
     {
         public HttpClient Client { get; private set; }
 
@@ -62,23 +63,23 @@ namespace Copyleaks.SDK.V3.API.Helpers
                 handler.ClientCertificateOptions = ClientCertificateOption.Manual;
                 handler.SslProtocols = SslProtocols.Tls12;
                 handler.ClientCertificates.Add(clientCertificate);
+                handler.AutomaticDecompression = DecompressionMethods.GZip;                               
                 this.Client = new HttpClient(handler);
             }
             else
                 this.Client = new HttpClient();
-            SetCopyleaksHeaders();   
-            
+            SetCopyleaksHeaders();
+
         }
 
         private void SetCopyleaksHeaders()
-        {
-            this.Client.SetCopyleaksClient();
+        {            
             this.ApiVersion = ConfigurationManager.Configuration["apiVersion"];
         }
 
         public void Dispose()
         {
-            this.Client.Dispose();
+            //this.Client.Dispose();
         }
     }
 }

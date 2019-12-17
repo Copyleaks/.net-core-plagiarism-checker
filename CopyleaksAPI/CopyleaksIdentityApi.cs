@@ -25,29 +25,42 @@
 using Copyleaks.SDK.V3.API.Exceptions;
 using Copyleaks.SDK.V3.API.Extensions;
 using Copyleaks.SDK.V3.API.Helpers;
+using Copyleaks.SDK.V3.API.Models.HttpCustomSend;
 using Copyleaks.SDK.V3.API.Models.Responses;
 using Newtonsoft.Json;
+using Polly;
+using Polly.Retry;
 using System;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 namespace Copyleaks.SDK.V3.API
 {
-    public class CopyleaksIdentityApi: CopyleaksBase
+    public class CopyleaksIdentityApi : CopyleaksBase
     {
-		/// <summary>
+
+
+        /// <summary>
         /// This class alows you the get the API token from Copyleaks API and manage your scans permissions
         /// </summary>
-		public string CopyleaksIdServer { get; private set; }
+        public string CopyleaksIdServer { get; private set; }
+
+        public AsyncRetryPolicy<HttpResponseMessage> RetrayPolicy { get; private set; }
 
         /// <summary>
         /// Connection to Copyleaks identity API
         /// </summary>
         /// <param name="clientCertificate">Optional: client certificate to be checked against in Copyleaks API.
         /// Configure you client's certificate at https://copyleaks.com/Manage </param>
-        public CopyleaksIdentityApi(X509Certificate2 clientCertificate = null): base(clientCertificate)
+        public CopyleaksIdentityApi(X509Certificate2 clientCertificate = null) : base(clientCertificate)
         {
+            SetRetrayPolicyAsync();
             SetServerEndpoint();
         }
 
@@ -57,7 +70,13 @@ namespace Copyleaks.SDK.V3.API
         /// <param name="client">Override the underlying http client with custom settings</param>
         public CopyleaksIdentityApi(HttpClient client) : base(client)
         {
+            SetRetrayPolicyAsync();
             SetServerEndpoint();
+        }
+
+        private void SetRetrayPolicyAsync()
+        {
+            this.RetrayPolicy = HttpClientRetrayPolicy.GetPolicy();
         }
 
         private void SetServerEndpoint()
@@ -79,13 +98,54 @@ namespace Copyleaks.SDK.V3.API
                 throw new ArgumentException("ApiKey is mandatory.", nameof(key));
 
             string requestUri = $"{this.CopyleaksIdServer}{this.ApiVersion}/account/login/api";
-            var response = await Client.PostAsync(requestUri, new StringContent(JsonConvert.SerializeObject(new
-            {
-                email,
-                key
-            }), Encoding.UTF8, "application/json"));
-            return await response.ExtractJsonResultsAsync<LoginResponse>();
-        }
 
+            var response = await RetrayPolicy.ExecuteAsync(async () =>
+            {
+                HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Post, requestUri);
+                msg.SetupHeaders();
+                msg.Headers.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
+                msg.Headers.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
+
+
+                byte[] bytesToSend;
+
+                using (var compressedStream = new MemoryStream())
+                {
+                    using (var gzipStream = new GZipStream(compressedStream, CompressionMode.Compress))
+                    {
+                        var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
+                        {
+                            email,
+                            key
+                        }));
+                        await gzipStream.WriteAsync(data, 0, data.Length).ConfigureAwait(false);
+                        gzipStream.Close();
+                        bytesToSend = compressedStream.ToArray();
+                    }
+                }
+
+                msg.Content = new ByteArrayContent(bytesToSend, 0, bytesToSend.Length);
+
+                return await Client.SendAsync(msg).ConfigureAwait(false);
+
+                //msg.Content = new StringContent(JsonConvert.SerializeObject(new
+                //{
+                //    email,
+                //    key
+                //}), Encoding.UTF8, "application/json");
+
+            }).ConfigureAwait(false);
+
+
+            using (response)
+            {
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new CopyleaksHttpException(response);
+                }
+
+                return await response.ExtractJsonResultsAsync<LoginResponse>().ConfigureAwait(false);
+            }
+        }
     }
 }

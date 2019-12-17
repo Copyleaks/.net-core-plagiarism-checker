@@ -41,7 +41,7 @@ namespace SampleWebApplication
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
-        {
+        {            
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.CheckConsentNeeded = context => true;
@@ -75,7 +75,7 @@ namespace SampleWebApplication
                     template: "{controller=CopyleaksDemo}/{action=Index}/{id?}");
             });
 
-            
+
 
         }
     }

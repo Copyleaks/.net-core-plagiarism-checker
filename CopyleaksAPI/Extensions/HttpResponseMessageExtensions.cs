@@ -43,7 +43,7 @@ namespace Copyleaks.SDK.V3.API.Extensions
         {
             if (!message.IsSuccessStatusCode)
                 throw new CopyleaksHttpException(message);
-            return await message.Content.ReadAsStringAsync();
+            return await message.Content.ReadAsStringAsync().ConfigureAwait(false);
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Copyleaks.SDK.V3.API.Extensions
         {
             if(!message.IsSuccessStatusCode)
                 throw new CopyleaksHttpException(message);
-            string json = await message.Content.ReadAsStringAsync();
+            string json = await message.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (string.IsNullOrEmpty(json))
                 throw new JsonException("This request could not be processed.");
             var result = JsonConvert.DeserializeObject<T>(json);
