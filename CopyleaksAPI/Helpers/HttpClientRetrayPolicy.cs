@@ -24,7 +24,8 @@ namespace Copyleaks.SDK.V3.API.Helpers
                     lock (Just4lock)
                         if (_RetryPolicy == null)
                             _RetryPolicy = Policy
-                                .HandleResult<HttpResponseMessage>(response => (int)response.StatusCode >= 500)
+                                .Handle<HttpRequestException>()
+                                .OrResult<HttpResponseMessage>(response => (int)response.StatusCode >= 500)
                                   .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(4));
 
                 return _RetryPolicy;
