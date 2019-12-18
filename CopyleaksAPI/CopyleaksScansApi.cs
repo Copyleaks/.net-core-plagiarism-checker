@@ -32,6 +32,7 @@ using Copyleaks.SDK.V3.API.Models.Responses.Download;
 using Copyleaks.SDK.V3.API.Models.Responses.Result;
 using Copyleaks.SDK.V3.API.Models.Types;
 using Newtonsoft.Json;
+using Polly.Retry;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -106,7 +107,8 @@ namespace Copyleaks.SDK.V3.API
             HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders(token);
 
-            using (var response = await Client.SendAsync(msg).ConfigureAwait(false))
+            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
+            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -125,6 +127,7 @@ namespace Copyleaks.SDK.V3.API
 
             var msg = new HttpRequestMessage(HttpMethod.Put, requestUri);
             msg.SetupHeaders(token);
+
             msg.Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
             using (var response = await Client.SendAsync(msg).ConfigureAwait(false))
@@ -205,7 +208,8 @@ namespace Copyleaks.SDK.V3.API
             HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders(token);
 
-            using (var response = await Client.SendAsync(msg).ConfigureAwait(false))
+            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
+            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -213,37 +217,6 @@ namespace Copyleaks.SDK.V3.API
                 }
                 var progress = await response.ExtractJsonResultsAsync<ProgressResponse>().ConfigureAwait(false);
                 return progress.Percents;
-            }
-        }
-
-        /// <summary>
-        /// Deletes the process once it has finished running 
-        /// </summary>
-        /// <param name="scanIds">A list of completed scan id's to be deleted</param>
-        /// <returns>A task that represents the asynchronous operation.
-        /// The task result contains a list of errors by scan id if errors have occurred</returns>
-        [Obsolete]
-        public async Task<DeleteResponse> DeleteV3Async(string[] scanIds, string token)
-        {
-            if (string.IsNullOrEmpty(token))
-                throw new ArgumentException("mandatory", nameof(token));
-
-            var method = new HttpMethod("PATCH");
-            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/delete";
-            HttpRequestMessage msg = new HttpRequestMessage(method, requestUri);
-            msg.SetupHeaders(token);
-            msg.Content = new StringContent(JsonConvert.SerializeObject(new
-            {
-                id = scanIds
-            }), Encoding.UTF8, "application/json");
-
-            using (var response = await Client.SendAsync(msg).ConfigureAwait(false))
-            {
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new CopyleaksHttpException(response);
-                }
-                return await response.ExtractJsonResultsAsync<DeleteResponse>().ConfigureAwait(false);
             }
         }
 
@@ -264,7 +237,8 @@ namespace Copyleaks.SDK.V3.API
             msg.SetupHeaders(token);
             msg.Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
-            using (var response = await Client.SendAsync(msg).ConfigureAwait(false))
+            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
+            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -351,7 +325,9 @@ namespace Copyleaks.SDK.V3.API
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/{scanId}/result";
             var msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders(token);
-            using (var response = await Client.SendAsync(msg).ConfigureAwait(false))
+
+            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
+            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -379,7 +355,8 @@ namespace Copyleaks.SDK.V3.API
             var msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders(token);
 
-            using (var response = await Client.SendAsync(msg).ConfigureAwait(false))
+            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
+            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -406,7 +383,8 @@ namespace Copyleaks.SDK.V3.API
             var msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders(token);
 
-            using (var response = await Client.SendAsync(msg).ConfigureAwait(false))
+            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
+            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -433,7 +411,8 @@ namespace Copyleaks.SDK.V3.API
             var msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders(token);
 
-            using (var response = await Client.SendAsync(msg).ConfigureAwait(false))
+            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
+            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -490,7 +469,8 @@ namespace Copyleaks.SDK.V3.API
             var msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders();
 
-            using (var response = await Client.SendAsync(msg).ConfigureAwait(false))
+            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
+            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -511,7 +491,8 @@ namespace Copyleaks.SDK.V3.API
             var msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders();
 
-            using (var response = await Client.SendAsync(msg).ConfigureAwait(false))
+            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
+            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
             {
                 if (!response.IsSuccessStatusCode)
                 {

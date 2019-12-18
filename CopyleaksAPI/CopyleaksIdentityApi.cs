@@ -44,14 +44,10 @@ namespace Copyleaks.SDK.V3.API
 {
     public class CopyleaksIdentityApi : CopyleaksBase
     {
-
-
         /// <summary>
         /// This class alows you the get the API token from Copyleaks API and manage your scans permissions
         /// </summary>
         public string CopyleaksIdServer { get; private set; }
-
-        public AsyncRetryPolicy<HttpResponseMessage> RetrayPolicy { get; private set; }
 
         /// <summary>
         /// Connection to Copyleaks identity API
@@ -60,7 +56,6 @@ namespace Copyleaks.SDK.V3.API
         /// Configure you client's certificate at https://copyleaks.com/Manage </param>
         public CopyleaksIdentityApi(X509Certificate2 clientCertificate = null) : base(clientCertificate)
         {
-            SetRetrayPolicyAsync();
             SetServerEndpoint();
         }
 
@@ -70,13 +65,7 @@ namespace Copyleaks.SDK.V3.API
         /// <param name="client">Override the underlying http client with custom settings</param>
         public CopyleaksIdentityApi(HttpClient client) : base(client)
         {
-            SetRetrayPolicyAsync();
             SetServerEndpoint();
-        }
-
-        private void SetRetrayPolicyAsync()
-        {
-            this.RetrayPolicy = HttpClientRetrayPolicy.GetPolicy();
         }
 
         private void SetServerEndpoint()
@@ -99,45 +88,19 @@ namespace Copyleaks.SDK.V3.API
 
             string requestUri = $"{this.CopyleaksIdServer}{this.ApiVersion}/account/login/api";
 
-            var response = await RetrayPolicy.ExecuteAsync(async () =>
+            HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Post, requestUri);
+            msg.SetupHeaders();
+
+            string json = JsonConvert.SerializeObject(new
             {
-                HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Post, requestUri);
-                msg.SetupHeaders();
-                msg.Headers.AcceptEncoding.Add(new StringWithQualityHeaderValue("gzip"));
-                msg.Headers.AcceptEncoding.Add(new StringWithQualityHeaderValue("deflate"));
+                email,
+                key
+            });
 
+            msg.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                byte[] bytesToSend;
-
-                using (var compressedStream = new MemoryStream())
-                {
-                    using (var gzipStream = new GZipStream(compressedStream, CompressionMode.Compress))
-                    {
-                        var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new
-                        {
-                            email,
-                            key
-                        }));
-                        await gzipStream.WriteAsync(data, 0, data.Length).ConfigureAwait(false);
-                        gzipStream.Close();
-                        bytesToSend = compressedStream.ToArray();
-                    }
-                }
-
-                msg.Content = new ByteArrayContent(bytesToSend, 0, bytesToSend.Length);
-
-                return await Client.SendAsync(msg).ConfigureAwait(false);
-
-                //msg.Content = new StringContent(JsonConvert.SerializeObject(new
-                //{
-                //    email,
-                //    key
-                //}), Encoding.UTF8, "application/json");
-
-            }).ConfigureAwait(false);
-
-
-            using (response)
+            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
+            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -146,6 +109,8 @@ namespace Copyleaks.SDK.V3.API
 
                 return await response.ExtractJsonResultsAsync<LoginResponse>().ConfigureAwait(false);
             }
+
         }
     }
 }
+

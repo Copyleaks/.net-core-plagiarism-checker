@@ -51,11 +51,28 @@
                     <hr />
                     <div style="margin-top: 20px;">
                         <label>Product:</label>
-                        @Html.DropDownList("Product",new SelectList(
+                        @Html.DropDownList("Product", new SelectList(
                                         new eProduct[]{
                                         eProduct.Education,
                                         eProduct.Businesses
-                                        }),new { @class = "form-control" })
+                                        }), new { @class = "form-control" })
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <label for="text">Webhook status event</label>
+                        <input type="url" name="webhookHost" placeholder="Example: https://yoursite.com/webhook/{STATUS}" class="form-control"/>
+                        <div class="ok-message">
+                            <p>
+                                This webhook event is triggered once the scan status changes.
+                            </p>
+                            <p>
+                                Use the special token <code>{STATUS}</code> to track the current scan status.
+                                This special token will automatically be replaced by the Copyleaks servers with the optional values:
+                                <code>completed</code>, <code>error</code>, <code>creditsChecked</code> and <code>indexed</code>.
+                            </p>
+                            <p>
+                                Read more about <a href="https://api.copyleaks.com/documentation/v3/webhooks">webhooks</a>.
+                            </p>
+                        </div>
                     </div>
                     <div style="margin-top: 20px;">
                         <label for="text">The text to scan:</label>

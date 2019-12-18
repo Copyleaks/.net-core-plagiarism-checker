@@ -167,7 +167,7 @@ namespace Copyleaks.SDK.Demo.Controllers
             {
                 // Copyleaks API will POST the scan results to the 'completed' callback
                 // See 'CompletedProcess' method for more details
-                Status = new Uri($"{Request.Host}/{scanId}/{{status}}")
+                Status = new Uri($"{submitModel.WebHookHost}/{scanId}/{{status}}")
             };
             // Sandbox mode does not take any credits
             scanProperties.Sandbox = submitModel.Sandbox;

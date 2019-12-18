@@ -23,6 +23,7 @@
 ********************************************************************************/
 
 using Copyleaks.SDK.V3.API.Extensions;
+using Polly.Retry;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -38,7 +39,9 @@ namespace Copyleaks.SDK.V3.API.Helpers
     {
         public HttpClient Client { get; private set; }
 
-        protected string ApiVersion { get; set; }
+        protected string ApiVersion { get; set; }     
+        
+        public AsyncRetryPolicy<HttpResponseMessage> RetryPolicy { get; private set; }
 
         /// <summary>
         /// A new dispoable HTTP Connection to Copyleaks API
@@ -48,6 +51,7 @@ namespace Copyleaks.SDK.V3.API.Helpers
         {
             this.Client = client ?? throw new ArgumentNullException(nameof(client));
             SetCopyleaksHeaders();
+            SetRetrayPolicies();
         }
 
         /// <summary>
@@ -63,18 +67,23 @@ namespace Copyleaks.SDK.V3.API.Helpers
                 handler.ClientCertificateOptions = ClientCertificateOption.Manual;
                 handler.SslProtocols = SslProtocols.Tls12;
                 handler.ClientCertificates.Add(clientCertificate);
-                handler.AutomaticDecompression = DecompressionMethods.GZip;                               
+                handler.AutomaticDecompression = DecompressionMethods.GZip;
                 this.Client = new HttpClient(handler);
             }
             else
                 this.Client = new HttpClient();
             SetCopyleaksHeaders();
-
+            SetRetrayPolicies();
         }
 
         private void SetCopyleaksHeaders()
-        {            
+        {
             this.ApiVersion = ConfigurationManager.Configuration["apiVersion"];
+        }
+
+        private void SetRetrayPolicies()
+        {            
+            this.RetryPolicy = HttpClientRetrayPolicy.RetryPolicy;
         }
 
         public void Dispose()

@@ -13,39 +13,22 @@ namespace Copyleaks.SDK.V3.API.Helpers
 {
     public static class HttpClientRetrayPolicy
     {
-        private static HttpStatusCode[] httpStatusCodesWorthRetrying = {                
-                HttpStatusCode.RequestTimeout, // 408
-                HttpStatusCode.InternalServerError, // 500
-                HttpStatusCode.BadGateway, // 502
-                HttpStatusCode.ServiceUnavailable, // 503
-                HttpStatusCode.GatewayTimeout // 504
-        };
 
-        private static AsyncRetryPolicy<HttpResponseMessage> RetrayPolicy { get; set; }
-
-        static HttpClientRetrayPolicy()
+        static object Just4lock = new object();
+        static AsyncRetryPolicy<HttpResponseMessage> _RetryPolicy;
+        public static AsyncRetryPolicy<HttpResponseMessage> RetryPolicy
         {
-            RetrayPolicy = Policy
-                .HandleResult<HttpResponseMessage>(r => httpStatusCodesWorthRetrying.Contains(r.StatusCode))
-                .WaitAndRetryAsync(new[] {
-                    TimeSpan.FromSeconds(1),
-                    TimeSpan.FromSeconds(5),
-                    TimeSpan.FromSeconds(10)
-                }, (exception, timeSpan) =>
-                {
-                    Console.WriteLine("********************************************");
-                    Console.WriteLine("********************************************");
-                    Console.WriteLine("********************************************");
-                    Console.WriteLine($"{timeSpan} - result {JsonConvert.SerializeObject(exception.Result)}");
-                    Console.WriteLine("********************************************");
-                    Console.WriteLine("********************************************");
-                    Console.WriteLine("********************************************");
-                });
-        }
+            get
+            {
+                if (_RetryPolicy == null)
+                    lock (Just4lock)
+                        if (_RetryPolicy == null)
+                            _RetryPolicy = Policy
+                                .HandleResult<HttpResponseMessage>(response => (int)response.StatusCode >= 500)
+                                  .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(4));
 
-        public static AsyncRetryPolicy<HttpResponseMessage> GetPolicy()
-        {
-            return RetrayPolicy;
+                return _RetryPolicy;
+            }
         }
     }
 }

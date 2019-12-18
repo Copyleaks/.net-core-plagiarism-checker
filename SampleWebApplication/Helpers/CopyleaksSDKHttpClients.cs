@@ -11,8 +11,8 @@ namespace Copyleaks.SDK.Demo.Helpers
 {
     public class CopyleaksSDKHttpClients
     {
-        public const string PRODUCT_EDUCATION = "education-ui";
-        public const string PRODUCT_BUSINESSES = "businesses-ui";
+        public const string PRODUCT_EDUCATION = "education";
+        public const string PRODUCT_BUSINESSES = "businesses";
         private static HttpClient _HttpClient { get; set; }
         private static CopyleaksIdentityApi _IdentityClient { get; set; }
 
