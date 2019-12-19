@@ -42,7 +42,6 @@ namespace Copyleaks.SDK.V3.API.Helpers
 
         public const string apiVersion = "v3";
         #endregion
-
         static ConfigurationManager()
         {
             Configuration = new ConfigurationBuilder()

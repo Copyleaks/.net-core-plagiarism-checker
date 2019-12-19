@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Copyleaks.SDK.V3.API.Helpers
 {
-    public static class HttpClientRetrayPolicy
+    internal static class HttpClientRetrayPolicy
     {
 
         static object Just4lock = new object();

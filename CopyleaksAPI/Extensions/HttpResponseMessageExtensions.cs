@@ -32,19 +32,8 @@ namespace Copyleaks.SDK.V3.API.Extensions
     /// <summary>
     /// Extensions for HttpResponseMessage class
     /// </summary>
-    public static class HttpResponseMessageExtensions
+    internal static class HttpResponseMessageExtensions
     {
-        /// <summary>
-        /// Extract a string from the message body 
-        /// </summary>
-        /// <param name="message">The response message</param>
-        /// <returns>The body of the response as string</returns>
-        public static async Task<string> ExtractStringResultsAsync(this HttpResponseMessage message)
-        {
-            if (!message.IsSuccessStatusCode)
-                throw new CopyleaksHttpException(message);
-            return await message.Content.ReadAsStringAsync().ConfigureAwait(false);
-        }
 
         /// <summary>
         /// Extract type T from the response body
@@ -54,7 +43,7 @@ namespace Copyleaks.SDK.V3.API.Extensions
         /// <returns>A deserialized object from the response</returns>
         public static async Task<T> ExtractJsonResultsAsync<T>(this HttpResponseMessage message)
         {
-            if(!message.IsSuccessStatusCode)
+            if (!message.IsSuccessStatusCode)
                 throw new CopyleaksHttpException(message);
             string json = await message.Content.ReadAsStringAsync().ConfigureAwait(false);
             if (string.IsNullOrEmpty(json))

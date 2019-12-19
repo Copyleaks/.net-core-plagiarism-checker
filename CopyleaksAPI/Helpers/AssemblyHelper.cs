@@ -30,7 +30,7 @@ namespace Copyleaks.SDK.V3.API.Helpers
     /// <summary>
     /// Get Copyleaks SDK version from assembly
     /// </summary>
-    public static class AssemblyHelper
+    internal static class AssemblyHelper
     {
         /// <summary>
         /// Return the version of Copyleaks SDK from assembly

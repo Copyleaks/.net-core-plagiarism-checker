@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Copyleaks.SDK.V3.API.Extensions
 {
-    public static class HttpRequestMessageExtensions
+    internal static class HttpRequestMessageExtensions
     {
         public static void SetupHeaders(this HttpRequestMessage msg, string token = null)
         {

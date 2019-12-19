@@ -67,7 +67,7 @@ namespace Copyleaks.SDK.Demo.Controllers
         {
             var response = new LoginResponse();
             try
-            {
+            {                
                 // Use CopyleaksIdentityApi to aquire a login Token from 
                 Guid temp;
                 var validOrEmptyKey = Guid.TryParse(loginModel.Key, out temp) ? loginModel.Key : Guid.Empty.ToString();
