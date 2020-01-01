@@ -33,7 +33,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
 		public Uri Endpoint { get; set; }
 
 		[JsonProperty("headers")]
-		public string[] Headers { get; set; }
+		public string[,] Headers { get; set; }
 	}
 
 	public class ResultExportTask : ExportTask
