@@ -36,6 +36,13 @@ namespace CopyleaksAPITests
             IdentityClient = new CopyleaksIdentityApi(Client);
             EducationAPIClient = new CopyleaksScansApi(eProduct.Education.ToString().ToLower(), Client);
         }
+
+        [TestMethod]
+        public async Task LOGIN()
+        {
+            var LoginResposne = await IdentityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
+        }
+
         [TestMethod]
         public async Task SUBMIT_FILE_TEST()
         {

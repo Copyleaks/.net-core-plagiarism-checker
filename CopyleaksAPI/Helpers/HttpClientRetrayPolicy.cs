@@ -27,6 +27,11 @@ namespace Copyleaks.SDK.V3.API.Helpers
                                 .Handle<HttpRequestException>()
                                 .OrResult<HttpResponseMessage>(response => (int)response.StatusCode >= 500)
                                   .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(4));
+                //,(ex, ts) =>
+                //{
+                //    Console.WriteLine($"{DateTime.Now.ToString()}:************************Retry attempt*********************");
+                //})
+
 
                 return _RetryPolicy;
             }

@@ -86,8 +86,7 @@ namespace Copyleaks.SDK.V3.API
             else if (string.IsNullOrEmpty(key))
                 throw new ArgumentException("ApiKey is mandatory.", nameof(key));
 
-            string requestUri = $"{this.CopyleaksIdServer}{this.ApiVersion}/account/login/api";
-
+            string requestUri = $"{this.CopyleaksIdServer}{this.ApiVersion}/account/login/api";              
             HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Post, requestUri);
             msg.SetupHeaders();
 
@@ -99,17 +98,24 @@ namespace Copyleaks.SDK.V3.API
 
             msg.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
-            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
+            using (var stream = new MemoryStream())
             {
-                if (!response.IsSuccessStatusCode)
+                var task = Task.Run(async () =>
                 {
-                    throw new CopyleaksHttpException(response);
+                    using (var streamContent = new StreamContent(stream))
+                        return await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false));
+                });
+                    
+                using (var response = await RetryPolicy.ExecuteAsync(() => task).ConfigureAwait(false))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new CopyleaksHttpException(response);
+                    }
+
+                    return await response.ExtractJsonResultsAsync<LoginResponse>().ConfigureAwait(false);
                 }
-
-                return await response.ExtractJsonResultsAsync<LoginResponse>().ConfigureAwait(false);
             }
-
         }
     }
 }

@@ -39,8 +39,8 @@ namespace Copyleaks.SDK.V3.API.Helpers
     {
         public HttpClient Client { get; private set; }
 
-        protected string ApiVersion { get; set; }     
-        
+        protected string ApiVersion { get; set; }
+
         public AsyncRetryPolicy<HttpResponseMessage> RetryPolicy { get; private set; }
 
         /// <summary>

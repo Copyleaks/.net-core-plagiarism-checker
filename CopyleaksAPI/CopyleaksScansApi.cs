@@ -107,16 +107,24 @@ namespace Copyleaks.SDK.V3.API
             HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders(token);
 
-            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
-            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
+            using (var stream = new MemoryStream())
             {
-                if (!response.IsSuccessStatusCode)
+                var task = Task.Run(async () =>
                 {
-                    throw new CopyleaksHttpException(response);
-                }
+                    using (var streamContent = new StreamContent(stream))
+                        return await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false));
+                });
 
-                var credits = await response.ExtractJsonResultsAsync<CountCreditsResponse>().ConfigureAwait(false);
-                return credits.Amount;
+                using (var response = await RetryPolicy.ExecuteAsync(() => task).ConfigureAwait(false))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new CopyleaksHttpException(response);
+                    }
+
+                    var credits = await response.ExtractJsonResultsAsync<CountCreditsResponse>().ConfigureAwait(false);
+                    return credits.Amount;
+                }
             }
         }
 
@@ -129,8 +137,9 @@ namespace Copyleaks.SDK.V3.API
             msg.SetupHeaders(token);
 
             msg.Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
-
-            using (var response = await Client.SendAsync(msg).ConfigureAwait(false))
+            using (var stream = new MemoryStream())
+            using (var streamContent = new StreamContent(stream))
+            using (var response = await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false)).ConfigureAwait(false))
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -208,15 +217,23 @@ namespace Copyleaks.SDK.V3.API
             HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders(token);
 
-            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
-            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
+
+            using (var stream = new MemoryStream())
             {
-                if (!response.IsSuccessStatusCode)
+                var task = Task.Run(async () =>
                 {
-                    throw new CopyleaksHttpException(response);
+                    using (var streamContent = new StreamContent(stream))
+                        return await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false));
+                });
+                using (var response = await RetryPolicy.ExecuteAsync(() => task).ConfigureAwait(false))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new CopyleaksHttpException(response);
+                    }
+                    var progress = await response.ExtractJsonResultsAsync<ProgressResponse>().ConfigureAwait(false);
+                    return progress.Percents;
                 }
-                var progress = await response.ExtractJsonResultsAsync<ProgressResponse>().ConfigureAwait(false);
-                return progress.Percents;
             }
         }
 
@@ -237,12 +254,19 @@ namespace Copyleaks.SDK.V3.API
             msg.SetupHeaders(token);
             msg.Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
-            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
-            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
+            using (var stream = new MemoryStream())
             {
-                if (!response.IsSuccessStatusCode)
+                var task = Task.Run(async () =>
                 {
-                    throw new CopyleaksHttpException(response);
+                    using (var streamContent = new StreamContent(stream))
+                        return await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false));
+                });
+                using (var response = await RetryPolicy.ExecuteAsync(() => task).ConfigureAwait(false))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new CopyleaksHttpException(response);
+                    }
                 }
             }
         }
@@ -268,7 +292,9 @@ namespace Copyleaks.SDK.V3.API
             msg.SetupHeaders(token);
             msg.Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
-            using (var response = await Client.SendAsync(msg).ConfigureAwait(false))
+            using (var stream = new MemoryStream())
+            using (var streamContent = new StreamContent(stream))
+            using (var response = await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false)).ConfigureAwait(false))
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -299,7 +325,9 @@ namespace Copyleaks.SDK.V3.API
             msg.SetupHeaders(token);
             msg.Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
-            using (var response = await Client.SendAsync(msg).ConfigureAwait(false))
+            using (var stream = new MemoryStream())
+            using (var streamContent = new StreamContent(stream))
+            using (var response = await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false)).ConfigureAwait(false))
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -326,14 +354,21 @@ namespace Copyleaks.SDK.V3.API
             var msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders(token);
 
-            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
-            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
+            using (var stream = new MemoryStream())
             {
-                if (!response.IsSuccessStatusCode)
+                var task = Task.Run(async () =>
                 {
-                    throw new CopyleaksHttpException(response);
+                    using (var streamContent = new StreamContent(stream))
+                        return await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false));
+                });
+                using (var response = await RetryPolicy.ExecuteAsync(() => task).ConfigureAwait(false))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new CopyleaksHttpException(response);
+                    }
+                    return await response.ExtractJsonResultsAsync<Result>().ConfigureAwait(false);
                 }
-                return await response.ExtractJsonResultsAsync<Result>().ConfigureAwait(false);
             }
         }
 
@@ -355,14 +390,21 @@ namespace Copyleaks.SDK.V3.API
             var msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders(token);
 
-            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
-            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
+            using (var stream = new MemoryStream())
             {
-                if (!response.IsSuccessStatusCode)
+                var task = Task.Run(async () =>
                 {
-                    throw new CopyleaksHttpException(response);
+                    using (var streamContent = new StreamContent(stream))
+                        return await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false));
+                });
+                using (var response = await RetryPolicy.ExecuteAsync(() => task).ConfigureAwait(false))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new CopyleaksHttpException(response);
+                    }
+                    return await response.ExtractJsonResultsAsync<DownloadResultResponse>().ConfigureAwait(false);
                 }
-                return await response.ExtractJsonResultsAsync<DownloadResultResponse>().ConfigureAwait(false);
             }
         }
 
@@ -383,14 +425,21 @@ namespace Copyleaks.SDK.V3.API
             var msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders(token);
 
-            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
-            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
+            using (var stream = new MemoryStream())
             {
-                if (!response.IsSuccessStatusCode)
+                var task = Task.Run(async () =>
                 {
-                    throw new CopyleaksHttpException(response);
+                    using (var streamContent = new StreamContent(stream))
+                        return await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false));
+                });
+                using (var response = await RetryPolicy.ExecuteAsync(() => task).ConfigureAwait(false))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new CopyleaksHttpException(response);
+                    }
+                    return await response.ExtractJsonResultsAsync<DownloadSourceResponse>().ConfigureAwait(false);
                 }
-                return await response.ExtractJsonResultsAsync<DownloadSourceResponse>().ConfigureAwait(false);
             }
         }
 
@@ -411,16 +460,23 @@ namespace Copyleaks.SDK.V3.API
             var msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders(token);
 
-            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
-            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
+            using (var stream = new MemoryStream())
             {
-                if (!response.IsSuccessStatusCode)
+                var task = Task.Run(async () =>
                 {
-                    throw new CopyleaksHttpException(response);
+                    using (var streamContent = new StreamContent(stream))
+                        return await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false));
+                });
+                using (var response = await RetryPolicy.ExecuteAsync(() => task).ConfigureAwait(false))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new CopyleaksHttpException(response);
+                    }
+                    var reportStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                    reportStream.Seek(0, SeekOrigin.Begin);
+                    return reportStream;
                 }
-                var reportStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                reportStream.Seek(0, SeekOrigin.Begin);
-                return reportStream;
             }
         }
 
@@ -450,7 +506,9 @@ namespace Copyleaks.SDK.V3.API
             msg.SetupHeaders(token);
             msg.Content = new StringContent(JsonConvert.SerializeObject(request), Encoding.UTF8, "application/json");
 
-            using (var response = await Client.SendAsync(msg).ConfigureAwait(false))
+            using (var stream = new MemoryStream())
+            using (var streamContent = new StreamContent(stream))
+            using (var response = await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false)).ConfigureAwait(false))
             {
                 if (!response.IsSuccessStatusCode)
                 {
@@ -469,15 +527,22 @@ namespace Copyleaks.SDK.V3.API
             var msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders();
 
-            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
-            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
+            using (var stream = new MemoryStream())
             {
-                if (!response.IsSuccessStatusCode)
+                var task = Task.Run(async () =>
                 {
-                    throw new CopyleaksHttpException(response);
-                }
+                    using (var streamContent = new StreamContent(stream))
+                        return await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false));
+                });
+                using (var response = await RetryPolicy.ExecuteAsync(() => task).ConfigureAwait(false))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new CopyleaksHttpException(response);
+                    }
 
-                return await response.ExtractJsonResultsAsync<SupportedTypesResult>().ConfigureAwait(false);
+                    return await response.ExtractJsonResultsAsync<SupportedTypesResult>().ConfigureAwait(false);
+                }
             }
         }
 
@@ -491,15 +556,22 @@ namespace Copyleaks.SDK.V3.API
             var msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders();
 
-            var request = Client.SendAsync(await msg.CloneAsync().ConfigureAwait(false));
-            using (var response = await RetryPolicy.ExecuteAsync(() => request).ConfigureAwait(false))
+            using (var stream = new MemoryStream())
             {
-                if (!response.IsSuccessStatusCode)
+                var task = Task.Run(async () =>
                 {
-                    throw new CopyleaksHttpException(response);
-                }
+                    using (var streamContent = new StreamContent(stream))
+                        return await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false));
+                });
+                using (var response = await RetryPolicy.ExecuteAsync(() => task).ConfigureAwait(false))
+                {
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new CopyleaksHttpException(response);
+                    }
 
-                return await response.ExtractJsonResultsAsync<string[]>().ConfigureAwait(false);
+                    return await response.ExtractJsonResultsAsync<string[]>().ConfigureAwait(false);
+                }
             }
         }
     }
