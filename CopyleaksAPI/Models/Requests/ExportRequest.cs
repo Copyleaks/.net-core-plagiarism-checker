@@ -38,7 +38,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
 
 	public class ResultExportTask : ExportTask
 	{
-		[JsonProperty("resultId")]
+		[JsonProperty("id")]
 		public string ResultId { get; set; }
 	}
 }
