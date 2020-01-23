@@ -49,6 +49,11 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         [JsonProperty("htmlTemplate")]
         public bool HtmlTemplate { get; set; } = false;
 
+        /// <summary>
+        /// Exclude table of contents from the scan. 
+        /// </summary>
+        [JsonProperty("tableOfContents")]
+        public bool TableOfContents { get; set; } = false;
     }
 
     /// <summary>
