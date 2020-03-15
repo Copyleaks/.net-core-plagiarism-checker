@@ -44,6 +44,21 @@ namespace CopyleaksAPITests
         }
 
         [TestMethod]
+        public async Task USER_USAGE_TEST()
+        {
+            var LoginResposne = await IdentityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
+            var authToken = LoginResposne.Token;
+            var productType = "education";
+            DateTime start = new DateTime(2020, 3, 12);
+            start.ToString("dd-MM-yyyy");
+            DateTime end = new DateTime(2020, 3, 15);
+            end.ToString("dd-MM-yyyy");
+
+            var response = await EducationAPIClient.GetUserUsageAsync(start, end, productType, authToken).ConfigureAwait(false);
+        }
+
+
+        [TestMethod]
         public async Task SUBMIT_FILE_TEST()
         {
             var LoginResposne = await IdentityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);

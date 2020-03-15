@@ -409,6 +409,49 @@ namespace Copyleaks.SDK.V3.API
         }
 
         /// <summary>
+        /// Get user usage as a stream.
+        /// </summary>
+        /// <param name="startDate">The start date of wanted usage history.</param>
+        /// <param name="endDate">The end date of wanted usage history.</param>
+        /// <param name="productType">The product type to user: Education or Business.</param>
+        /// <exception cref="HttpRequestException">In case of reject from the server.</exception>
+        /// <returns>Returns user usage data as a stream.</returns>
+        /// 
+        public async Task<Stream> GetUserUsageAsync(DateTime startDate, DateTime endDate, string productType, string token)
+        {
+            if (startDate == null)
+                throw new ArgumentException("Mandatory", nameof(startDate));
+            if (endDate == null)
+                throw new ArgumentException("Mandatory", nameof(endDate));
+            if (string.IsNullOrEmpty(token))
+                throw new ArgumentException("Mandatory", nameof(token));
+            if (string.IsNullOrEmpty(productType))
+                throw new ArgumentException("Mandatory", nameof(productType));
+
+            Uri url = new Uri($"{this.CopyleaksApiServer}v3/{productType}/usages/history" +
+                $"?start={startDate.ToString("dd-MM-yyyy")}" +
+                $"&end={endDate.ToString("dd-MM-yyyy")}");
+
+            HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Get, url);
+            msg.SetupHeaders(token);
+
+            using (var memoryStream = new MemoryStream())
+            {
+                var task = Task.Run(async () =>
+                {
+                    using (var streamContent = new StreamContent(memoryStream))
+                        return await Client.SendAsync(await msg.CloneAsync(memoryStream, streamContent).ConfigureAwait(false));
+                });
+                using (var response = await RetryPolicy.ExecuteAsync(() => task).ConfigureAwait(false))
+                {
+                    if (!response.IsSuccessStatusCode)
+                        throw new CopyleaksHttpException(response);
+                    return await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                }
+            }
+        }
+
+        /// <summary>
         /// Get the your source content comparison report 
         /// </summary>
         /// <param name="scanId">The scan id</param>
