@@ -417,7 +417,7 @@ namespace Copyleaks.SDK.V3.API
         /// <exception cref="HttpRequestException">In case of reject from the server.</exception>
         /// <returns>Returns user usage data as a stream.</returns>
         /// 
-        public async Task<Stream> GetUserUsageAsync(DateTime startDate, DateTime endDate, string productType, string token)
+        public async Task<Stream> GetUserUsageAsync(DateTime startDate, DateTime endDate, string token)
         {
             if (startDate == null)
                 throw new ArgumentException("Mandatory", nameof(startDate));
@@ -425,10 +425,8 @@ namespace Copyleaks.SDK.V3.API
                 throw new ArgumentException("Mandatory", nameof(endDate));
             if (string.IsNullOrEmpty(token))
                 throw new ArgumentException("Mandatory", nameof(token));
-            if (string.IsNullOrEmpty(productType))
-                throw new ArgumentException("Mandatory", nameof(productType));
 
-            Uri url = new Uri($"{this.CopyleaksApiServer}v3/{productType}/usages/history" +
+            Uri url = new Uri($"{this.CopyleaksApiServer}v3/{this.Product}/usages/history" +
                 $"?start={startDate.ToString("dd-MM-yyyy")}" +
                 $"&end={endDate.ToString("dd-MM-yyyy")}");
 
