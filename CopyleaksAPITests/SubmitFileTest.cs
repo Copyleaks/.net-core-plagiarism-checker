@@ -50,13 +50,22 @@ namespace CopyleaksAPITests
             var LoginResposne = await IdentityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
             var authToken = LoginResposne.Token;
 
-            DateTime start = new DateTime(2020, 3, 12);
+            DateTime start = new DateTime(2020, 3, 11);
             start.ToString("dd-MM-yyyy");
             DateTime end = new DateTime(2020, 3, 15);
             end.ToString("dd-MM-yyyy");
 
-            var stream = new MemoryStream();
-            await EducationAPIClient.GetUserUsageAsync(start, end, stream, authToken).ConfigureAwait(false);
+            using (var stream = new MemoryStream())
+            {
+                await EducationAPIClient.GetUserUsageAsync(start, end, stream, authToken).ConfigureAwait(false);
+
+                using (var sr = new StreamReader(stream))
+                {
+                    stream.Seek(0, SeekOrigin.Begin);
+                    var csv = await sr.ReadToEndAsync();
+                    Console.WriteLine(csv);
+                }
+            }
         }
 
 

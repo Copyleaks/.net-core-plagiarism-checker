@@ -444,7 +444,9 @@ namespace Copyleaks.SDK.V3.API
                 {
                     if (!response.IsSuccessStatusCode)
                         throw new CopyleaksHttpException(response);
-                    stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                    var resultStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                    resultStream.Seek(0, SeekOrigin.Begin);
+                   await resultStream.CopyToAsync(stream).ConfigureAwait(false);
                 }
             }
         }
