@@ -6,6 +6,7 @@ using Copyleaks.SDK.V3.API.Models.Types;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Polly;
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -48,13 +49,14 @@ namespace CopyleaksAPITests
         {
             var LoginResposne = await IdentityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
             var authToken = LoginResposne.Token;
-            var productType = "education";
+
             DateTime start = new DateTime(2020, 3, 12);
             start.ToString("dd-MM-yyyy");
             DateTime end = new DateTime(2020, 3, 15);
             end.ToString("dd-MM-yyyy");
 
-            var response = await EducationAPIClient.GetUserUsageAsync(start, end, productType, authToken).ConfigureAwait(false);
+            var stream = new MemoryStream();
+            await EducationAPIClient.GetUserUsageAsync(start, end, stream, authToken).ConfigureAwait(false);
         }
 
 

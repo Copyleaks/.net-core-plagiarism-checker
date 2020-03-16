@@ -417,7 +417,7 @@ namespace Copyleaks.SDK.V3.API
         /// <exception cref="HttpRequestException">In case of reject from the server.</exception>
         /// <returns>Returns user usage data as a stream.</returns>
         /// 
-        public async Task<Stream> GetUserUsageAsync(DateTime startDate, DateTime endDate, string token)
+        public async Task GetUserUsageAsync(DateTime startDate, DateTime endDate, Stream stream, string token)
         {
             if (startDate == null)
                 throw new ArgumentException("Mandatory", nameof(startDate));
@@ -444,7 +444,7 @@ namespace Copyleaks.SDK.V3.API
                 {
                     if (!response.IsSuccessStatusCode)
                         throw new CopyleaksHttpException(response);
-                    return await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                    stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                 }
             }
         }
