@@ -38,5 +38,8 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         [JsonProperty("exclude")]
         public Exclude Exclude { get; set; } = new Exclude();
 
+        [JsonProperty("pdf")]
+        public ReportCustomization ReportSection { get; set; } = new ReportCustomization();
+
     }
 }
