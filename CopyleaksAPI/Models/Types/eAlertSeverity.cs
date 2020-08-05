@@ -22,22 +22,25 @@
  SOFTWARE.
 ********************************************************************************/
 
-using Newtonsoft.Json;
+using System.ComponentModel;
 
-namespace Copyleaks.SDK.V3.API.Models.Responses.Result
+namespace Copyleaks.SDK.V3.API.Models.Types
 {
-	/// <summary>
-	/// The scan result
-	/// </summary>
-	public class Result : BaseResponse
+	public enum eAlertSeverity
 	{
-		[JsonProperty("scannedDocument")]
-		public ScannedDocumentSection ScannedDocument { get; set; }
+        [Description("DEBUG")]
+        Debug = 0,
 
-		[JsonProperty("results")]
-		public ResultsSection Results { get; set; }
+        [Description("INFO")]
+        Info = 1,
 
-		[JsonProperty("notifications")]
-		public NotificationSection Notifications { get; set; }
-	}
+        [Description("WARNING")]
+        Warning = 2,
+
+        [Description("ERROR")]
+        Error = 3,
+
+        [Description("CRITICAL")]
+        Critical = 4
+    }
 }

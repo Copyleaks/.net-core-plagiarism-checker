@@ -26,18 +26,9 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.Result
 {
-	/// <summary>
-	/// The scan result
-	/// </summary>
-	public class Result : BaseResponse
+	public class NotificationSection
 	{
-		[JsonProperty("scannedDocument")]
-		public ScannedDocumentSection ScannedDocument { get; set; }
-
-		[JsonProperty("results")]
-		public ResultsSection Results { get; set; }
-
-		[JsonProperty("notifications")]
-		public NotificationSection Notifications { get; set; }
+		[JsonProperty("alerts")]
+		public AlertNotification[] Alerts { get; set; }
 	}
 }
