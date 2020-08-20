@@ -6,6 +6,7 @@ using Copyleaks.SDK.V3.API.Models.Types;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Polly;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -17,9 +18,9 @@ namespace CopyleaksAPITests
     [TestClass]
     public class SubmitFileTest
     {
-        public const string USER_EMAIL = "**Your Email**";
-        public const string USER_KEY = "**Your Key**";
-        public const string WebhooksHost = "**Webhooks host origin**";
+        public const string USER_EMAIL = "ora@copyleaks.com";
+        public const string USER_KEY = "F3B5C0EA-89DF-4FCB-8291-CB1DAAC789CC";
+        public const string WebhooksHost = "https://glacial-refuge-96501.herokuapp.com/r4j3yir4";
 
         private HttpClient Client { get; set; }
         private CopyleaksIdentityApi IdentityClient { get; set; }
@@ -137,13 +138,14 @@ namespace CopyleaksAPITests
             //           The Result of the request will be returned to the 'Completion' callback
             // 3. Index - Upload the submitted text to Copyleaks internal database to be compared against feture scans
             //            The Result of the request will be returned to the 'Completion' callback
-            scanProperties.Action = eSubmitAction.Scan;
+            scanProperties.Action = eSubmitAction.Index;
             scanProperties.Webhooks = new Webhooks
             {
                 // Copyleaks API will POST the scan results to the 'completed' callback
                 // See 'CompletedProcess' method for more details
                 Status = new Uri($"{WebhooksHost}/{scanId}/{{status}}")
             };
+
             // Sandbox mode does not take any credits
             scanProperties.Sandbox = true;
 
