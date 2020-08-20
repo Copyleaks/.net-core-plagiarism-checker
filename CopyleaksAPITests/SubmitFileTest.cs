@@ -18,9 +18,9 @@ namespace CopyleaksAPITests
     [TestClass]
     public class SubmitFileTest
     {
-        public const string USER_EMAIL = "ora@copyleaks.com";
-        public const string USER_KEY = "F3B5C0EA-89DF-4FCB-8291-CB1DAAC789CC";
-        public const string WebhooksHost = "https://glacial-refuge-96501.herokuapp.com/r4j3yir4";
+        public const string USER_EMAIL = "<EMAIL>";
+        public const string USER_KEY = "<API KEY>";
+        public const string WebhooksHost = "<WEBHOOK>";
 
         private HttpClient Client { get; set; }
         private CopyleaksIdentityApi IdentityClient { get; set; }
