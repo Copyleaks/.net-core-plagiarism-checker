@@ -82,6 +82,9 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         [JsonProperty("author")]
         public AuthorEntity Author { get; set; } = new AuthorEntity();
 
+        [JsonProperty("indexing")]
+        public IndexingEntity Indexing { get; set; } = new IndexingEntity();
+
         /// <summary>
         /// Control the level of plagiarism sensitivity that will be identified according to the speed of the scan. If you prefer a faster scan with the results that contains the highest amount of plagiarism choose 1, and if a slower, more comprehensive scan, that will also detect the smallest instances choose 5.  
         /// Range between 1 (faster ) to 5 (slower but more comprehensive)
