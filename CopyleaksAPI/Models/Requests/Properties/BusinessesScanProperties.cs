@@ -41,5 +41,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         [JsonProperty("pdf")]
         public ReportCustomization ReportSection { get; set; } = new ReportCustomization();
 
+        [JsonProperty("indexing")]
+        public IndexingEntity Indexing { get; set; } = new IndexingEntity();
     }
 }
