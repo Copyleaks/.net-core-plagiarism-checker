@@ -36,5 +36,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Download
 
         [JsonProperty("text")]
         public FullTextSourceSubVersionSection Text { get; set; }
+        [JsonProperty("version")]
+        public int Version { get; set; }
     }
 }
