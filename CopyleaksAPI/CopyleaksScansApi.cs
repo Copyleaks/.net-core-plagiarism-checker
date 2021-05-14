@@ -194,9 +194,7 @@ namespace Copyleaks.SDK.V3.API
             if (documentModel.Base64 == null)
                 throw new ArgumentException("Base64 is mandatory.", nameof(documentModel.Base64));
             else if (documentModel.Filename == null)
-                throw new ArgumentException("Filename is mandatory.", nameof(documentModel.Filename));
-            else if (documentModel.Language == null)
-                throw new ArgumentException("Language is mandatory.", nameof(documentModel.Language));
+                throw new ArgumentException("Filename is mandatory.", nameof(documentModel.Filename));            
 
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/submit/ocr/{scanId}";
             await SubmitAsync(documentModel, requestUri, token).ConfigureAwait(false);
