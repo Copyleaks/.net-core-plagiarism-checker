@@ -53,6 +53,12 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
         [JsonProperty("matchedWords")]
         public uint MatchedWords { get; set; }
 
+        /// <summary>
+        /// Result meta data
+        /// </summary>
+        [JsonProperty("metadata")]
+        public ResultMetaData MetaData { get; set; }
+
     }
 
 }

@@ -27,38 +27,44 @@ using System;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.Result
 {
-    /// <summary>
-    /// Details about the scanned document
-    /// </summary>
-    public class ScannedDocumentSection
-    {
-        /// <summary>
-        /// A unique scan id provided by you.
-        /// </summary>
-        [JsonProperty("scanId")]
-        public string ScanId { get; set; }
-        /// <summary>
-        /// Total number of excluded words in the document
-        /// </summary>
-        [JsonProperty("totalWords")]
-        public uint TotalWords { get; set; }
+	/// <summary>
+	/// Details about the scanned document
+	/// </summary>
+	public class ScannedDocumentSection
+	{
+		/// <summary>
+		/// A unique scan id provided by you.
+		/// </summary>
+		[JsonProperty("scanId")]
+		public string ScanId { get; set; }
+		/// <summary>
+		/// Total number of excluded words in the document
+		/// </summary>
+		[JsonProperty("totalWords")]
+		public uint TotalWords { get; set; }
 
-        /// <summary>
-        /// Total number of words in the document
-        /// </summary>
-        [JsonProperty("totalExcluded")]
-        public uint TotalExcluded { get; set; }
+		/// <summary>
+		/// Total number of words in the document
+		/// </summary>
+		[JsonProperty("totalExcluded")]
+		public uint TotalExcluded { get; set; }
 
-        /// <summary>
-        /// The amount of credits that will be consumed by the scan
-        /// </summary>
-        [JsonProperty("credits")]
-        public uint Credits { get; set; }
+		/// <summary>
+		/// The amount of credits that will be consumed by the scan
+		/// </summary>
+		[JsonProperty("credits")]
+		public uint Credits { get; set; }
 
-        /// <summary>
-        /// The amount of credits that will be consumed by the scan
-        /// </summary>
-        [JsonProperty("creationTime")]
-        public DateTime CreationTime { get; set; }
-    }
+		/// <summary>
+		/// The amount of credits that will be consumed by the scan
+		/// </summary>
+		[JsonProperty("creationTime")]
+		public DateTime CreationTime { get; set; }
+
+		/// <summary>
+		/// Scanned document meta data
+		/// </summary>
+		[JsonProperty("metadata")]
+		public ResultMetaData MetaData { get; set; }
+	}
 }
