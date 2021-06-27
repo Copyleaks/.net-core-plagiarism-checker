@@ -30,5 +30,8 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
 
 		[JsonProperty("lastModificationDate")]
 		public string LastModificationDate { get; set; }
+		
+		[JsonProperty("submittedBy")]
+		public string SubmittedBy { get; set; }
 	}
 }
