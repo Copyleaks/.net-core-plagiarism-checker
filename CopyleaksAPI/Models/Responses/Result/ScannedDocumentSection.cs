@@ -56,6 +56,12 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
 		public uint Credits { get; set; }
 
 		/// <summary>
+		/// The amount of credits that will expected for full scan
+		/// </summary>
+		[JsonProperty("expectedCredits")]
+		public uint ExpectedCredits { get; set; }
+
+		/// <summary>
 		/// The amount of credits that will be consumed by the scan
 		/// </summary>
 		[JsonProperty("creationTime")]
