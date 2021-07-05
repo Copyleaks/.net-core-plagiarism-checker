@@ -15,10 +15,10 @@
     <PackageIconUrl>https://copyleaks.com/images/nuget/copyleaks-icon-32.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/Copyleaks/.net-core-plagiarism-checker</RepositoryUrl>
     <PackageTags>plagiarism copyright copyrights Copyleaks infringement checker detector</PackageTags>
-    <Version>1.8.4</Version>
+    <Version>1.8.5</Version>
     <PackageId>Copyleaks</PackageId>
-    <AssemblyVersion>1.8.3.0</AssemblyVersion>
-    <FileVersion>1.8.3.0</FileVersion>
+    <AssemblyVersion>1.8.5.0</AssemblyVersion>
+    <FileVersion>1.8.5.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
