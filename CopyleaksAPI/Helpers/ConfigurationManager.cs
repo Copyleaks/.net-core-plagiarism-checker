@@ -34,9 +34,9 @@ namespace Copyleaks.SDK.V3.API.Helpers
     public static class ConfigurationManager
     {
         #region Constants
-        public const string ApiEndPoint = "https://api.copyleaks.com/";
+        public static string ApiEndPoint = "https://api.copyleaks.com/";
 
-        public const string IdEndPoint = "https://id.copyleaks.com/";
+        public static string IdEndPoint = "https://id.copyleaks.com/";
 
         public const string RequestsTimeout = "60000";
 

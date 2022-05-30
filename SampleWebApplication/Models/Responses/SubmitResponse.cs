@@ -29,7 +29,6 @@ namespace Copyleaks.SDK.Demo.Models.Responses
         public string ScanId { get; set; }
 
         public string Token { get; set; }
-        public uint EducationCredits { get; set; }
-        public uint BusinessesCredits { get; set; }
+        public uint ClientCredits { get; set; }
     }
 }

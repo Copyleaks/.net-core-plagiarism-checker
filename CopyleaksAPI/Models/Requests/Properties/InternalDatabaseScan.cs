@@ -32,12 +32,12 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         /// Check against documents I previously submitted
         /// </summary>
         [JsonProperty("includeMySubmissions")]
-        public bool IncludeMySubmissions { get; set; } = true;
+        public bool IncludeMySubmissions { get; set; } = false;
 
         /// <summary>
         /// Check against documents other users previously submitted
         /// </summary>
         [JsonProperty("includeOthersSubmissions")]
-        public bool IncludeOthersSubmissions { get; set; } = true;
+        public bool IncludeOthersSubmissions { get; set; } = false;
     }
 }

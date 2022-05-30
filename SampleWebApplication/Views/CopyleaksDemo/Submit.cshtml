@@ -14,8 +14,7 @@
 <div class="row ">
     <div class="col-xs-12">
         <div class="ok-message">
-            <h4>Education Credits: @Model.EducationCredits</h4>
-            <h4>Businesses Credits: @Model.BusinessesCredits</h4>
+            <h4>Credits: @Model.ClientCredits</h4>
         </div>
     </div>
     <div class="col-xs-12">
@@ -49,14 +48,6 @@
                         <textarea rows="4" name="token" id="token" readonly class="form-control">@Model.Token</textarea>
                     </div>
                     <hr />
-                    <div style="margin-top: 20px;">
-                        <label>Product:</label>
-                        @Html.DropDownList("Product", new SelectList(
-                                        new eProduct[]{
-                                        eProduct.Education,
-                                        eProduct.Businesses
-                                        }), new { @class = "form-control" })
-                    </div>
                     <div style="margin-top: 20px;">
                         <label for="text">Webhook status event</label>
                         <input type="url" name="webhookHost" placeholder="Example: https://yoursite.com/webhook/{STATUS}" class="form-control"/>

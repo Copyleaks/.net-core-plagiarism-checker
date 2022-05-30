@@ -76,16 +76,13 @@ namespace Copyleaks.SDK.Demo.Controllers
                 var identity = CopyleaksSDKHttpClients.IdentityClient();
                 var loginResponse = await identity.LoginAsync(loginModel.Email, validOrEmptyKey).ConfigureAwait(false);
 
-                var educationApi = CopyleaksSDKHttpClients.APIClient(CopyleaksSDKHttpClients.PRODUCT_EDUCATION);
-                var businessesApi = CopyleaksSDKHttpClients.APIClient(CopyleaksSDKHttpClients.PRODUCT_BUSINESSES);
-                var educationCredits = await educationApi.CreditBalanceAsync(loginResponse.Token).ConfigureAwait(false);
-                var businessesCredits = await businessesApi.CreditBalanceAsync(loginResponse.Token).ConfigureAwait(false);
+                var clientApi = CopyleaksSDKHttpClients.APIClient();
+                var clientCredits = await clientApi.CreditBalanceAsync(loginResponse.Token).ConfigureAwait(false);
 
                 var submitResponse = new SubmitResponse()
                 {
                     Token = loginResponse.Token,
-                    EducationCredits = educationCredits,
-                    BusinessesCredits = businessesCredits
+                    ClientCredits = clientCredits,
                 };
 
                 return View("Submit", submitResponse);
@@ -116,7 +113,7 @@ namespace Copyleaks.SDK.Demo.Controllers
 
             try
             {
-                using (var api = new CopyleaksScansApi(submitModel.Product))
+                using (var api = new CopyleaksScansApi())
                 {
                     // Submit a file for scan in https://api.copyleaks.com
                     await api.SubmitFileAsync(scanId, new FileDocument
@@ -125,7 +122,7 @@ namespace Copyleaks.SDK.Demo.Controllers
                         Base64 = TextToBase64(submitModel.Text),
                         // The file name is it will appear in the scan result
                         Filename = "text.txt",
-                        PropertiesSection = GetScanPropertiesByProduct(scanId, submitModel)
+                        PropertiesSection = GetScanProperties(scanId, submitModel)
                     },
                     submitModel.Token).ConfigureAwait(false);
                 }
@@ -146,13 +143,9 @@ namespace Copyleaks.SDK.Demo.Controllers
             return View(response);
         }
 
-        private ScanProperties GetScanPropertiesByProduct(string scanId, SubmitModel submitModel)
+        private ScanProperties GetScanProperties(string scanId, SubmitModel submitModel)
         {
-            ScanProperties scanProperties;
-            if (submitModel.Product == eProduct.Businesses)
-                scanProperties = new BusinessesScanProperties();
-            else
-                scanProperties = new EducationScanProperties();
+            ScanProperties scanProperties = new ClientScanProperties();
 
             // The action to perform
             // Possible values:

@@ -28,20 +28,20 @@ using System;
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
     /// <summary>
-    /// The scan request properties for requests to Education product
+    /// The scan request properties for requests
     /// </summary>
-    public class EducationScanProperties : ScanProperties
+    public class ClientScanProperties : ScanProperties
     {        
         [JsonProperty("scanning")]
-        public EducationProtectionLayers ProtectionLayersSection { get; set; } = new EducationProtectionLayers();
+        public ClientProtectionLayers ProtectionLayersSection { get; set; } = new ClientProtectionLayers();
 
         [JsonProperty("exclude")]
-        public EducationExclude Exclude { get; set; } = new EducationExclude();
+        public ClientExclude Exclude { get; set; } = new ClientExclude();
 
         [JsonProperty("pdf")]
         public ReportCustomization ReportSection { get; set; } = new ReportCustomization();
 
         [JsonProperty("indexing")]
-        public EducationIndexingEntity Indexing { get; set; } = new EducationIndexingEntity();
+        public ClientIndexingEntity Indexing { get; set; } = new ClientIndexingEntity();
     }
 }

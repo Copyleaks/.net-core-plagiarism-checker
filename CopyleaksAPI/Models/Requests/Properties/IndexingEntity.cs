@@ -12,7 +12,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		public Repository[] Repositories { get; set; }
 	}
 
-	public class EducationIndexingEntity : IndexingEntity
+	public class ClientIndexingEntity : IndexingEntity
 	{
 		/// <summary>
 		/// The scanned document will be indexed to the Copyleaks internal database.

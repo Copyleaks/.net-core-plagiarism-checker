@@ -28,11 +28,11 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace SampleWebApplication
 {
-    public class Program
+	public class Program
     {
         public static void Main(string[] args)
         {
-            ResultFile.CreateResultDirectory();
+			ResultFile.CreateResultDirectory();
             CreateWebHostBuilder(args).Build().Run();
         }
 
