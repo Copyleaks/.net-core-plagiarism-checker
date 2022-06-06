@@ -140,6 +140,16 @@ public ActionResult NewResultWebhook([FromRoute]string scanId, [FromBody] NewRes
 }
 </pre>
 
+<p>To change the Identity server URI (default:"https://id.copyleaks.com"):</p>
+<pre>
+ConfigurationManager.IdEndPoint = "<your identity server URI>";
+</pre>
+
+<p>To change the API server URI (default:"https://api.copyleaks.com"):</p>
+<pre>
+ConfigurationManager.ApiEndPoint = "<your API server URI>";
+</pre>
+
 <h3>Dependencies:</h3>
 <ul>
 <li><a href="https://dotnet.microsoft.com/download/dotnet-core/2.0">.Net Core 2.0</a></li>
