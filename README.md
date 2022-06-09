@@ -23,74 +23,17 @@ Install-Package Copyleaks
 </ol>
 <h3>Signing Up and Getting Your API Key</h3>
  <p>To use the Copyleaks API you need to be a registered user. Signing up is quick and free of charge.</p>
- <p><a href="https://copyleaks.com/Account/Register">Signup</a> to Copyleaks and confirm your account by clicking the link on the confirmation email. Generate your personal API key on your dashboard (<a href="https://api.copyleaks.com/businessesapi">Businesses dashboard/</a><a href="https://api.copyleaks.com/academicapi">Academic dashboard/</a>) under 'Access Keys'. </p>
+ <p><a href="https://app.copyleaks.com/signup">Signup</a> to Copyleaks and confirm your account by clicking the link on the confirmation email. Generate your personal API key on your dashboard (<a href="https://api.copyleaks.com/dashboard">dashboard/</a>) under 'API Access Credentials'. </p>
  <p>For more information check out our <a href="https://api.copyleaks.com/documentation/v3">API guide</a>.</p>
 <h3>Example</h3>
 
 <p>The Copyleaks system architecture was built to support the asynchronous model.<br>
 The asynchronous model allows you to get notified immediately when your scan status changes, without having to call any other methods.<br>
 For more details see: <a href="https://api.copyleaks.com/documentation/v3/webhooks">webhooks</a> and <a href="https://api.copyleaks.com/documentation/v3/activities/single-file-scan">single file scan</a></p>
-<p>Submitting a scan:</p>
-<pre>
-using Copyleaks.SDK.V3.API;
-using Copyleaks.SDK.V3.API.Models.Callbacks;
-using Copyleaks.SDK.V3.API.Models.Requests;
-using Copyleaks.SDK.V3.API.Models.Requests.Properties;
-using Copyleaks.SDK.V3.API.Models.Responses;
-using Copyleaks.SDK.V3.API.Models.Types;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading.Tasks;
-using ...
 
+See the [SubmittingScanExample.cs](https://github.com/Copyleaks/.net-core-plagiarism-checker/blob/master/CopyleaksAPITests/SubmitFileTest.cs) file.
 
-#region  Acquiring an API token
-LoginResponse loginResponse;
-using (var id = new CopyleaksIdentityApi())
-{
-    loginResponse = await id.LoginAsync(email, apiKey);
-}
-#endregion
-
-
-using (var api = new CopyleaksScansApi(eProduct.Businesses, loginResponse.Token))
-{
-    #region Checking account balance
-    var creditBalance = await api.CreditBalanceAsync();
-    Console.WriteLine($"You have {creditBalance} credits");
-    #endregion
-
-    #region Submitting a file for plagiarism detection
-    string fileName = "myFile.txt";
-    string filePath = $"/path/to/file/{fileName}";
-    // Convert the file to base64 string
-    string base64 = Convert.ToBase64String(await File.ReadAllBytesAsync(filePath));
-    string scanId = Guid.NewGuid().ToString();
-    api.SubmitFileAsync(scanId, new FileDocument {
-        // A base64 data string of a file.
-        // If you would like to scan plain text, encode it as base64 and submit it.
-        Base64 = base64,
-        // The name of the file as it will appear in the Copyleaks scan report
-        // Make sure to include the right extension for your filetype.
-        Filename = fileName,
-
-        PropertiesSection = new EducationScanProperties
-        {
-            // You can test the integration with the Copyleaks API for free using the sandbox mode.
-            Sandbox = true,
-            // Register to receive asynchronous notifications
-            Webhooks = new Webhooks
-            {
-                // Triggered on every new result
-                NewResult = new Uri($"http://webhook.url.com/results/{scanId}"),
-                // Triggerd on every status change, i.e: completed, error, creditsChecked , indexed
-                Status = new Uri($"http://webhook.url.com/{{STATUS}}/{scanId}"),
-            },
-                        
-        }
-    }).Wait();
-    #endregion
-</pre>
+You can run it as a test with [Program.cs](https://github.com/Copyleaks/.net-core-plagiarism-checker/blob/master/SampleWebApplication/Program.cs) file which found in [SampleWebApplication](https://github.com/Copyleaks/.net-core-plagiarism-checker/tree/master/SampleWebApplication) directory.
 
 <p>Waiting for webhooks:</p>
 
