@@ -121,28 +121,30 @@ namespace CopyleaksAPITests
 
         private ScanProperties GetScanProperties(string scanId)
         {
-            ScanProperties scanProperties = new ClientScanProperties();
-            
-            // The action to perform
-            // Possible values:
-            // 1. checkCredits - return the number of credits that will be consumed by the scan.
-            //                   The Result of the request will be returned to the 'Completion' callback
-            // 2. Scan - Scan the submitted text
-            //           The Result of the request will be returned to the 'Completion' callback
-            // 3. Index - Upload the submitted text to Copyleaks internal database to be compared against feture scans
-            //            The Result of the request will be returned to the 'Completion' callback
-            scanProperties.Action = eSubmitAction.Index;
-            scanProperties.Webhooks = new Webhooks
+            ClientScanProperties clientScanProperties = new ClientScanProperties();
+
+			// The action to perform
+			// Possible values:
+			// 1. checkCredits - return the number of credits that will be consumed by the scan.
+			//                   The Result of the request will be returned to the 'Completion' callback
+			// 2. Scan - Scan the submitted text
+			//           The Result of the request will be returned to the 'Completion' callback
+			// 3. Index - Upload the submitted text to Copyleaks internal database to be compared against feture scans
+			//            The Result of the request will be returned to the 'Completion' callback
+			clientScanProperties.Action = eSubmitAction.Scan;
+			clientScanProperties.Webhooks = new Webhooks
             {
                 // Copyleaks API will POST the scan results to the 'completed' callback
                 // See 'CompletedProcess' method for more details
                 Status = new Uri($"{WebhooksHost}/{scanId}/{{status}}")
             };
 
-            // Sandbox mode does not take any credits
-            scanProperties.Sandbox = true;
+			// Sandbox mode does not take any credits
+			clientScanProperties.Sandbox = true;
 
-            return scanProperties;
+			clientScanProperties.ReportSection.Create = true;
+
+			return clientScanProperties;
         }
     }
 }

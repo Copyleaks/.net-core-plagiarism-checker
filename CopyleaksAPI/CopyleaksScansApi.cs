@@ -366,7 +366,7 @@ namespace Copyleaks.SDK.V3.API
                 throw new ArgumentException("Token is mandatory", nameof(token));
             }
 
-            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/downloads/scans/results/{resultId}";
+            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/downloads/{scanId}/results/{resultId}";
             var msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders(token);
 
