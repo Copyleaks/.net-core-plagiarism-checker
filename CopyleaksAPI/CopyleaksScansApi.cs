@@ -49,48 +49,30 @@ namespace Copyleaks.SDK.V3.API
     /// </summary>
     public class CopyleaksScansApi : CopyleaksBase
     {
-        /// <summary>
-        /// The product for scanning the documents
-        /// </summary>
-        public string Product { get; private set; }
 
         public string CopyleaksApiServer { get; private set; }
 
         /// <summary>
         /// Conection to Copyleaks scan API
         /// </summary>
-        /// <param name="product">The product for scanning the documents</param>
-        /// <param name="token">Login Token, aquire a login token by invoking by using `CopyleaksIdentityApi.LoginAsync`</param>
-        /// <param name="clientCertificate">Optional Client certificate to be checked against.
-        /// Configure you client's certificate at https://copyleaks.com/Manage </param>
-        public CopyleaksScansApi(eProduct product, X509Certificate2 clientCertificate = null) : this(product.ToString().ToLower(), clientCertificate) { }
-
-        /// <summary>
-        /// Conection to Copyleaks scan API
-        /// </summary>
-        /// <param name="product">The product for scanning the documents</param>
-        /// <param name="token">Login Token, aquire a login token by invoking by using `Copyle
         /// <param name="client">Override the underlying http client with custom settings</param>
-        public CopyleaksScansApi(string product, HttpClient client) : base(client)
+        public CopyleaksScansApi(HttpClient client) : base(client)
         {
-            SetUpService(product);
+            SetUpService();
         }
 
         /// <summary>
         /// Conection to Copyleaks scan API
         /// </summary>
-        /// <param name="product">The product for scanning the documents</param>
-        /// <param name="token">Login Token, aquire a login token by invoking by using `CopyleaksIdentityApi.LoginAsync`</param>
         /// <param name="clientCertificate">Optional Client certificate to be checked against.
-        public CopyleaksScansApi(string product, X509Certificate2 clientCertificate = null) : base(clientCertificate)
+        public CopyleaksScansApi(X509Certificate2 clientCertificate = null) : base(clientCertificate)
         {
-            SetUpService(product);
+            SetUpService();
         }
 
-        private void SetUpService(string product)
+        private void SetUpService()
         {
             this.CopyleaksApiServer = ConfigurationManager.Configuration["apiEndPoint"];
-            this.Product = product;
         }
 
         /// <summary>
@@ -103,7 +85,7 @@ namespace Copyleaks.SDK.V3.API
             if (string.IsNullOrEmpty(token))
                 throw new ArgumentException("mandatory", nameof(token));
 
-            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/credits";
+            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/scans/credits";
             HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders(token);
 
@@ -162,7 +144,7 @@ namespace Copyleaks.SDK.V3.API
             if (documentModel.Url == null)
                 throw new ArgumentException("Url is mandatory.", nameof(documentModel.Url));
 
-            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/submit/url/{scanId}";
+            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/scans/submit/url/{scanId}";
             await SubmitAsync(documentModel, requestUri, token).ConfigureAwait(false);
         }
 
@@ -179,7 +161,7 @@ namespace Copyleaks.SDK.V3.API
             else if (documentModel.Filename == null)
                 throw new ArgumentException("Filename is mandatory.", nameof(documentModel.Filename));
 
-            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/submit/file/{scanId}";
+            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/scans/submit/file/{scanId}";
             await SubmitAsync(documentModel, requestUri, token).ConfigureAwait(false);
         }
 
@@ -196,7 +178,7 @@ namespace Copyleaks.SDK.V3.API
             else if (documentModel.Filename == null)
                 throw new ArgumentException("Filename is mandatory.", nameof(documentModel.Filename));            
 
-            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/submit/ocr/{scanId}";
+            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/scans/submit/ocr/{scanId}";
             await SubmitAsync(documentModel, requestUri, token).ConfigureAwait(false);
         }
 
@@ -211,7 +193,7 @@ namespace Copyleaks.SDK.V3.API
             if (string.IsNullOrEmpty(token))
                 throw new ArgumentException("mandatory", nameof(token));
 
-            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/{scanId}/progress";
+            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/scans/{scanId}/progress";
             HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders(token);
 
@@ -247,7 +229,7 @@ namespace Copyleaks.SDK.V3.API
                 throw new ArgumentException("mandatory", nameof(token));
 
             var method = new HttpMethod("PATCH");
-            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}.1/{this.Product}/delete";
+            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}.1/scans/delete";
             HttpRequestMessage msg = new HttpRequestMessage(method, requestUri);
             msg.SetupHeaders(token);
             msg.Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
@@ -285,7 +267,7 @@ namespace Copyleaks.SDK.V3.API
                 throw new ArgumentException("Trigger is mandatory.", nameof(model.Trigger));
 
             var method = new HttpMethod("PATCH");
-            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/start";
+            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/scans/start";
             HttpRequestMessage msg = new HttpRequestMessage(method, requestUri);
             msg.SetupHeaders(token);
             msg.Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
@@ -318,7 +300,7 @@ namespace Copyleaks.SDK.V3.API
                 throw new ArgumentException("Trigger is mandatory.", nameof(model.Trigger));
 
             var method = new HttpMethod("PATCH");
-            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/batch/start";
+            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/scans/batch/start";
             var msg = new HttpRequestMessage(method, requestUri);
             msg.SetupHeaders(token);
             msg.Content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
@@ -348,7 +330,7 @@ namespace Copyleaks.SDK.V3.API
                 throw new ArgumentException("Token is mandatory", nameof(token));
             }
 
-            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/{this.Product}/{scanId}/result";
+            string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/scans/{scanId}/result";
             var msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
             msg.SetupHeaders(token);
 
@@ -411,7 +393,6 @@ namespace Copyleaks.SDK.V3.API
         /// </summary>
         /// <param name="startDate">The start date of wanted usage history.</param>
         /// <param name="endDate">The end date of wanted usage history.</param>
-        /// <param name="productType">The product type to user: Education or Business.</param>
         /// <exception cref="HttpRequestException">In case of reject from the server.</exception>
         /// <returns>Returns user usage data as a stream.</returns>
         /// 
@@ -424,7 +405,7 @@ namespace Copyleaks.SDK.V3.API
             if (string.IsNullOrEmpty(token))
                 throw new ArgumentException("Mandatory", nameof(token));
 
-            Uri url = new Uri($"{this.CopyleaksApiServer}v3/{this.Product}/usages/history" +
+            Uri url = new Uri($"{this.CopyleaksApiServer}v3/scans/usages/history" +
                 $"?start={startDate.ToString("dd-MM-yyyy")}" +
                 $"&end={endDate.ToString("dd-MM-yyyy")}");
 

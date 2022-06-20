@@ -36,8 +36,6 @@ namespace Copyleaks.SDK.Demo.Models.Requests
 
         public string Text { get; set; } = "hello world";
 
-        public eProduct Product { get; set; }
-
         public string Token { get; set; }
 
     }

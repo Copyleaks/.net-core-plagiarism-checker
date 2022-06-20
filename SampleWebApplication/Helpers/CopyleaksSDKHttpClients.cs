@@ -11,13 +11,10 @@ namespace Copyleaks.SDK.Demo.Helpers
 {
     public class CopyleaksSDKHttpClients
     {
-        public const string PRODUCT_EDUCATION = "education";
-        public const string PRODUCT_BUSINESSES = "businesses";
         private static HttpClient _HttpClient { get; set; }
         private static CopyleaksIdentityApi _IdentityClient { get; set; }
 
-        private static CopyleaksScansApi _EducationAPIClient { get; set; }
-        private static CopyleaksScansApi _BusinessesAPIClient { get; set; }
+        private static CopyleaksScansApi _APIClient { get; set; }
 
         static CopyleaksSDKHttpClients()
         {
@@ -28,21 +25,12 @@ namespace Copyleaks.SDK.Demo.Helpers
             };
             _HttpClient = new HttpClient(handler);
             _IdentityClient = new CopyleaksIdentityApi(_HttpClient);
-            _EducationAPIClient = new CopyleaksScansApi(PRODUCT_EDUCATION, _HttpClient);
-            _BusinessesAPIClient = new CopyleaksScansApi(PRODUCT_BUSINESSES, _HttpClient);
+			_APIClient = new CopyleaksScansApi(_HttpClient);
         }
-        public static CopyleaksScansApi APIClient(string product)
+        public static CopyleaksScansApi APIClient()
         {
-            switch (product)
-            {
-                case PRODUCT_EDUCATION:
-                    return _EducationAPIClient;
-                case PRODUCT_BUSINESSES:
-                    return _BusinessesAPIClient;
-                default:
-                    throw new Exception($"Product {product} not supported");
-            }
-        }
+			return _APIClient;
+		}
 
 
         public static CopyleaksIdentityApi IdentityClient()

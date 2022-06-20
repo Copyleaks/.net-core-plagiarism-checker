@@ -40,9 +40,9 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
     }
 
     /// <summary>
-    /// Defines which mediums to scan for Education product.
+    /// Defines which mediums to scan
     /// </summary>
-    public class EducationProtectionLayers : ProtectionLayers
+    public class ClientProtectionLayers : ProtectionLayers
     {
         /// <summary>
         /// Scan against copyleaks internal database?

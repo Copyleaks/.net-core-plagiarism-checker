@@ -57,9 +57,9 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
     }
 
     /// <summary>
-    /// Exclude properties from scan for Education product
+    /// Exclude properties from scan
     /// </summary>
-    public class EducationExclude : Exclude
+    public class ClientExclude : Exclude
     {
         /// <summary>
         /// Exclude references from the scan.
