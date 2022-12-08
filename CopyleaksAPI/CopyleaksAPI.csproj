@@ -18,7 +18,7 @@
     <Version>1.9.3</Version>
     <PackageId>Copyleaks</PackageId>
     <AssemblyVersion>1.9.3.0</AssemblyVersion>
-    <FileVersion>1.9.2.0</FileVersion>
+    <FileVersion>1.9.3.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
