@@ -35,7 +35,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
         public string Url { get; set; }
 
         [JsonProperty("tags")]
-        public TagsResult Tags { get; set; }
+        public TagsResult[] Tags { get; set; }
 
     }
 }
