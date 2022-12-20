@@ -28,67 +28,83 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
-    /// <summary>
-    /// The scan request properties
-    /// </summary>
-    public abstract class ScanProperties
-    {
-        /// <summary>
+	/// <summary>
+	/// The scan request properties
+	/// </summary>
+	public abstract class ScanProperties
+	{
+		/// <summary>
 		/// Define which type of task it is.
 		/// </summary>
 		[JsonProperty("action")]
-        public eSubmitAction Action { get; set; } = eSubmitAction.Scan;
+		public eSubmitAction Action { get; set; } = eSubmitAction.Scan;
 
-        /// <summary>
-        /// Define in which format to return the results. 
-        /// </summary>
-        [JsonProperty("includeHtml")]
-        public bool IncludeHtml{ get; set; } = false;
+		/// <summary>
+		/// Define in which format to return the results. 
+		/// </summary>
+		[JsonProperty("includeHtml")]
+		public bool IncludeHtml { get; set; } = false;
 
-        /// <summary>
-        /// Developer payload string.
-        /// </summary>
-        [JsonProperty("developerPayload")]
-        [StringLength(512)]
-        public string DeveloperPayload { get; set; }
+		/// <summary>
+		/// Developer payload string.
+		/// </summary>
+		[JsonProperty("developerPayload")]
+		[StringLength(512)]
+		public string DeveloperPayload { get; set; }
 
-        /// <summary>
+		/// <summary>
 		/// Scan priority
 		/// </summary>
 		[JsonProperty("priority")]
-        public eScanPriority Priority { get; set; } = eScanPriority.Normal;
+		public eScanPriority Priority { get; set; } = eScanPriority.Normal;
 
-        /// <summary>
-        /// Enable sandbox scan.
-        /// </summary>
-        [JsonProperty("sandbox")]
-        public bool Sandbox { get; set; } = false;
+		/// <summary>
+		/// Enable sandbox scan.
+		/// </summary>
+		[JsonProperty("sandbox")]
+		public bool Sandbox { get; set; } = false;
 
-        /// <summary>
-        /// Getting the client notify changes on server.
-        /// </summary>
-        [JsonProperty("webhooks")]
-        public Webhooks Webhooks { get; set; } = new Webhooks();
+		/// <summary>
+		/// Getting the client notify changes on server.
+		/// </summary>
+		[JsonProperty("webhooks")]
+		public Webhooks Webhooks { get; set; } = new Webhooks();
 
-        /// <summary>
-        /// How much time, in hours, to store the scan on the database.
-        /// </summary>
-        [JsonProperty("expiration")]
-        public uint Expiration { get; set; } = 2880;
+		/// <summary>
+		/// How much time, in hours, to store the scan on the database.
+		/// </summary>
+		[JsonProperty("expiration")]
+		public uint Expiration { get; set; } = 2800;
 
-        [JsonProperty("filters")]
-        public Filters Filters { get; set; } = new Filters();
+		/// <summary>
+		/// Scan priority
+		/// </summary>
+		[JsonProperty("scanMethodAlgorithm")]
+		[Range(0, 1)]
+		public eScanMethodAlgorithm ScanMethodAlgorithm { get; set; } = eScanMethodAlgorithm.MaximumCoverage;
 
-        [JsonProperty("author")]
-        public AuthorEntity Author { get; set; } = new AuthorEntity();
+		[JsonProperty("filters")]
+		public Filters Filters { get; set; } = new Filters();
 
-        /// <summary>
-        /// Control the level of plagiarism sensitivity that will be identified according to the speed of the scan. If you prefer a faster scan with the results that contains the highest amount of plagiarism choose 1, and if a slower, more comprehensive scan, that will also detect the smallest instances choose 5.  
-        /// Range between 1 (faster ) to 5 (slower but more comprehensive)
-        /// </summary>
-        [JsonProperty("sensitivityLevel")]
-        [Range(1, 5)]
-        public int SensitivityLevel { get; set; } = 3;
+		[JsonProperty("author")]
+		public AuthorEntity Author { get; set; } = new AuthorEntity();
 
-    }
+		/// <summary>
+		/// Control the level of plagiarism sensitivity that will be identified according to the speed of the scan. If you prefer a faster scan with the results that contains the highest amount of plagiarism choose 1, and if a slower, more comprehensive scan, that will also detect the smallest instances choose 5.  
+		/// Range between 1 (faster ) to 5 (slower but more comprehensive)
+		/// </summary>
+		[JsonProperty("sensitivityLevel")]
+		[Range(1, 5)]
+		public int SensitivityLevel { get; set; } = 3;
+
+		/// <summary>
+		/// Enable cheatDetection scan.
+		/// </summary>
+		[JsonProperty("cheatDetection")]
+		public bool cheatDetection { get; set; } = false;
+
+		[JsonProperty("sensitiveDataProtection")]
+		public SensitiveDataProtection SensitiveDataProtection { get; set; } = new SensitiveDataProtection();
+
+	}
 }

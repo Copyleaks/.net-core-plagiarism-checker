@@ -27,21 +27,27 @@ using System;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
-    /// <summary>
-    /// Register your HTTP callback endpoints with Copyleaks API
-    /// </summary>
-    public class Webhooks
-    {
-        /// <summary>
-        /// The callback that Copyleaks API will return to once the scan is completed
-        /// </summary>
-        [JsonProperty("status")]
-        public Uri Status { get; set; }
+	/// <summary>
+	/// Register your HTTP callback endpoints with Copyleaks API
+	/// </summary>
+	public class Webhooks
+	{
+		/// <summary>
+		/// The callback that Copyleaks API will return to once the scan is completed
+		/// </summary>
+		[JsonProperty("status")]
+		public Uri Status { get; set; }
 
-        /// <summary>
-        /// The callback that Copyleaks API will return to every time the a new result is founs for the scan
-        /// </summary>
-        [JsonProperty("newResult")]
-        public Uri NewResult { get; set; }
-    }
+		/// <summary>
+		/// The callback that Copyleaks API will return to every time the a new result is founs for the scan
+		/// </summary>
+		[JsonProperty("newResult")]
+		public Uri NewResult { get; set; }
+
+		[JsonProperty("newResultHeaders")]
+		public string[,] NewResultHeaders { get; set; } = null;
+
+		[JsonProperty("statusHeaders")]
+		public string[,] StatusHeaders { get; set; } = null;
+	}
 }
