@@ -34,5 +34,8 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
         [Required]
         public Uri Url { get; set; }
 
+        [JsonProperty("headers")]
+        public string[,] Headers { get; set; } = null;
+
     }
 }

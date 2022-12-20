@@ -26,45 +26,51 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
-    /// <summary>
-    /// Exclude properties from scan
-    /// </summary>
-    public class Exclude
-    {
-        /// <summary>
-        /// Exclude quotes from the scan.
-        /// </summary>
-        [JsonProperty("quotes")]
-        public bool Quotes { get; set; } = false;
+	/// <summary>
+	/// Exclude properties from scan
+	/// </summary>
+	public class Exclude
+	{
+		/// <summary>
+		/// Exclude quotes from the scan.
+		/// </summary>
+		[JsonProperty("quotes")]
+		public bool Quotes { get; set; } = false;
 
-        /// <summary>
-        /// Exclude titles from the scan.
-        /// </summary>
-        [JsonProperty("titles")]
-        public bool Titles { get; set; } = false;
+		/// <summary>
+		/// Exclude citations from the scan.
+		/// </summary>
+		[JsonProperty("citations")]
+		public bool Citations { get; set; } = false;
 
-        /// <summary>
-        /// When HTML document, exclude the HTML tags and attribute metadata from the scan. 
-        /// </summary>
-        [JsonProperty("htmlTemplate")]
-        public bool HtmlTemplate { get; set; } = false;
+		/// <summary>
+		/// Exclude titles from the scan.
+		/// </summary>
+		[JsonProperty("titles")]
+		public bool Titles { get; set; } = false;
 
-        /// <summary>
-        /// Exclude table of contents from the scan. 
-        /// </summary>
-        [JsonProperty("tableOfContents")]
-        public bool TableOfContents { get; set; } = false;
-    }
+		/// <summary>
+		/// When HTML document, exclude the HTML tags and attribute metadata from the scan. 
+		/// </summary>
+		[JsonProperty("htmlTemplate")]
+		public bool HtmlTemplate { get; set; } = false;
 
-    /// <summary>
-    /// Exclude properties from scan
-    /// </summary>
-    public class ClientExclude : Exclude
-    {
-        /// <summary>
-        /// Exclude references from the scan.
-        /// </summary>
-        [JsonProperty("references")]
-        public bool References { get; set; } = false;
-    }
+		/// <summary>
+		/// Exclude table of contents from the scan. 
+		/// </summary>
+		[JsonProperty("tableOfContents")]
+		public bool TableOfContents { get; set; } = false;
+	}
+
+	/// <summary>
+	/// Exclude properties from scan
+	/// </summary>
+	public class ClientExclude : Exclude
+	{
+		/// <summary>
+		/// Exclude references from the scan.
+		/// </summary>
+		[JsonProperty("references")]
+		public bool References { get; set; } = false;
+	}
 }

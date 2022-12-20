@@ -27,21 +27,21 @@ using System;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
-    /// <summary>
-    /// The scan request properties for requests
-    /// </summary>
-    public class ClientScanProperties : ScanProperties
-    {        
-        [JsonProperty("scanning")]
-        public ClientProtectionLayers ProtectionLayersSection { get; set; } = new ClientProtectionLayers();
+	/// <summary>
+	/// The scan request properties for requests
+	/// </summary>
+	public class ClientScanProperties : ScanProperties
+	{
+		[JsonProperty("scanning")]
+		public ClientProtectionLayers ProtectionLayersSection { get; set; } = new ClientProtectionLayers();
 
-        [JsonProperty("exclude")]
-        public ClientExclude Exclude { get; set; } = new ClientExclude();
+		[JsonProperty("exclude")]
+		public ClientExclude Exclude { get; set; } = new ClientExclude();
 
-        [JsonProperty("pdf")]
-        public ReportCustomization ReportSection { get; set; } = new ReportCustomization();
+		[JsonProperty("pdf")]
+		public ReportCustomization ReportSection { get; set; } = new ReportCustomization();
 
-        [JsonProperty("indexing")]
-        public ClientIndexingEntity Indexing { get; set; } = new ClientIndexingEntity();
-    }
+		[JsonProperty("indexing")]
+		public ClientIndexingEntity Indexing { get; set; } = new ClientIndexingEntity();
+	}
 }

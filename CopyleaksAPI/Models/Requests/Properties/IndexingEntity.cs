@@ -9,7 +9,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		/// <summary>
 		/// Specify which repositories to index the scanned document to.
 		/// </summary>
-		public Repository[] Repositories { get; set; }
+		public RepositoryIndexing[] Repositories { get; set; }
 	}
 
 	public class ClientIndexingEntity : IndexingEntity
