@@ -101,7 +101,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		/// Enable cheatDetection scan.
 		/// </summary>
 		[JsonProperty("cheatDetection")]
-		public bool cheatDetection { get; set; } = false;
+		public bool CheatDetection { get; set; } = false;
 
 		[JsonProperty("sensitiveDataProtection")]
 		public SensitiveDataProtection SensitiveDataProtection { get; set; } = new SensitiveDataProtection();
