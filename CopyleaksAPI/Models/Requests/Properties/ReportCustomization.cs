@@ -22,44 +22,53 @@
  SOFTWARE.
 ********************************************************************************/
 
+using Copyleaks.SDK.V3.API.Models.Types;
+
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
-    /// <summary>
-    /// Specify customized attributes for Copyleaks scan results report
-    /// </summary>
-    public class ReportCustomization
-    {
-        /// <summary>
-        /// When set to true a pdf report will be generated
-        /// </summary>
-        public bool Create { get; set; } = false;
+	/// <summary>
+	/// Specify customized attributes for Copyleaks scan results report
+	/// </summary>
+	public class ReportCustomization
+	{
+		/// <summary>
+		/// When set to true a pdf report will be generated
+		/// </summary>
+		public bool Create { get; set; } = false;
 
-        /// <summary>
-        /// Customizable title
-        /// </summary>
-        public string Title { get; set; }
+		/// <summary>
+		/// Customizable title
+		/// </summary>
+		public string Title { get; set; }
 
-        /// <summary>
-        /// Customizable logo for the header of the report.
-        /// The logo should be in string base64 format
-        /// </summary>
-        public string LargeLogo { get; set; }
+		/// <summary>
+		/// Customizable logo for the header of the report.
+		/// The logo should be in string base64 format
+		/// </summary>
+		public string LargeLogo { get; set; }
 
-        /// <summary>
-        /// Customizable logo for the footer of the report.
-        /// The logo should be in string base64 format
-        /// </summary>
-        public string SmallLogo { get; set; }
+		/// <summary>
+		/// Customizable logo for the footer of the report.
+		/// The logo should be in string base64 format
+		/// </summary>
+		public string SmallLogo { get; set; }
 
-        /// <summary>
-        /// Customizable direction of text.
-        /// When set to true the direction of the text will be from right to lef
-        /// </summary>
-        public bool RTL { get; set; }
+		/// <summary>
+		/// Customizable direction of text.
+		/// When set to true the direction of the text will be from right to lef
+		/// </summary>
+		public bool RTL { get; set; }
 
-        /// <summary>
-        /// Customizable colors
-        /// </summary>
-        public ReportCustomizationColors Colors { get; set; }
-    }
+		/// <summary>
+		/// Customizable colors
+		/// </summary>
+		public ReportCustomizationColors Colors { get; set; }
+
+		/// <summary>
+		/// PDF version to generate. 
+		/// By default version 1 will be generated as it our current stable version. 
+		/// Version 2 is our latest iteration of our PDF report.
+		/// </summary>
+		public ePdfReportVersion Version { get; set; } = ePdfReportVersion.V1;
+	}
 }
