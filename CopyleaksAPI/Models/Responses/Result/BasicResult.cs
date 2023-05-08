@@ -59,6 +59,12 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
         [JsonProperty("metadata")]
         public ResultMetaData MetaData { get; set; }
 
-    }
+        /// <summary>
+        /// Result tags
+        /// </summary>
+		[JsonProperty("tags")]
+		public TagsResult[] Tags { get; set; }
+
+	}
 
 }

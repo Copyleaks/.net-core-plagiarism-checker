@@ -72,5 +72,11 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
 		/// </summary>
 		[JsonProperty("metadata")]
 		public ResultMetaData MetaData { get; set; }
+
+		/// <summary>
+		/// Specify whether AiDetection or PlagiarismDetection are enabled
+		/// </summary>
+		[JsonProperty("enabled")]
+		public Enabled Enabled { get; set; }
 	}
 }
