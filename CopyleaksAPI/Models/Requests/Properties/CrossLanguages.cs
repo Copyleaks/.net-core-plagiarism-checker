@@ -29,12 +29,18 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
     public class CrossLanguages
     {
+        /// <summary>
+        /// Cross language plagiarism detection. Choose which languages to scan your content against.
+        /// </summary>
         [JsonProperty("languages")]
         public Language[] Languages { get; set; } = Array.Empty<Language>();
     }
 
     public class Language
     {
+        /// <summary>
+        /// Language code for cross language plagiarism detection.
+        /// </summary>
         [JsonProperty("code")]
         public string Code { get; set; } = null;
     }

@@ -28,6 +28,9 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
     public class AIGeneratedText
     {
+        /// <summary>
+        /// Detects whether the text was written by an AI.
+        /// </summary>
         [JsonProperty("detect")]
         public bool Detect { get; set; } = false;
     }
