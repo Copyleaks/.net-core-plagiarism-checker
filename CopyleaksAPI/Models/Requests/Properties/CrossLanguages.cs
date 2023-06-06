@@ -35,13 +35,4 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         [JsonProperty("languages")]
         public Language[] Languages { get; set; } = Array.Empty<Language>();
     }
-
-    public class Language
-    {
-        /// <summary>
-        /// Language code for cross language plagiarism detection.
-        /// </summary>
-        [JsonProperty("code")]
-        public string Code { get; set; } = null;
-    }
 }

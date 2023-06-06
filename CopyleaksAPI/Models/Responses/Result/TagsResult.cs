@@ -15,9 +15,9 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
 		public string Description { get; set; }
 
         [JsonProperty("helpLink")]
-        public string HelpLink { get; set; } = null;
+        public string HelpLink { get; set; }
 
         [JsonProperty("data")]
-        public string Data { get; set; } = null;
+        public string Data { get; set; }
 	}
 }
