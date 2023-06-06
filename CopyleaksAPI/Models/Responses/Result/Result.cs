@@ -36,8 +36,5 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
 
 		[JsonProperty("results")]
 		public ResultsSection Results { get; set; }
-
-		[JsonProperty("notifications")]
-		public NotificationSection Notifications { get; set; }
 	}
 }
