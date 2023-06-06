@@ -53,6 +53,15 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
         [JsonProperty("matchedWords")]
         public uint MatchedWords { get; set; }
 
+        [JsonProperty("identicalWords")]
+        public uint IdenticalWords { get; set; }
+
+        [JsonProperty("similarWords")]
+        public uint SimilarWords { get; set; }
+
+        [JsonProperty("paraphrasedWords")]
+        public uint ParaphrasedWords { get; set; }
+
         /// <summary>
         /// Result meta data
         /// </summary>

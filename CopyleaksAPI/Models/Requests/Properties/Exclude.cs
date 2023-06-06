@@ -22,6 +22,7 @@
  SOFTWARE.
 ********************************************************************************/
 
+using System;
 using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
@@ -60,6 +61,18 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		/// </summary>
 		[JsonProperty("tableOfContents")]
 		public bool TableOfContents { get; set; } = false;
+
+		/// <summary>
+		/// Exclude text based on text found within other documents
+		/// </summary>
+		[JsonProperty("documentTemplateIds")]
+		public string[] DocumentTemplateIds { get; set; } = Array.Empty<string>();
+
+        /// <summary>
+        /// Exclude sections of source code
+        /// </summary>
+		[JsonProperty("code")]
+        public ExcludeCode Code { get; set; } = new ExcludeCode();
 	}
 
 	/// <summary>

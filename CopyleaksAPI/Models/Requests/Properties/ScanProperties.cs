@@ -24,6 +24,7 @@
 
 using Copyleaks.SDK.V3.API.Models.Types;
 using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
@@ -103,8 +104,17 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		[JsonProperty("cheatDetection")]
 		public bool CheatDetection { get; set; } = false;
 
+
 		[JsonProperty("sensitiveDataProtection")]
 		public SensitiveDataProtection SensitiveDataProtection { get; set; } = new SensitiveDataProtection();
 
+		[JsonProperty("aiGeneratedText")]
+		public AIGeneratedText AIGeneratedText { get; set; } = new AIGeneratedText(); 
+
+		/// <summary>
+		/// Add custom properties that will be attached to your document in a Copyleaks repository.
+		/// </summary>
+		[JsonProperty("customMetadata")]
+		public CustomMetadata[] CustomMetadata { get; set; } = Array.Empty<CustomMetadata>();
 	}
 }

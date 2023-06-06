@@ -1,4 +1,4 @@
-﻿/********************************************************************************
+    /********************************************************************************
  The MIT License(MIT)
  
  Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
@@ -24,17 +24,14 @@
 
 using Newtonsoft.Json;
 
-namespace Copyleaks.SDK.V3.API.Models.Responses.Result
+namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
-	/// <summary>
-	/// The scan result
-	/// </summary>
-	public class Result : BaseResponse
-	{
-		[JsonProperty("scannedDocument")]
-		public ScannedDocumentSection ScannedDocument { get; set; }
+    public class CustomMetadata
+    {
+        [JsonProperty("key")]
+        public string Key { get; set; }
 
-		[JsonProperty("results")]
-		public ResultsSection Results { get; set; }
-	}
+        [JsonProperty("value")]
+        public string Value { get; set; }
+    }
 }

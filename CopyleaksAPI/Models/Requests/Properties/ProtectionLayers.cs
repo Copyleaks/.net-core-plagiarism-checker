@@ -59,6 +59,9 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		/// </summary>
 		[JsonProperty("repositories")]
 		public RepositoryScanning[] Repositories { get; set; }
+
+		[JsonProperty("crossLanguages")]
+        public CrossLanguages CrossLanguages { get; set; } = new CrossLanguages();
 	}
 
 }

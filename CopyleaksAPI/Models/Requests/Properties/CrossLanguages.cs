@@ -1,4 +1,4 @@
-﻿/********************************************************************************
+/********************************************************************************
  The MIT License(MIT)
  
  Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
@@ -22,19 +22,17 @@
  SOFTWARE.
 ********************************************************************************/
 
+using System;
 using Newtonsoft.Json;
 
-namespace Copyleaks.SDK.V3.API.Models.Responses.Result
+namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
-	/// <summary>
-	/// The scan result
-	/// </summary>
-	public class Result : BaseResponse
-	{
-		[JsonProperty("scannedDocument")]
-		public ScannedDocumentSection ScannedDocument { get; set; }
-
-		[JsonProperty("results")]
-		public ResultsSection Results { get; set; }
-	}
+    public class CrossLanguages
+    {
+        /// <summary>
+        /// Cross language plagiarism detection. Choose which languages to scan your content against.
+        /// </summary>
+        [JsonProperty("languages")]
+        public Language[] Languages { get; set; } = Array.Empty<Language>();
+    }
 }
