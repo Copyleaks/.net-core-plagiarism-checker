@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Copyleaks.SDK.V3.API.Models.Requests.Properties;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -36,5 +37,11 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
 
 		[JsonProperty("submittedBy")]
 		public string SubmittedBy { get; set; }
+
+        [JsonProperty("submitterAuthorId")]
+        public string SubmitterAuthorId { get; set; }
+
+        [JsonProperty("customMetadata")]
+        public CustomMetadata[] CustomMetadata { get; set; }
 	}
 }
