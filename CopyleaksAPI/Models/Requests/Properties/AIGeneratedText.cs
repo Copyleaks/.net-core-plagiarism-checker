@@ -1,4 +1,4 @@
-﻿/********************************************************************************
+/********************************************************************************
  The MIT License(MIT)
  
  Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
@@ -26,42 +26,9 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
-	/// <summary>
-	/// Defines which mediums to scan.
-	/// </summary>
-	public class ProtectionLayers
-	{
-		/// <summary>
-		/// Scan against the internet?
-		/// </summary>
-		[JsonProperty("internet")]
-		public bool Internet { get; set; } = true;
-
-	}
-
-	/// <summary>
-	/// Defines which mediums to scan
-	/// </summary>
-	public class ClientProtectionLayers : ProtectionLayers
-	{
-		/// <summary>
-		/// Scan against copyleaks internal database?
-		/// If specified true, it will also index the scanned document into the database.
-		/// </summary>
-		[JsonProperty("copyleaksDB")]
-		public InternalDatabaseScan CopyleaksInternalDB { get; set; } = new InternalDatabaseScan();
-
-		[JsonProperty("exclude")]
-		public ExcludeResults Exclude { get; set; } = new ExcludeResults();
-
-		/// <summary>
-		/// Specify which repositories to index the scanned document to.
-		/// </summary>
-		[JsonProperty("repositories")]
-		public RepositoryScanning[] Repositories { get; set; }
-
-		[JsonProperty("crossLanguages")]
-        public CrossLanguages CrossLanguages { get; set; } = new CrossLanguages();
-	}
-
+    public class AIGeneratedText
+    {
+        [JsonProperty("detect")]
+        public bool Detect { get; set; } = false;
+    }
 }

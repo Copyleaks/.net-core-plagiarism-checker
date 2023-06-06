@@ -106,5 +106,10 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		[JsonProperty("sensitiveDataProtection")]
 		public SensitiveDataProtection SensitiveDataProtection { get; set; } = new SensitiveDataProtection();
 
+		[JsonProperty("aiGeneratedText")]
+		public AIGeneratedText AIGeneratedText { get; set; } = new AIGeneratedText(); 
+
+		[JsonProperty("customMetadata")]
+		public CustomMetadata[] CustomMetadata { get; set; } = null;
 	}
 }
