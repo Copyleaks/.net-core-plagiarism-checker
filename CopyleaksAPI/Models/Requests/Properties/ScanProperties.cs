@@ -54,12 +54,6 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		public string DeveloperPayload { get; set; }
 
 		/// <summary>
-		/// Scan priority
-		/// </summary>
-		[JsonProperty("priority")]
-		public eScanPriority Priority { get; set; } = eScanPriority.Normal;
-
-		/// <summary>
 		/// Enable sandbox scan.
 		/// </summary>
 		[JsonProperty("sandbox")]
