@@ -72,7 +72,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		public uint Expiration { get; set; } = 2800;
 
 		/// <summary>
-		/// Scan priority
+		/// Choose the algorithm goal
 		/// </summary>
 		[JsonProperty("scanMethodAlgorithm")]
 		[Range(0, 1)]
