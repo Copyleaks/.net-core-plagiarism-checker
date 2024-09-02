@@ -41,6 +41,11 @@ namespace Copyleaks.SDK.V3.API.Helpers
         public const string RequestsTimeout = "60000";
 
         public const string apiVersion = "v3";
+
+        public const string aiDetectionApiVersion = "v2";
+
+        public const string writingAssitantApiVersion = "v1";
+
         #endregion
         static ConfigurationManager()
         {
@@ -50,7 +55,9 @@ namespace Copyleaks.SDK.V3.API.Helpers
                     { "apiEndPoint", ApiEndPoint },
                     { "idEndPoint",  IdEndPoint },
                     { "RequestsTimeout", RequestsTimeout},
-                    { "apiVersion", apiVersion }
+                    { "apiVersion", apiVersion },
+                    { "aiDetectionApiVersion", aiDetectionApiVersion},
+                    { "writingAssistantApiVersion", writingAssitantApiVersion}
                 }).Build();
         }
 
