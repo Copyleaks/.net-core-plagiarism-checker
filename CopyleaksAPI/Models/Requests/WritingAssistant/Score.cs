@@ -29,25 +29,25 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.WritingAssistant
     public class Score
     {
         /// <summary>
-        /// Grammar correction category weight in the overall score. 0.0 >= weight <=1.0
+        /// Grammar correction category weight in the overall score. 0.0 >= weight <= 1.0
         /// </summary>
         [JsonProperty("grammarScoreWeight")]
         public double GrammarScoreWeight { get; set; }
 
         /// <summary>
-        /// Mechanics correction category weight in the overall score. 0.0 >= weight <=1.0
+        /// Mechanics correction category weight in the overall score. 0.0 >= weight <= 1.0
         /// </summary>
         [JsonProperty("mechanicsScoreWeight")]
         public double MechanicsScoreWeight { get; set; }
 
         /// <summary>
-        /// Sentence structure correction category weight in the overall score. 0.0 >= weight <=1.0
+        /// Sentence structure correction category weight in the overall score. 0.0 >= weight <= 1.0
         /// </summary>
         [JsonProperty("sentenceStructureScoreWeight")]
         public double SentenceStructureScoreWeight { get; set; }
 
         /// <summary>
-        /// Word choice correction category weight in the overall score. 0.0 >= weight <=1.0
+        /// Word choice correction category weight in the overall score. 0.0 >= weight <= 1.0
         /// </summary>
         [JsonProperty("wordChoiceScoreWeight")]
         public double WordChoiceScoreWeight { get; set; }
