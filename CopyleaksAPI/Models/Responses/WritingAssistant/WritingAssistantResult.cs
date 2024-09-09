@@ -29,6 +29,8 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.WritingFeedback
 {
     public class WritingAssistantResult
     {
+        [JsonProperty("scanType")]
+        public string ScanType { get; set; }
 
         [JsonProperty("score")]
         public Score Score { get; set; }
