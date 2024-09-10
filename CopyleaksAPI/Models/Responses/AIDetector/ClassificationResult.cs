@@ -1,0 +1,66 @@
+﻿/********************************************************************************
+ The MIT License(MIT)
+ 
+ Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+********************************************************************************/
+
+
+using Newtonsoft.Json;
+using System.Collections.Generic;
+
+namespace Copyleaks.SDK.V3.API.Models.Responses.AIDetector
+{
+    public class ClassificationResult
+    {
+        [JsonProperty("classification")]
+        public int Classification { get; set; }
+
+        [JsonProperty("probability")]
+        public double Probability { get; set; }
+
+        [JsonProperty("matches")]
+        public List<Match> Matches { get; set; }
+    }
+
+    public class Match
+    {
+        [JsonProperty("text")]
+        public MatchText Text { get; set; }
+    }
+
+    public class MatchText
+    {
+        [JsonProperty("chars")]
+        public MatchPositions Chars { get; set; }
+
+        [JsonProperty("words")]
+        public MatchPositions Words { get; set; }
+    }
+
+    public class MatchPositions
+    {
+        [JsonProperty("starts")]
+        public List<int> Starts { get; set; }
+
+        [JsonProperty("lengths")]
+        public List<int> Lengths { get; set; }
+    }
+}
