@@ -24,7 +24,6 @@
 
 using Copyleaks.SDK.V3.API.Models.Types;
 using Newtonsoft.Json;
-using System.ComponentModel;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
