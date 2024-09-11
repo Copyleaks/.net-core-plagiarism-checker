@@ -74,5 +74,12 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         /// </summary>
         [JsonProperty("domainsMode")]
         public eDomainsFilteringMode DomainsFilteringMode { get; set; } = eDomainsFilteringMode.Exclude;
+
+
+        /// <summary>
+        /// when set to true it will allow results from the same domain as the submitted url.
+        /// </summary>
+        [JsonProperty("allowSameDomain")]
+        public bool AllowSameDomain { get; set; } = false;
     }
 }
