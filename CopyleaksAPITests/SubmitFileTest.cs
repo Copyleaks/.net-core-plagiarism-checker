@@ -80,11 +80,11 @@ namespace CopyleaksAPITests
 
             var scanId = await SubmitFileScanAsync(authToken).ConfigureAwait(false);
 
-            var progress = await Policy.HandleResult<uint>((result) => result != 100)
+            var progress = await Policy.HandleResult<ProgressResponse>((result) => result.Percents != 100)
                 .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(3))
                 .ExecuteAsync(() => APIClient.ProgressAsync(scanId, authToken)).ConfigureAwait(false);
 
-            Assert.IsTrue(progress == 100, "Scan Progress didn't hit the 100%");
+            Assert.IsTrue(progress.Percents == 100, "Scan Progress didn't hit the 100%");
 
             //downloads
             var pdfReport = await APIClient.DownloadPdfReportAsync(scanId, authToken).ConfigureAwait(false);
