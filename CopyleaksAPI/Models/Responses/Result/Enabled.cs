@@ -19,7 +19,6 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
 		[JsonProperty("aiDetection")]
 		public bool AiDetection { get; set; }
 
-
         /// <summary>
         /// Determines whether the aiSourceMatch is enabled or disabled
         /// </summary>
