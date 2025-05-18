@@ -30,8 +30,10 @@ using Copyleaks.SDK.V3.API.Exceptions;
 using Copyleaks.SDK.V3.API.Models.Callbacks;
 using Copyleaks.SDK.V3.API.Models.Requests;
 using Copyleaks.SDK.V3.API.Models.Requests.Properties;
+using Copyleaks.SDK.V3.API.Models.Responses.Webhooks;
 using Copyleaks.SDK.V3.API.Models.Types;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using SampleWebApplication.Models;
 using System;
 using System.Diagnostics;
@@ -67,7 +69,7 @@ namespace Copyleaks.SDK.Demo.Controllers
         {
             var response = new LoginResponse();
             try
-            {                
+            {
                 // Use CopyleaksIdentityApi to aquire a login Token from 
                 Guid temp;
                 var validOrEmptyKey = Guid.TryParse(loginModel.Key, out temp) ? loginModel.Key : Guid.Empty.ToString();
@@ -188,13 +190,25 @@ namespace Copyleaks.SDK.Demo.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("/{scanId}/completed")]
-        public IActionResult CompletedProcess(string scanId, [FromBody]CompletedCallback scanResults)
+        public IActionResult CompletedProcess(string scanId, [FromBody] CompletedCallback scanResults)
         {
             // Do something with the scan results
             ResultFile.SaveResults(scanResults, scanId);
             return Ok();
         }
-
+        /// <summary>
+        /// Endpoint to listedn to the completed webhook
+        /// </summary>
+        /// <param name="scanId"></param>
+        /// <param name="scanResults"></param>
+        /// <returns></returns>
+        [HttpPost("/webhook/completed/{scanId}/completed")]
+        public IActionResult CompletedWebhookProcess([FromRoute] string scanId, [FromBody] CompletedCallback scanResults)
+        {
+            var completedWebhook = JsonConvert.DeserializeObject<CompletedWebhook>(JsonConvert.SerializeObject(scanResults));
+            // do something with the model
+            return Ok();
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
