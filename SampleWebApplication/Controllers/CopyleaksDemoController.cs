@@ -162,7 +162,7 @@ namespace Copyleaks.SDK.Demo.Controllers
             {
                 // Copyleaks API will POST the scan results to the 'completed' callback
                 // See 'CompletedProcess' method for more details
-                Status = new Uri($"{submitModel.WebHookHost}/{scanId}/{{status}}")
+                Status = new Uri($"{submitModel.WebHookHost}/{{status}}/{scanId}")
             };
             // Sandbox mode does not take any credits
             scanProperties.Sandbox = submitModel.Sandbox;
@@ -189,24 +189,11 @@ namespace Copyleaks.SDK.Demo.Controllers
         /// <param name="scanResults">The scan results</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/{scanId}/completed")]
+        [Route("/webhook/completed/{scanId}")]
         public IActionResult CompletedProcess(string scanId, [FromBody] CompletedCallback scanResults)
         {
             // Do something with the scan results
             ResultFile.SaveResults(scanResults, scanId);
-            return Ok();
-        }
-        /// <summary>
-        /// Endpoint to listedn to the completed webhook
-        /// </summary>
-        /// <param name="scanId"></param>
-        /// <param name="scanResults"></param>
-        /// <returns></returns>
-        [HttpPost("/webhook/completed/{scanId}/completed")]
-        public IActionResult CompletedWebhookProcess([FromRoute] string scanId, [FromBody] CompletedCallback scanResults)
-        {
-            var completedWebhook = JsonConvert.DeserializeObject<CompletedWebhook>(JsonConvert.SerializeObject(scanResults));
-            // do something with the model
             return Ok();
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

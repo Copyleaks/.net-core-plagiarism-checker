@@ -12,12 +12,12 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks
         [JsonProperty("score")]
         public NewResultScore Score { get; set; }
         [JsonProperty("internet")]
-        public List<NewResultInternet> Internet { get; set; }
+        public NewResultInternet[] Internet { get; set; }
         [JsonProperty("database")]
-        public List<SharedResultsModel> Database { get; set; }
+        public SharedResultsModel[] Database { get; set; }
         [JsonProperty("batch")]
-        public List<SharedResultsModel> Batch { get; set; }
+        public SharedResultsModel[] Batch { get; set; }
         [JsonProperty("repositories")]
-        public List<NewResultsRepositories> Repositories { get; set; }
+        public NewResultsRepositories[] Repositories { get; set; }
     }
 }
