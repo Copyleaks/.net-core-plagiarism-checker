@@ -30,8 +30,10 @@ using Copyleaks.SDK.V3.API.Exceptions;
 using Copyleaks.SDK.V3.API.Models.Callbacks;
 using Copyleaks.SDK.V3.API.Models.Requests;
 using Copyleaks.SDK.V3.API.Models.Requests.Properties;
+using Copyleaks.SDK.V3.API.Models.Responses.Webhooks;
 using Copyleaks.SDK.V3.API.Models.Types;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using SampleWebApplication.Models;
 using System;
 using System.Diagnostics;
@@ -67,7 +69,7 @@ namespace Copyleaks.SDK.Demo.Controllers
         {
             var response = new LoginResponse();
             try
-            {                
+            {
                 // Use CopyleaksIdentityApi to aquire a login Token from 
                 Guid temp;
                 var validOrEmptyKey = Guid.TryParse(loginModel.Key, out temp) ? loginModel.Key : Guid.Empty.ToString();
@@ -160,7 +162,7 @@ namespace Copyleaks.SDK.Demo.Controllers
             {
                 // Copyleaks API will POST the scan results to the 'completed' callback
                 // See 'CompletedProcess' method for more details
-                Status = new Uri($"{submitModel.WebHookHost}/{scanId}/{{status}}")
+                Status = new Uri($"{submitModel.WebHookHost}/{{status}}/{scanId}")
             };
             // Sandbox mode does not take any credits
             scanProperties.Sandbox = submitModel.Sandbox;
@@ -187,14 +189,13 @@ namespace Copyleaks.SDK.Demo.Controllers
         /// <param name="scanResults">The scan results</param>
         /// <returns></returns>
         [HttpPost]
-        [Route("/{scanId}/completed")]
-        public IActionResult CompletedProcess(string scanId, [FromBody]CompletedCallback scanResults)
+        [Route("/webhook/completed/{scanId}")]
+        public IActionResult CompletedProcess(string scanId, [FromBody] CompletedCallback scanResults)
         {
             // Do something with the scan results
             ResultFile.SaveResults(scanResults, scanId);
             return Ok();
         }
-
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
