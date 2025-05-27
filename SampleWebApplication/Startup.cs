@@ -41,7 +41,7 @@ namespace SampleWebApplication
         public IConfiguration Configuration { get; }
 
         public void ConfigureServices(IServiceCollection services)
-        {            
+        {
             services.Configure<CookiePolicyOptions>(options =>
             {
                 options.CheckConsentNeeded = context => true;
@@ -49,7 +49,12 @@ namespace SampleWebApplication
             });
 
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            // Endpoint routing must be disabled for 2.1 with UseMvc()
+            services.AddMvc(options =>
+            {
+                options.EnableEndpointRouting = false;
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -68,14 +73,13 @@ namespace SampleWebApplication
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=CopyleaksDemo}/{action=Index}/{id?}");
             });
-
-
 
         }
     }
