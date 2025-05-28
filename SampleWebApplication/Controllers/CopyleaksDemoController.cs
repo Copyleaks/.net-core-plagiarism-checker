@@ -191,7 +191,7 @@ namespace Copyleaks.SDK.Demo.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("/{scanId}/completed")]
-        public IActionResult CompletedProcess(string scanId, [FromBody] CompletedCallback scanResults)
+        public IActionResult CompletedProcess([FromRoute]string scanId, [FromBody] CompletedCallback scanResults)
         {
             // Do something with the scan results
             ResultFile.SaveResults(scanResults, scanId);

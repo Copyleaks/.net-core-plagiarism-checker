@@ -41,7 +41,7 @@ namespace Copyleaks.SDK.Demo.Controllers
         public IActionResult CompletedWebhookProcessor([FromRoute]string scanId, [FromBody] CompletedWebhookModel scanResults)
         {
             // Do something with the scan results
-            Console.WriteLine(JsonConvert.SerializeObject(scanResults, Formatting.Indented));
+            Console.WriteLine("Recieved Completed Webhook: " + JsonConvert.SerializeObject(scanResults, Formatting.Indented));
             return Ok(scanResults);
         }
 
@@ -52,7 +52,7 @@ namespace Copyleaks.SDK.Demo.Controllers
         public IActionResult ErrorWebhookProccessor([FromRoute] string scanId, [FromBody] ErrorWebhookModel scanResults)
         {
             // Do something with the scan results
-            Console.WriteLine(JsonConvert.SerializeObject(scanResults, Formatting.Indented));
+            Console.WriteLine("Recieved Error Webhook: "+JsonConvert.SerializeObject(scanResults, Formatting.Indented));
             return Ok(scanResults);
         }
 
@@ -62,7 +62,7 @@ namespace Copyleaks.SDK.Demo.Controllers
         public IActionResult CreditsCheckedWebhookProccessor([FromRoute] string scanId, [FromBody] CreditsCheckedWebhookModel scanResults)
         {
             // Do something with the scan results
-            Console.WriteLine(JsonConvert.SerializeObject(scanResults, Formatting.Indented));
+            Console.WriteLine("Recieved Credits Checked Webhook: " + JsonConvert.SerializeObject(scanResults, Formatting.Indented));
             return Ok(scanResults);
         }
 
@@ -73,7 +73,7 @@ namespace Copyleaks.SDK.Demo.Controllers
         public IActionResult IndexedWebhookProccessor([FromRoute] string scanId, [FromBody] IndexedWebhookModel scanResults)
         {
             // Do something with the scan results
-            Console.WriteLine(JsonConvert.SerializeObject(scanResults, Formatting.Indented));
+            Console.WriteLine("Recieved Indexed Webhook: " + JsonConvert.SerializeObject(scanResults, Formatting.Indented));
             return Ok(scanResults);
         }
         [HttpPost]
@@ -82,7 +82,7 @@ namespace Copyleaks.SDK.Demo.Controllers
         public IActionResult NewResultWebhookProccessor([FromRoute] string scanId, [FromBody] NewResultWebhookModel scanResults)
         {
             // Do something with the scan results
-            Console.WriteLine(JsonConvert.SerializeObject(scanResults, Formatting.Indented));
+            Console.WriteLine("Recieved New Results Webhook: " + JsonConvert.SerializeObject(scanResults, Formatting.Indented));
             return Ok(scanResults);
         }
     }
