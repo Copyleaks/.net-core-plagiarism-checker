@@ -23,15 +23,16 @@
 ********************************************************************************/
 
 using Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.BaseModels;
-using Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.ErrorModels;
+using Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.CompletedModels;
 using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks
 {
-    public class ErrorWebhook : StatusWebhook
+    public class CreditsCheckedWebhookModel : StatusWebhook
     {
-        [JsonProperty("error")]
-        public Error error {  get; set; }
-
+        [JsonProperty("credits")]
+        private int Credits { get; set; }
+        [JsonProperty("scannedDocument")]
+        private ScannedDocument ScannedDocument { get; set; }
     }
 }

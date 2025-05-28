@@ -28,7 +28,7 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks
 {
-    public class CompletedWebhook : StatusWebhook
+    public class CompletedWebhookModel : StatusWebhook
     {
         [JsonProperty("results")]
         public Results Results { get; set; }
