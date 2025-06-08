@@ -46,6 +46,8 @@ namespace Copyleaks.SDK.V3.API.Helpers
 
         public const string writingAssitantApiVersion = "v1";
 
+        public const string textModerationApiVersion = "v1";
+
         #endregion
         static ConfigurationManager()
         {
@@ -57,7 +59,8 @@ namespace Copyleaks.SDK.V3.API.Helpers
                     { "RequestsTimeout", RequestsTimeout},
                     { "apiVersion", apiVersion },
                     { "aiDetectionApiVersion", aiDetectionApiVersion},
-                    { "writingAssistantApiVersion", writingAssitantApiVersion}
+                    { "writingAssistantApiVersion", writingAssitantApiVersion},
+                    { "textModerationApiVersion",textModerationApiVersion}
                 }).Build();
         }
 
