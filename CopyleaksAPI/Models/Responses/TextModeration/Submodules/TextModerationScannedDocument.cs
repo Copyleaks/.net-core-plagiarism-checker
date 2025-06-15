@@ -28,8 +28,8 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.TextModeration.Submodules
 {
     public class TextModerationScannedDocument
     {
-        [JsonProperty("id")]
-        public string Id { get; set; }
+        [JsonProperty("scanId")]
+        public string ScanId { get; set; }
 
         [JsonProperty("totalWords")]
         public int TotalWords { get; set; }

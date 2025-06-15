@@ -29,6 +29,7 @@ using System.Threading.Tasks;
 using Copyleaks.SDK.V3.API.Exceptions;
 using Copyleaks.SDK.V3.API.Extensions;
 using Copyleaks.SDK.V3.API.Helpers;
+using Copyleaks.SDK.V3.API.Models.Constants;
 using Copyleaks.SDK.V3.API.Models.Requests.TextModeration;
 using Copyleaks.SDK.V3.API.Models.Responses.TextModeration;
 using Newtonsoft.Json;
@@ -53,28 +54,37 @@ namespace Copyleaks.SDK.V3.API
 
         private void SetUpService()
         {
-            this.CopyleaksApiServer = ConfigurationManager.Configuration["ApiEndPoint"];
-            this.TextModerationApiVersion = ConfigurationManager.Configuration["textModerationApiVersion"];
+            this.CopyleaksApiServer = ConfigurationManager.Configuration[CopyleaksConstants.ApiEndPoint];
+            this.TextModerationApiVersion = ConfigurationManager.Configuration[CopyleaksConstants.TextModerationApiVersion];
         }
 
+        /// <summary>
+        /// This function for submitting text to the copyleaks text moderation client.
+        /// it recieves a scanId a requestModel and token. creates a post request to copyleaks servers adn return the response as TextModerationResponseModel.
+        /// </summary>
+        /// <param name="scanId"></param>
+        /// <param name="textModerationRequestModel"></param>
+        /// <param name="token"></param>
+        /// <returns> model of TextModerationResponseModel represents the response from copyleaks servers</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="CopyleaksHttpException"></exception>
         public async Task<TextModerationResponseModel> SubmitTextAsync(string scanId, TextModerationRequestModel textModerationRequestModel, string token)
         {
             #region Input validation
             if (string.IsNullOrEmpty(scanId))
                 throw new ArgumentNullException("ScanId is mandatory", nameof(scanId));
 
-            if (string.IsNullOrEmpty(scanId))
+            if (string.IsNullOrEmpty(token))
                 throw new ArgumentNullException("Token is mandatory", nameof(token));
 
             if (string.IsNullOrEmpty(textModerationRequestModel.Text))
                 throw new ArgumentNullException("Text is mandatory.", nameof(textModerationRequestModel.Text));
             #endregion
 
-            var method = new HttpMethod("POST");
             string requestUri = $"{this.CopyleaksApiServer}{this.TextModerationApiVersion}/text-moderation/{scanId}/check";
 
             // Add requerst body and headers
-            var request = new HttpRequestMessage(method, requestUri);
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
             request.Content = new StringContent(JsonConvert.SerializeObject(textModerationRequestModel), Encoding.UTF8, "application/json");
             request.SetupHeaders(token);
 
@@ -87,8 +97,7 @@ namespace Copyleaks.SDK.V3.API
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                 return JsonConvert.DeserializeObject<TextModerationResponseModel>(json);
-            }
-            ;
+            };
         }
     }
 }

@@ -22,6 +22,7 @@
  SOFTWARE.
 ********************************************************************************/
 
+using Copyleaks.SDK.V3.API.Models.Constants;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 using System.IO;
@@ -34,7 +35,7 @@ namespace Copyleaks.SDK.V3.API.Helpers
     public static class ConfigurationManager
     {
         #region Constants
-        public static string ApiEndPoint = "https://api.copyleaks.com/";
+        public static string apiEndPoint = "https://api.copyleaks.com/";
 
         public static string IdEndPoint = "https://id.copyleaks.com/";
 
@@ -54,13 +55,13 @@ namespace Copyleaks.SDK.V3.API.Helpers
             Configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection(new Dictionary<string, string>()
                 {
-                    { "apiEndPoint", ApiEndPoint },
-                    { "idEndPoint",  IdEndPoint },
-                    { "RequestsTimeout", RequestsTimeout},
-                    { "apiVersion", apiVersion },
-                    { "aiDetectionApiVersion", aiDetectionApiVersion},
-                    { "writingAssistantApiVersion", writingAssitantApiVersion},
-                    { "textModerationApiVersion",textModerationApiVersion}
+                    { CopyleaksConstants.ApiEndPoint, apiEndPoint },
+                    { CopyleaksConstants.IdEndPoint,  IdEndPoint },
+                    { CopyleaksConstants.RequestsTimeout, RequestsTimeout},
+                    { CopyleaksConstants.ApiVersion, apiVersion },
+                    { CopyleaksConstants.AiDetectionApiVersion, aiDetectionApiVersion},
+                    { CopyleaksConstants.WritingAssistantApiVersion, writingAssitantApiVersion},
+                    { CopyleaksConstants.TextModerationApiVersion,textModerationApiVersion}
                 }).Build();
         }
 
