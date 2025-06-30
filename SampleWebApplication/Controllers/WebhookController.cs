@@ -22,7 +22,6 @@
  SOFTWARE.
 ********************************************************************************/
 using System;
-using Copyleaks.SDK.V3.API.Models.Callbacks;
 using Copyleaks.SDK.V3.API.Models.Responses.Webhooks;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;

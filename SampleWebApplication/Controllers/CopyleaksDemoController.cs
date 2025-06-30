@@ -22,6 +22,12 @@
  SOFTWARE.
 ********************************************************************************/
 
+using System;
+using System.Diagnostics;
+using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading.Tasks;
 using Copyleaks.SDK.Demo.Helpers;
 using Copyleaks.SDK.Demo.Models.Requests;
 using Copyleaks.SDK.Demo.Models.Responses;
@@ -30,17 +36,9 @@ using Copyleaks.SDK.V3.API.Exceptions;
 using Copyleaks.SDK.V3.API.Models.Callbacks;
 using Copyleaks.SDK.V3.API.Models.Requests;
 using Copyleaks.SDK.V3.API.Models.Requests.Properties;
-using Copyleaks.SDK.V3.API.Models.Responses.Webhooks;
 using Copyleaks.SDK.V3.API.Models.Types;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using SampleWebApplication.Models;
-using System;
-using System.Diagnostics;
-using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Copyleaks.SDK.Demo.Controllers
 {
