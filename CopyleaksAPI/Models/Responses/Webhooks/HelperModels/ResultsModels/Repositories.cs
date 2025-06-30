@@ -33,9 +33,9 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.ResultsMod
         /// </summary>
         [JsonProperty("repositoryId")]
         public string RepositoryId {  get; set; }
-        
+
         /// <summary>
-        /// Tags object
+        /// Tags object array
         /// </summary>
         [JsonProperty("tags")]
         public Tags[] Tags { get; set; }

@@ -29,7 +29,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.ResultsMod
     public class Batch : SharedResultsModel
     {
         /// <summary>
-        /// Tags object
+        /// Tags object array
         /// </summary>
         [JsonProperty("tags")]
         public Tags[] Tags { get; set; }
