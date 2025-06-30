@@ -31,8 +31,8 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks
     public class CreditsCheckedWebhookModel : StatusWebhook
     {
         [JsonProperty("credits")]
-        private int Credits { get; set; }
+        public int Credits { get; set; }
         [JsonProperty("scannedDocument")]
-        private ScannedDocument ScannedDocument { get; set; }
+        public ScannedDocument ScannedDocument { get; set; }
     }
 }

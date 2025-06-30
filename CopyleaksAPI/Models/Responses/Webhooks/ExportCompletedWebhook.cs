@@ -32,8 +32,8 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks
     public class ExportCompletedWebhook:Webhook
     {
         [JsonProperty("completed")]
-        private Boolean Completed { get; set; }
+        public Boolean Completed { get; set; }
         [JsonProperty("tasks")]
-        private Task[] Tasks {  get; set; }
+        public Task[] Tasks {  get; set; }
     }
 }
