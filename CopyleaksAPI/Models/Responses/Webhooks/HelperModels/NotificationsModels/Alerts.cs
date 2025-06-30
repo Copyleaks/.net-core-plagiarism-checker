@@ -32,7 +32,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.Notificati
         /// Scan alert category.
         /// </summary>
         [JsonProperty("category")]
-        public string Category { get; set; }
+        public int Category { get; set; }
 
         /// <summary>
         /// Scan alert code. The code is unique for each scan alert.
@@ -62,7 +62,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.Notificati
         /// Specifies the importance of the scan alert.
         /// </summary>
         [JsonProperty("severity")]
-        public string Severity { get; set; }
+        public int Severity { get; set; }
 
         /// <summary>
         /// Additional data about the scan alert. Supplied as a json string.
