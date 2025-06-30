@@ -60,7 +60,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.CompletedM
         public string CreationTime;
 
         /// <summary>
-        /// metadate of the scanned document
+        /// Metadata object
         /// </summary>
         [JsonProperty("metadata")]
         public Metadata Metadata;

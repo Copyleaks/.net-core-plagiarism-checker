@@ -51,10 +51,10 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.NewResults
         /// </summary>
         [JsonProperty("matchedWords")]
         public int MatchedWords{get;set;}
-
-        [JsonProperty("scanId")]
-        public string ScanId{get;set;}
-
+        
+        /// <summary>
+        /// Metadata object
+        /// </summary>
         [JsonProperty("metadata")]
         public Metadata Metadata{get;set;}
 

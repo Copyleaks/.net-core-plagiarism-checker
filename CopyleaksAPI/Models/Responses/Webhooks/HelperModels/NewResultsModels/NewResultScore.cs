@@ -28,6 +28,9 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.NewResults
 {
     public class NewResultScore
     {
+        /// <summary>
+        /// The percentage of similar words from all results. The calculation does not include excluded references, quotations, etc...
+        /// </summary>
         [JsonProperty("aggregatedScore")]
         public decimal AggregatedScore {  get; set; }
     }

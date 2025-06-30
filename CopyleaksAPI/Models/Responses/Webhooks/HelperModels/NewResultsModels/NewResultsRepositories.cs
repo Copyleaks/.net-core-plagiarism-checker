@@ -29,8 +29,15 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.NewResults
 {
     public class NewResultsRepositories:SharedResultsModel
     {
+        /// <summary>
+        /// The repository Id that has the result.
+        /// </summary>
         [JsonProperty("repositoryId")]
         public string RepositoryId {  get; set; }
+
+        /// <summary>
+        /// Metadata object
+        /// </summary>
         [JsonProperty("metdata")]
         public new RepositoryMetadata Metdata { get; set; }
     }

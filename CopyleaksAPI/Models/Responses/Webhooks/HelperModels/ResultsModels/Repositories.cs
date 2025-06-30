@@ -33,10 +33,16 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.ResultsMod
         /// </summary>
         [JsonProperty("repositoryId")]
         public string RepositoryId {  get; set; }
-
+        
+        /// <summary>
+        /// Tags object
+        /// </summary>
         [JsonProperty("tags")]
         public Tags[] Tags { get; set; }
 
+        /// <summary>
+        /// Metadata object
+        /// </summary>
         [JsonProperty("metadata")]
         public new RepositoryMetadata Metadata { get; set; }
 

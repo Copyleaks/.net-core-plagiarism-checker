@@ -59,6 +59,9 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.ResultsMod
         [JsonProperty("scanId")]
         public string ScanId { get; set; }
 
+        /// <summary>
+        /// Metdata object
+        /// </summary>
         [JsonProperty("metadata")]
         public Metadata Metadata { get; set; }
 
