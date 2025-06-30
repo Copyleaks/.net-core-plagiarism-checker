@@ -38,52 +38,52 @@ namespace Copyleaks.SDK.Demo.Controllers
         [HttpPost]
         [Route("completed/{scanId}")]
         // this endpoint handles the completed webhook response from copyleaks system
-        public IActionResult CompletedWebhookProcessor([FromRoute]string scanId, [FromBody] CompletedWebhookModel scanResults)
+        public IActionResult CompletedWebhookProcessor([FromRoute]string scanId, [FromBody] CompletedWebhookModel completedWebhook)
         {
             // Do something with the scan results
-            Console.WriteLine("Recieved Completed Webhook: " + JsonConvert.SerializeObject(scanResults, Formatting.Indented));
-            return Ok(scanResults);
+            Console.WriteLine("Recieved Completed Webhook: " + JsonConvert.SerializeObject(completedWebhook, Formatting.Indented));
+            return Ok(completedWebhook);
         }
 
 
         [HttpPost]
         [Route("error/{scanId}")]
         // this endpoint handles the error webhook response from copyleaks system
-        public IActionResult ErrorWebhookProccessor([FromRoute] string scanId, [FromBody] ErrorWebhookModel scanResults)
+        public IActionResult ErrorWebhookProccessor([FromRoute] string scanId, [FromBody] ErrorWebhookModel errorWebhook)
         {
             // Do something with the scan results
-            Console.WriteLine("Recieved Error Webhook: "+JsonConvert.SerializeObject(scanResults, Formatting.Indented));
-            return Ok(scanResults);
+            Console.WriteLine("Recieved Error Webhook: "+JsonConvert.SerializeObject(errorWebhook, Formatting.Indented));
+            return Ok(errorWebhook);
         }
 
         [HttpPost]
         [Route("creditsChecked/{scanId}")]
         // this endpoint handles the credits-checked webhook response from copyleaks system
-        public IActionResult CreditsCheckedWebhookProccessor([FromRoute] string scanId, [FromBody] CreditsCheckedWebhookModel scanResults)
+        public IActionResult CreditsCheckedWebhookProccessor([FromRoute] string scanId, [FromBody] CreditsCheckedWebhookModel creditsCheckedWebhook)
         {
             // Do something with the scan results
-            Console.WriteLine("Recieved Credits Checked Webhook: " + JsonConvert.SerializeObject(scanResults, Formatting.Indented));
-            return Ok(scanResults);
+            Console.WriteLine("Recieved Credits Checked Webhook: " + JsonConvert.SerializeObject(creditsCheckedWebhook, Formatting.Indented));
+            return Ok(creditsCheckedWebhook);
         }
 
 
         [HttpPost]
         [Route("indexed/{scanId}")]
         // this endpoint handles the indexed webhook response from copyleaks system
-        public IActionResult IndexedWebhookProccessor([FromRoute] string scanId, [FromBody] IndexedWebhookModel scanResults)
+        public IActionResult IndexedWebhookProccessor([FromRoute] string scanId, [FromBody] IndexedWebhookModel indexedWebhook)
         {
             // Do something with the scan results
-            Console.WriteLine("Recieved Indexed Webhook: " + JsonConvert.SerializeObject(scanResults, Formatting.Indented));
-            return Ok(scanResults);
+            Console.WriteLine("Recieved Indexed Webhook: " + JsonConvert.SerializeObject(indexedWebhook, Formatting.Indented));
+            return Ok(indexedWebhook);
         }
         [HttpPost]
         [Route("new-results/{scanId}")]
         // this endpoint handles the new result webhook response from copyleaks system
-        public IActionResult NewResultWebhookProccessor([FromRoute] string scanId, [FromBody] NewResultWebhookModel scanResults)
+        public IActionResult NewResultWebhookProccessor([FromRoute] string scanId, [FromBody] NewResultWebhookModel newResultsWebhook)
         {
             // Do something with the scan results
-            Console.WriteLine("Recieved New Results Webhook: " + JsonConvert.SerializeObject(scanResults, Formatting.Indented));
-            return Ok(scanResults);
+            Console.WriteLine("Recieved New Results Webhook: " + JsonConvert.SerializeObject(newResultsWebhook, Formatting.Indented));
+            return Ok(newResultsWebhook);
         }
     }
 }

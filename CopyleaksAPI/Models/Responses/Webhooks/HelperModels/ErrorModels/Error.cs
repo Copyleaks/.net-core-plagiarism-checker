@@ -28,8 +28,15 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.ErrorModel
 {
     public class Error
     {
+        /// <summary>
+        /// Error code that represents the reason for failure. See below the full error table.
+        /// </summary>
         [JsonProperty("code")]
         public int Code {  get; set; }
+
+        /// <summary>
+        /// Error message that represents the reason for failure.
+        /// </summary>
         [JsonProperty("message")]
         public string Message { get; set; } 
     }

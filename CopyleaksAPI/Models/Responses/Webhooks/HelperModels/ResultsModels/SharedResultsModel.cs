@@ -29,16 +29,36 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.ResultsMod
 {
     public class SharedResultsModel
     {
+        /// <summary>
+        /// Unique result ID to identify this result.
+        /// </summary>
         [JsonProperty("id")]
         public string Id {  get; set; }
+
+        /// <summary>
+        /// Document title. Mostly extracted from the document content.
+        /// </summary>
         [JsonProperty("title")]
         public string Title { get; set; }
+
+        /// <summary>
+        /// Document brief introduction. Mostly extracted from the document content.
+        /// </summary>
         [JsonProperty("introduction")]
         public string Introduction { get; set; }
-        [JsonProperty("matchedResults")]
-        public int MatchedResults {  get; set; }
+
+        /// <summary>
+        /// Total matched words between this result and the scanned document.
+        /// </summary>
+        [JsonProperty("matchedWords")]
+        public int MatchedWords {  get; set; }
+
+        /// <summary>
+        /// In case a result was found in the Copyleaks internal database, and was submitted by you, this will show the scan id of the specific result. Otherwise, this field will remain empty.
+        /// </summary>
         [JsonProperty("scanId")]
         public string ScanId { get; set; }
+
         [JsonProperty("metadata")]
         public Metadata Metadata { get; set; }
 

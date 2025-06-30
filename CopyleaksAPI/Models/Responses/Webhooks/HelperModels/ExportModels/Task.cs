@@ -29,10 +29,21 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.ExportMode
 {
     public class Task
     {
+        /// <summary>
+        /// The endpoint address of the export task.
+        /// </summary>
         [JsonProperty("endpoint")]
         public string Endpoint {  get; set; }
+
+        /// <summary>
+        /// This flag gives an indication whether the scan was completed without internal errors on the Copyleaks side.
+        /// </summary>
         [JsonProperty("isHealthy")]
         public Boolean IsHealthy { get; set; }
+
+        /// <summary>
+        /// The status code reported by the customer servers. If the tasks.isHealthy is equal to false - this field will be null.
+        /// </summary>
         [JsonProperty("httpStatusCode")]
         public int HttpStatusCode { get; set; }
     }
