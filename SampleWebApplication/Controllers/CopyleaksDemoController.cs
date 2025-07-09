@@ -22,6 +22,12 @@
  SOFTWARE.
 ********************************************************************************/
 
+using System;
+using System.Diagnostics;
+using System.Net.Http;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading.Tasks;
 using Copyleaks.SDK.Demo.Helpers;
 using Copyleaks.SDK.Demo.Models.Requests;
 using Copyleaks.SDK.Demo.Models.Responses;
@@ -33,12 +39,6 @@ using Copyleaks.SDK.V3.API.Models.Requests.Properties;
 using Copyleaks.SDK.V3.API.Models.Types;
 using Microsoft.AspNetCore.Mvc;
 using SampleWebApplication.Models;
-using System;
-using System.Diagnostics;
-using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Copyleaks.SDK.Demo.Controllers
 {
@@ -67,7 +67,7 @@ namespace Copyleaks.SDK.Demo.Controllers
         {
             var response = new LoginResponse();
             try
-            {                
+            {
                 // Use CopyleaksIdentityApi to aquire a login Token from 
                 Guid temp;
                 var validOrEmptyKey = Guid.TryParse(loginModel.Key, out temp) ? loginModel.Key : Guid.Empty.ToString();
@@ -160,7 +160,8 @@ namespace Copyleaks.SDK.Demo.Controllers
             {
                 // Copyleaks API will POST the scan results to the 'completed' callback
                 // See 'CompletedProcess' method for more details
-                Status = new Uri($"{submitModel.WebHookHost}/{scanId}/{{status}}")
+                NewResult = new Uri($"{submitModel.WebHookHost}/new-results/{scanId}"),
+                Status = new Uri($"{submitModel.WebHookHost}/{{status}}/{scanId}")
             };
             // Sandbox mode does not take any credits
             scanProperties.Sandbox = submitModel.Sandbox;
@@ -188,7 +189,7 @@ namespace Copyleaks.SDK.Demo.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("/{scanId}/completed")]
-        public IActionResult CompletedProcess(string scanId, [FromBody]CompletedCallback scanResults)
+        public IActionResult CompletedProcess([FromRoute]string scanId, [FromBody] CompletedCallback scanResults)
         {
             // Do something with the scan results
             ResultFile.SaveResults(scanResults, scanId);
