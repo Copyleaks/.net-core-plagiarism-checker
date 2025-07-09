@@ -45,7 +45,7 @@ namespace CopyleaksAPITests
 
             var model = new CopyleaksTextModerationRequestModel()
             {
-                Text = "hello world",
+                Text = "This is some text to scan.",
                 Sandbox = true,
                 Language = "en",
                 Labels = new object[]
