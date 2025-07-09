@@ -45,7 +45,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.TextModeration
         /// If the 'language' field is not specified, our system will automatically detect the language of the content.
         /// </summary>
         [JsonProperty("language")]
-        public string Language { get; set; }
+        public string? Language { get; set; }
 
         /// <summary>
         /// A list of label configurations to be used for the moderation process.
@@ -53,7 +53,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.TextModeration
         [JsonProperty("labels")]
         [MinLength(1, ErrorMessage = "Labels array must have at least 1 elemnt.")]
         [MaxLength(32,ErrorMessage ="Labels array must have at most 32 elemnts.")]
-        public object[] Labels { get; set; }
+        public object?[] Labels { get; set; }
         
     }
 }
