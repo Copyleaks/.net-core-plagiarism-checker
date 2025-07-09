@@ -68,7 +68,7 @@ namespace Copyleaks.SDK.V3.API
         /// <returns> model of TextModerationResponseModel represents the response from copyleaks servers</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="CopyleaksHttpException"></exception>
-        public async Task<TextModerationResponseModel> SubmitTextAsync(string scanId, TextModerationRequestModel textModerationRequestModel, string token)
+        public async Task<CopyleaksTextModerationResponseModel> SubmitTextAsync(string scanId, CopyleaksTextModerationRequestModel textModerationRequestModel, string token)
         {
             #region Input validation
             if (string.IsNullOrEmpty(scanId))
@@ -96,7 +96,7 @@ namespace Copyleaks.SDK.V3.API
 
                 var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-                return JsonConvert.DeserializeObject<TextModerationResponseModel>(json);
+                return JsonConvert.DeserializeObject<CopyleaksTextModerationResponseModel>(json);
             };
         }
     }

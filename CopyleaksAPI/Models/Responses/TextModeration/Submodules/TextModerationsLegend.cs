@@ -27,9 +27,16 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.TextModeration.Submodules
 {
     public class TextModerationsLegend
     {
+        /// <summary>
+        /// The numerical index of the label.
+        /// </summary>
         [JsonProperty("index")]
-        public int Index { get; set; }
+        public object Index { get; set; }
+
+        /// <summary>
+        /// A unique string identifier for the label. This ID serves as a machine-readable way to identify the label type.
+        /// </summary>
         [JsonProperty("id")]
-        public string Id { get; set; }
+        public object Id { get; set; }
     }
 }

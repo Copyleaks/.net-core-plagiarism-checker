@@ -27,6 +27,9 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.TextModeration.Submodules
 {
     public class ModerationsModel
     {
+        /// <summary>
+        /// Moderated text segments corresponding to the submitted text. Each position in the inner arrays corresponds to a single segment in the textual version
+        /// </summary>
         [JsonProperty("text")]
         public Text Text { get; set; }
     }

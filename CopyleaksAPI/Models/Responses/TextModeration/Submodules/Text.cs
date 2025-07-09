@@ -27,6 +27,9 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.TextModeration.Submodules
 {
     public class Text
     {
+        /// <summary>
+        /// An object that groups together several arrays detailing the properties of labelled segments. 
+        /// </summary>
         [JsonProperty("chars")]
         public TextModerationChars Chars { get; set; }
     }

@@ -26,12 +26,24 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.TextModeration
 {
-    public class TextModerationResponseModel
+    public class CopyleaksTextModerationResponseModel
     {
+        /// <summary>
+        /// Moderated text segments detected in the input text.
+        /// </summary>
         [JsonProperty("moderations")]
         public ModerationsModel Moderations { get; set; }
+
+        /// <summary>
+        /// An array that provides a lookup for the labels referenced by their numerical indices in the text.chars.labels array. 
+        /// Each object within this legend array defines a specific label that was used in the scan.
+        /// </summary>
         [JsonProperty("legend")]
         public TextModerationsLegend[] Legend { get; set; }
+
+        /// <summary>
+        /// General information about the scanned document.
+        /// </summary>
         [JsonProperty("scannedDocument")]
         public TextModerationScannedDocument ScannedDocument {  get; set; }
     }

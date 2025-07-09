@@ -26,19 +26,34 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests.TextModeration
 {
-    public class TextModerationRequestModel
+    public class CopyleaksTextModerationRequestModel
     {
+        /// <summary>
+        /// Text to produce Text Moderation report for.
+        /// </summary>
         [JsonProperty("text")]
-        public string Text { get; set; } // Text to produce Text Moderation report for.
+        public string Text { get; set; }
 
+        /// <summary>
+        /// Use sandbox mode to test your integration with the Copyleaks API without consuming any credits.
+        /// </summary>
         [JsonProperty("sandbox")]
-        public bool Sandbox { get; set; } = false; // default value is set to false
+        public bool Sandbox { get; set; } = false;
 
+        /// <summary>
+        /// The language code of your content. The selected language should be on the Supported Languages list above.
+        /// If the 'language' field is not specified, our system will automatically detect the language of the content.
+        /// </summary>
         [JsonProperty("language")]
-        public string Language { get; set; } // if not provided then our system will automatically detect the language of the content.
+        public string Language { get; set; }
 
+        /// <summary>
+        /// A list of label configurations to be used for the moderation process.
+        /// </summary>
         [JsonProperty("labels")]
-        [MinLength(1, ErrorMessage = "Labels array must have at least 1 elemnt")]
+        [MinLength(1, ErrorMessage = "Labels array must have at least 1 elemnt.")]
+        [MaxLength(32,ErrorMessage ="Labels array must have at most 32 elemnts.")]
         public object[] Labels { get; set; }
+        
     }
 }

@@ -27,12 +27,21 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.TextModeration.Submodules
 {
     public class TextModerationChars
     {
-        [JsonProperty("labels")]
-        public int[] Labels { get; set; }
-
+        /// <summary>
+        /// Start character position of the labelled segment.
+        /// </summary>
         [JsonProperty("starts")]
         public int[] Starts { get; set; }
 
+        /// <summary>
+        /// Predicted label index for the corresponding segment. The index can be resolved to its ID using the supplied legend.
+        /// </summary>
+        [JsonProperty("labels")]
+        public int[] Labels { get; set; }
+
+        /// <summary>
+        /// Labelled segment character length.
+        /// </summary>
         [JsonProperty("lengths")]
         public int[] Lengths { get; set; }
 
