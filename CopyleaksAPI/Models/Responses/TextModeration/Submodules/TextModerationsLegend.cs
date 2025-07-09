@@ -31,12 +31,12 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.TextModeration.Submodules
         /// The numerical index of the label.
         /// </summary>
         [JsonProperty("index")]
-        public object Index { get; set; }
+        public int Index { get; set; }
 
         /// <summary>
         /// A unique string identifier for the label. This ID serves as a machine-readable way to identify the label type.
         /// </summary>
         [JsonProperty("id")]
-        public object Id { get; set; }
+        public string Id { get; set; }
     }
 }
