@@ -37,24 +37,25 @@ namespace CopyleaksAPITests
             var authToken = loginResponse.Token;
             string scanId = Guid.NewGuid().ToString();
 
+            var labelsArray = new object[]
+            {
+                new { id = "other-v1" },
+                new { id = "adult-v1" },
+                new { id = "toxic-v1" },
+                new { id = "violent-v1" },
+                new { id = "profanity-v1" },
+                new { id = "self-harm-v1" },
+                new { id = "harassment-v1" },
+                new { id = "hate-speech-v1" },
+                new { id = "drugs-v1" },
+                new { id = "firearms-v1" },
+                new { id = "cybersecurity-v1" },
+            };
             var model = new CopyleaksTextModerationRequestModel(
                  text: "This is some text to scan.",
                  sandbox: true,
                  language: "en",
-                 labels: new object[]
-                    {
-                        new { id = "other-v1" },
-                        new { id = "adult-v1" },
-                        new { id = "toxic-v1" },
-                        new { id = "violent-v1" },
-                        new { id = "profanity-v1" },
-                        new { id = "self-harm-v1" },
-                        new { id = "harassment-v1" },
-                        new { id = "hate-speech-v1" },
-                        new { id = "drugs-v1" },
-                        new { id = "firearms-v1" },
-                        new { id = "cybersecurity-v1" },
-                   }
+                 labels: labelsArray
             );
 
             var result = await new CopyleaksTextModerationApi().SubmitTextAsync(scanId, model, authToken).ConfigureAwait(false);
