@@ -64,7 +64,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.TextModeration
             Sandbox = sandbox;
             Language = language;
 
-            if (!labels.Any())
+            if (labels == null || !labels.Any())
                 throw new ArgumentException("Labels array must have at least 1 element.", nameof(labels));
 
             if (labels.Length > 32)
