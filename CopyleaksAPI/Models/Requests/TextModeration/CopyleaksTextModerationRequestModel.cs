@@ -23,6 +23,7 @@
 ********************************************************************************/
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests.TextModeration
@@ -63,8 +64,9 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.TextModeration
             Sandbox = sandbox;
             Language = language;
 
-            if (labels == null || labels.Length < 1)
+            if (!labels.Any())
                 throw new ArgumentException("Labels array must have at least 1 element.", nameof(labels));
+
             if (labels.Length > 32)
                 throw new ArgumentException("Labels array must have at most 32 elements.", nameof(labels));
 
