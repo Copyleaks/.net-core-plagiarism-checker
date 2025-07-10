@@ -21,6 +21,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 ********************************************************************************/
+using System;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
@@ -54,6 +55,18 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.TextModeration
         [MinLength(1, ErrorMessage = "Labels array must have at least 1 elemnt.")]
         [MaxLength(32,ErrorMessage ="Labels array must have at most 32 elemnts.")]
         public object?[] Labels { get; set; }
-        
+
+        // Constructor
+        public CopyleaksTextModerationRequestModel(string text, bool sandbox, string? language, object?[] labels)
+        {
+            Text = text ?? throw new ArgumentNullException(nameof(text));
+            Sandbox = sandbox;
+            Language = language;
+            if (labels == null || labels.Length < 1)
+                throw new ArgumentException("Labels array must have at least 1 element.", nameof(labels));
+            if (labels.Length > 32)
+                throw new ArgumentException("Labels array must have at most 32 elements.", nameof(labels));
+            Labels = labels;
+        }
     }
 }

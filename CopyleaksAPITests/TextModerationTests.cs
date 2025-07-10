@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Copyleaks.SDK.V3.API;
 using Copyleaks.SDK.V3.API.Models.Requests.TextModeration;
-using Copyleaks.SDK.V3.API.Models.Requests.WritingAssistant;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json.Linq;
 
 namespace CopyleaksAPITests
 {
-
-
     [TestClass]
     public class TextModerationTests
     {
@@ -43,12 +37,11 @@ namespace CopyleaksAPITests
             var authToken = loginResponse.Token;
             string scanId = Guid.NewGuid().ToString();
 
-            var model = new CopyleaksTextModerationRequestModel()
-            {
-                Text = "This is some text to scan.",
-                Sandbox = true,
-                Language = "en",
-                Labels = new object[]
+            var model = new CopyleaksTextModerationRequestModel(
+                 text: "This is some text to scan.",
+                 sandbox: true,
+                 language: "en",
+                 labels: new object[]
                     {
                         new { id = "other-v1" },
                         new { id = "adult-v1" },
@@ -62,7 +55,8 @@ namespace CopyleaksAPITests
                         new { id = "firearms-v1" },
                         new { id = "cybersecurity-v1" },
                    }
-            };
+            );
+
             var result = await new CopyleaksTextModerationApi().SubmitTextAsync(scanId, model, authToken).ConfigureAwait(false);
 
             Assert.IsNotNull(result, "Result should not be null.");
