@@ -9,7 +9,17 @@
     <Company>Copyleaks LTD</Company>
     <Product>Copyleaks</Product>
     <Description>Copyleaks is a popular advanced online plagiarism checker. This library provides access to Copyleaks cloud and scans your content for copyright infringement.</Description>
-    <Copyright>All rights reserved to Copyleaks Ltd.</Copyright>
+	  <!-- Add deprecation notice -->
+	  <PackageReleaseNotes>
+		  ⚠️ DEPRECATION NOTICE ⚠️
+		  AI Code Detection will be discontinued on August 29, 2025.
+		  Please remove AI code detection integrations before the sunset date.
+	  </PackageReleaseNotes>
+
+	  <!-- Mark as deprecated (NuGet 5.8+) -->
+	  <Deprecated>true</Deprecated>
+	  <DeprecationMessage>AI Code Detection will be discontinued on August 29, 2025.</DeprecationMessage>
+	  <Copyright>All rights reserved to Copyleaks Ltd.</Copyright>
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageProjectUrl>https://copyleaks.com/</PackageProjectUrl>
     <PackageIconUrl>https://copyleaks.com/images/nuget/copyleaks-icon-32.png</PackageIconUrl>
