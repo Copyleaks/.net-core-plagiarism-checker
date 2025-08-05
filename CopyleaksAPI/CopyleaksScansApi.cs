@@ -159,15 +159,15 @@ namespace Copyleaks.SDK.V3.API
         /// <returns>A task that represents the asynchronous submit operation.</returns>
         public async Task SubmitFileAsync(string scanId, FileDocument documentModel, string token)
         {
-            var fileExtension = Path.GetExtension(documentModel.Filename).TrimStart('.');
-
-            if (SupportedFilesTypes.SupportedCodeExtensions.Contains(fileExtension))
-                DeprecationService.ShowDeprecationMessgae();
-
             if (documentModel.Base64 == null)
                 throw new ArgumentException("Base64 is mandatory.", nameof(documentModel.Base64));
             else if (documentModel.Filename == null)
                 throw new ArgumentException("Filename is mandatory.", nameof(documentModel.Filename));
+
+            var fileExtension = Path.GetExtension(documentModel.Filename).TrimStart('.');
+
+            if (SupportedFilesTypes.SupportedCodeExtensions.Contains(fileExtension))
+                DeprecationService.ShowDeprecationMessgae();
 
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/scans/submit/file/{scanId}";
             await SubmitAsync(documentModel, requestUri, token).ConfigureAwait(false);
