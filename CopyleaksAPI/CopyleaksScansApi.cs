@@ -22,24 +22,27 @@
  SOFTWARE.
 ********************************************************************************/
 
+using System;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading.Tasks;
 using Copyleaks.SDK.V3.API.Exceptions;
 using Copyleaks.SDK.V3.API.Extensions;
 using Copyleaks.SDK.V3.API.Helpers;
+using Copyleaks.SDK.V3.API.Models.Constants;
 using Copyleaks.SDK.V3.API.Models.HttpCustomSend;
 using Copyleaks.SDK.V3.API.Models.Requests;
 using Copyleaks.SDK.V3.API.Models.Responses;
 using Copyleaks.SDK.V3.API.Models.Responses.Download;
 using Copyleaks.SDK.V3.API.Models.Responses.Result;
 using Copyleaks.SDK.V3.API.Models.Types;
+using Copyleaks.SDK.V3.API.Services;
 using Newtonsoft.Json;
 using Polly.Retry;
-using System;
-using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Copyleaks.SDK.V3.API
 {
@@ -156,6 +159,11 @@ namespace Copyleaks.SDK.V3.API
         /// <returns>A task that represents the asynchronous submit operation.</returns>
         public async Task SubmitFileAsync(string scanId, FileDocument documentModel, string token)
         {
+            var fileExtension = Path.GetExtension(documentModel.Filename).TrimStart('.');
+
+            if (SupportedFilesTypes.SupportedCodeExtensions.Contains(fileExtension))
+                DeprecationService.ShowDeprecationMessgae();
+
             if (documentModel.Base64 == null)
                 throw new ArgumentException("Base64 is mandatory.", nameof(documentModel.Base64));
             else if (documentModel.Filename == null)
@@ -176,7 +184,7 @@ namespace Copyleaks.SDK.V3.API
             if (documentModel.Base64 == null)
                 throw new ArgumentException("Base64 is mandatory.", nameof(documentModel.Base64));
             else if (documentModel.Filename == null)
-                throw new ArgumentException("Filename is mandatory.", nameof(documentModel.Filename));            
+                throw new ArgumentException("Filename is mandatory.", nameof(documentModel.Filename));
 
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/scans/submit/ocr/{scanId}";
             await SubmitAsync(documentModel, requestUri, token).ConfigureAwait(false);
@@ -425,7 +433,7 @@ namespace Copyleaks.SDK.V3.API
                         throw new CopyleaksHttpException(response);
                     var resultStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                     resultStream.Seek(0, SeekOrigin.Begin);
-                   await resultStream.CopyToAsync(stream).ConfigureAwait(false);
+                    await resultStream.CopyToAsync(stream).ConfigureAwait(false);
                 }
             }
         }
