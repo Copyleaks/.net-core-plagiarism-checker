@@ -1,4 +1,4 @@
-/********************************************************************************
+﻿/********************************************************************************
  The MIT License(MIT)
  
  Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
@@ -27,6 +27,7 @@ using Copyleaks.SDK.V3.API.Extensions;
 using Copyleaks.SDK.V3.API.Helpers;
 using Copyleaks.SDK.V3.API.Models.Requests.AIDetection;
 using Copyleaks.SDK.V3.API.Models.Responses.AIDetector;
+using Copyleaks.SDK.V3.API.Services;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -116,6 +117,8 @@ namespace Copyleaks.SDK.V3.API
         /// <exception cref="CopyleaksHttpException"></exception>
         public async Task<AIDetectionResult> SubmitSourceCodeAsync(string scanId, SourceCodeDocument documentModel, string token)
         {
+            DeprecationService.ShowDeprecationMessgae();
+
             if (string.IsNullOrEmpty(token))
                 throw new ArgumentException("Token is mandatory", nameof(token));
 
