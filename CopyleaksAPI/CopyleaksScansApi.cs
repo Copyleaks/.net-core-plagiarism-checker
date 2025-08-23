@@ -196,7 +196,7 @@ namespace Copyleaks.SDK.V3.API
         /// <param name="scanId">The scan Id</param>
         /// <returns>A task that represents the asynchronous operation.
         /// The task result contains the perecent progress of the scan </returns>
-        public async Task<uint> ProgressAsync(string scanId, string token)
+        public async Task<ProgressResponse> ProgressAsync(string scanId, string token)
         {
             if (string.IsNullOrEmpty(token))
                 throw new ArgumentException("mandatory", nameof(token));
@@ -219,8 +219,7 @@ namespace Copyleaks.SDK.V3.API
                     {
                         throw new CopyleaksHttpException(response);
                     }
-                    var progress = await response.ExtractJsonResultsAsync<ProgressResponse>().ConfigureAwait(false);
-                    return progress.Percents;
+                    return await response.ExtractJsonResultsAsync<ProgressResponse>().ConfigureAwait(false);
                 }
             }
         }
