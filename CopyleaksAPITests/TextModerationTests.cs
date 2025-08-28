@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Copyleaks.SDK.V3.API;
+using Copyleaks.SDK.V3.API.Models.Constants;
 using Copyleaks.SDK.V3.API.Models.Requests.TextModeration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -39,22 +40,21 @@ namespace CopyleaksAPITests
 
             var labelsArray = new object[]
             {
-                new { id = "other-v1" },
-                new { id = "adult-v1" },
-                new { id = "toxic-v1" },
-                new { id = "violent-v1" },
-                new { id = "profanity-v1" },
-                new { id = "self-harm-v1" },
-                new { id = "harassment-v1" },
-                new { id = "hate-speech-v1" },
-                new { id = "drugs-v1" },
-                new { id = "firearms-v1" },
-                new { id = "cybersecurity-v1" },
+                new { id = CopyleaksTextModerationConstants.ADULT_V1 },
+                new { id = CopyleaksTextModerationConstants.TOXIC_V1 },
+                new { id = CopyleaksTextModerationConstants.VIOLENT_V1 },
+                new { id = CopyleaksTextModerationConstants.PROFANITY_V1 },
+                new { id = CopyleaksTextModerationConstants.SELF_HARM_V1 },
+                new { id = CopyleaksTextModerationConstants.HARASSMENT_V1 },
+                new { id = CopyleaksTextModerationConstants.HATE_SPEECH_V1 },
+                new { id = CopyleaksTextModerationConstants.DRUGS_V1 },
+                new { id = CopyleaksTextModerationConstants.FIREARMS_V1 },
+                new { id = CopyleaksTextModerationConstants.CYBERSECURITY_V1 }
             };
             var model = new CopyleaksTextModerationRequestModel(
                  text: "This is some text to scan.",
                  sandbox: true,
-                 language: "en",
+                 language: CopyleaksTextModerationLanguages.ENGLISH,
                  labels: labelsArray
             );
 
