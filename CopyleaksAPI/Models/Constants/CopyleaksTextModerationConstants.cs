@@ -23,6 +23,10 @@
 ********************************************************************************/
 namespace Copyleaks.SDK.V3.API.Models.Constants
 {
+    /// <summary>
+    /// Provides a collection of constants representing different text moderation categories supported by the Copyleaks
+    /// Text Moderation API.
+    /// </summary>
     public static class CopyleaksTextModerationConstants
     {
         public const string ADULT_V1 = "adult-v1";
