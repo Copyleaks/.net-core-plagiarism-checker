@@ -1,112 +1,271 @@
-<h2>Copyleaks API C# SDK</h2>
-<p>
-Copyleaks SDK is a simple framework that allows you to perform plagiarism scans and track content distribution around the web, using Copyleaks API.
-</p>
-<p>
-With Copyleaks SDK you can submit a scan for:  
-<ul>
-<li>Webpages</li>
-<li>Local files - pdf, doc, docx, rtf and more <a href="https://api.copyleaks.com/GeneralDocumentation/TechnicalSpecifications#supportedfiletypes">(see full list)</a></li>
-<li>Free text</li>
-<li>OCR (Optical Character Recognition) - scanning pictures containing textual content <a href="https://api.copyleaks.com/GeneralDocumentation/TechnicalSpecifications#supportedfiletypes">(see full list)</a></li>
-</ul>
-Instructions for using the SDK are below. For a quick example demonstrating the SDK capabilities just look at the code examples under “examples”.
-</p>
-<h3>Integration</h3>
-<p>You can integrate with the Copyleaks SDK in one of two ways:</p>
-<ol>
-<li>Download the code from here, compile it and add reference to the assembly.</li>
-<li>Add <i>Copyleaks</i> NuGet by running the following command in the <a href="http://docs.nuget.org/consume/package-manager-console">Package Manager Console</a></li>
-<pre>
+# Copyleaks SDK
+The official [Copyleaks](https://copyleaks.com/) .NET library, supporting .NET versions:. NET8
+
+## 🚀 Getting Started
+Before you start, ensure you have the following:
+
+*   An active Copyleaks account. If you don’t have one, [Sign up for free](https://copyleaks.com/signup).
+*   You can find your API key on the [API Dashboard](https://api.copyleaks.com/dashboard).
+
+Once you have your account and API key:
+
+**Install the SDK**: 
+
+Add Copyleaks NuGet by running the following command in the Package Manager Consoleversion:   
+```bash
 Install-Package Copyleaks
-</pre>
-</ol>
-<h3>Signing Up and Getting Your API Key</h3>
- <p>To use the Copyleaks API you need to be a registered user. Signing up is quick and free of charge.</p>
- <p><a href="https://api.copyleaks.com/?register=true">Signup</a> to Copyleaks and confirm your account by clicking the link on the confirmation email. Generate your personal API key on your dashboard (<a href="https://api.copyleaks.com/dashboard">dashboard/</a>) under 'API Access Credentials'. </p>
- <p>For more information check out our <a href="https://api.copyleaks.com/documentation/v3">API guide</a>.</p>
-<h3>Example</h3>
+```
 
-<p>The Copyleaks system architecture was built to support the asynchronous model.<br>
-The asynchronous model allows you to get notified immediately when your scan status changes, without having to call any other methods.<br>
-For more details see: <a href="https://api.copyleaks.com/documentation/v3/webhooks">webhooks</a> and <a href="https://api.copyleaks.com/documentation/v3/activities/single-file-scan">single file scan</a></p>
+## 📚 Documentation
+To learn more about how to use Copyleaks API please check out our [Documentation](https://docs.copyleaks.com/resources/sdks/csharp/). 
 
-See the [SubmittingScanExample.cs](https://github.com/Copyleaks/.net-core-plagiarism-checker/blob/master/CopyleaksAPITests/SubmitFileTest.cs) file.
+## 💡 Usage Examples
+Here are some common usage examples for the Copyleaks SDK. You can also see a comprehensive code example in the SampleWebApplication.csproj on our GitHub repository: [SampleWebApplication](https://github.com/Copyleaks/.net-core-plagiarism-checker/tree/master/SampleWebApplication).
 
-You can run it as a test with [Program.cs](https://github.com/Copyleaks/.net-core-plagiarism-checker/blob/master/SampleWebApplication/Program.cs) file which found in [SampleWebApplication](https://github.com/Copyleaks/.net-core-plagiarism-checker/tree/master/SampleWebApplication) directory.
+### Get Authentication Token
 
-<p>Waiting for webhooks:</p>
+This example demonstrates how to log in to the Copyleaks API and obtain an authentication token.
 
-<pre>
-[HttpPost]
-[Route("http://webhook.url.com/completed/{scanId}")]
-public ActionResult Completed([FromRoute]string scanId, [FromBody] CompletedCallback model)
+```csharp
+using System;
+using System.Text;
+using System.Threading.Tasks;
+using Copyleaks.SDK.V3.API;
+using Copyleaks.SDK.V3.API.Models.Requests;
+using Copyleaks.SDK.V3.API.Models.Requests.Properties;
+
+public class Program
 {
-	Console.WriteLine($"scan {scanId} has found {model.Results.Score.IdenticalWords} identical copied words");
-	// Do something with completed scan...
-	return Ok();
-}
+    // --- Your Credentials ---
+    private const string USER_EMAIL = "YOUR_EMAIL_ADDRESS";
+    private const string USER_KEY = "YOUR_API_KEY";
+    private const string WEBHOOK_URL = "https://your-server.com/webhook/{STATUS}";
+    // --------------------
 
-[HttpPost]
-[Route("http://webhook.url.com/indexed/{scanId}")]
-public ActionResult Indexed([FromRoute]string scanId, [FromBody] IndexOnlyCallback model)
+    public static async Task Main(string[] args)
+    {
+        // Log in to the Copyleaks API
+        Console.WriteLine("Authenticating...");
+        var identityClient = new CopyleaksIdentityApi();
+        var loginResponse = await identityClient.LoginAsync(USER_EMAIL, USER_KEY);
+        Console.WriteLine("✅ Logged in successfully!");
+    }
+}
+```
+For a detailed understanding of the authentication process, refer to the Copyleaks Login Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/account/login).
+##
+### Submit Text for Plagiarism Scan
+This example shows how to prepare and submit raw text content for a plagiarism scan.
+
+```csharp
+using System;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using Copyleaks.SDK.V3.API;
+using Copyleaks.SDK.V3.API.Models.Requests;
+using Copyleaks.SDK.V3.API.Models.Requests.Properties;
+using Copyleaks.SDK.V3.API.Models.Types;
+
+public class Program
 {
-	Console.WriteLine($"scan {scanId} was indexed");
-	return Ok();
-}
+    // --- Your Credentials ---
+    private const string USER_EMAIL = "YOUR_EMAIL_ADDRESS";
+    private const string USER_KEY = "YOUR_API_KEY";
+    private const string WEBHOOK_URL = "https://your-server.com/webhook/{STATUS}";
+    // --------------------
 
-[HttpPost]
-[Route("http://webhook.url.com/creditsChecked/{scanId}")]
-public ActionResult Credits([FromRoute]string scanId, [FromBody] CreditsCheckCallback model)
+    public static async Task Main(string[] args)
+    {
+        var LoginResposne = await IdentityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
+        var authToken = LoginResposne.Token;
+
+        // A unique scan ID for the scan
+        // In case this scan ID already exists for this user Copyleaks API will return HTTP 409 Conflict result
+        string scanId = Guid.NewGuid().ToString();
+        string scannedText = "Hellow world";
+
+        ClientScanProperties clientScanProperties = new ClientScanProperties();
+
+        clientScanProperties.Action = eSubmitAction.Scan;
+        clientScanProperties.Webhooks = new Webhooks
+        {
+            // Copyleaks API will POST the scan results to the 'completed' callback
+            // See 'CompletedProcess' method for more details
+            Status = new Uri(WEBHOOK_URL)
+        };
+
+        // Sandbox mode does not take any credits
+        clientScanProperties.Sandbox = true;
+
+        clientScanProperties.ReportSection.Create = true;
+
+        // Submit a file for scan in https://api.copyleaks.com
+        await new CopyleaksScansApi().SubmitFileAsync(scanId, new FileDocument
+        {
+            Base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(scannedText)),
+            Filename = "text.txt",
+            PropertiesSection = clientScanProperties
+        },
+        authToken).ConfigureAwait(false);
+    }
+}
+```
+For a full guide please refer to our step by step [Guide](https://docs.copyleaks.com/guides/authenticity/detect-plagiarism-text)
+
+For a detailed understanding of the plagiarism detection process, refer to the Copyleaks Submit Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/scans/submit-file)
+##
+### AI-Generated Text Detection
+Use the AI detection client to determine if content was generated by artificial intelligence.
+
+```csharp
+using Copyleaks.SDK.V3.API;
+using System;
+using System.Net.Http;
+using System.Net;
+using System.Threading.Tasks;
+using Copyleaks.SDK.V3.API.Models.Requests.AIDetection;
+
+public class Program
 {
-	Console.WriteLine($"scan {scanId} will consume {model.Credits}");
-	// Decide whether or not to trigger the scan...
-	return Ok();
-}
+    // --- Your Credentials ---
+    private const string USER_EMAIL = "YOUR_EMAIL_ADDRESS";
+    private const string USER_KEY = "YOUR_API_KEY";
+    private const string WEBHOOK_URL = "https://your-server.com/webhook/{STATUS}";
+    // --------------------
 
-[HttpPost]
-[Route("http://webhook.url.com/error/{scanId}")]
-public ActionResult Error([FromRoute]string scanId, [FromBody] ErrorCallback model)
+    public static async Task Main(string[] args)
+    {
+            var loginResponse = await IdentityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
+            var authToken = loginResponse.Token;
+            string scanId = Guid.NewGuid().ToString();
+            var text = @"Lions are social animals, living in groups called prides, typically consisting of several females, their offspring, and a few males.   Female lions are the primary hunters, working together to catch prey. Lions are known for their strength, teamwork, and complex social structures.";
+
+            var naturalLanguageDocument = new NaturalLanguageDocument()
+            {
+                Text = text,
+                Sandbox = true,
+            };
+
+            var res = await AIDetectionClient.SubmitNaturalLanguageAsync(scanId, naturalLanguageDocument, authToken);
+    }
+}
+```
+For a full guide please refer to our step by step [Guide](https://docs.copyleaks.com/guides/ai-detector/ai-text-detection/)
+
+For a detailed understanding of the Ai detection process, refer to the Copyleaks detect natural language Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/writer-detector/check/)
+##
+### Writing Assistant
+Get intelligent suggestions for improving grammar, spelling, style, and overall writing quality.
+
+```csharp
+using Copyleaks.SDK.V3.API;
+using System;
+using System.Net.Http;
+using System.Net;
+using System.Threading.Tasks;
+using Copyleaks.SDK.V3.API.Models.Requests.WritingAssistant;
+
+public class Program
 {
-	Console.WriteLine($"scan {scanId} completed with error: {model.Error.Message}");
-	// Do something  with the error...
-	return Ok();
-}
+    // --- Your Credentials ---
+    private const string USER_EMAIL = "YOUR_EMAIL_ADDRESS";
+    private const string USER_KEY = "YOUR_API_KEY";
+    private const string WEBHOOK_URL = "https://your-server.com/webhook/{STATUS}";
+    // --------------------
 
-[HttpPost]
-[Route("http://webhook.url.com/results/{scanId}")]
-public ActionResult NewResultWebhook([FromRoute]string scanId, [FromBody] NewResultCallback model)
+    public static async Task Main(string[] args)
+    {
+            var loginResponse = await IdentityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
+            var authToken = loginResponse.Token;
+            string scanId = Guid.NewGuid().ToString();
+            var text = @"Lions are the only cat that live in groups, called pride. A prides typically consists of a few adult males, several feales, and their offspring. This social structure is essential for hunting and raising young cubs. Female lions, or lionesses are the primary hunters of the prid. They work together in cordinated groups to take down prey usually targeting large herbiores like zbras, wildebeest and buffalo. Their teamwork and strategy during hunts highlight the intelligence and coperation that are key to their survival.";
+
+            var document = new WritingAssistantDocument()
+            {
+                Sandbox = true,
+                Text = text,
+                Score = new Score()
+                {
+                    SentenceStructureScoreWeight = 0.2,
+                    GrammarScoreWeight = 0.3,
+                    MechanicsScoreWeight = 0.4,
+                    WordChoiceScoreWeight = 0.5,
+                },
+            };
+
+            var res = await WritingAssistantClient.SubmitTextAsync(scanId, document, authToken);
+    }
+}
+```
+For a full guide please refer to our step by step [Guide](https://docs.copyleaks.com/guides/writing/check-grammar/)
+
+For a detailed understanding of the Writing assistant process, refer to the Copyleaks writing feedback Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/writing-assistant/check/)
+##
+### Text Moderation
+Scan and moderate text content for unsafe, inappropriate, or policy-violating material across various categories.
+[See step by step guide at official Copyleaks API documentation](https://docs.copyleaks.com/guides/moderation/moderate-text/)
+
+For a detailed understanding of the Text moderation process, refer to the [Copyleaks text moderation Endpoint Documentation](https://docs.copyleaks.com/reference/actions/text-moderation/check/)
+
+```csharp
+using System;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Copyleaks.SDK.V3.API;
+using Copyleaks.SDK.V3.API.Models.Requests.TextModeration;
+
+public class Program
 {
-	Console.WriteLine($"scan {scanId} got a new result");
-	// Do something with the result...
-	return Ok();
+    // --- Your Credentials ---
+    private const string USER_EMAIL = "YOUR_EMAIL_ADDRESS";
+    private const string USER_KEY = "YOUR_API_KEY";
+    private const string WEBHOOK_URL = "https://your-server.com/webhook/{STATUS}";
+    // --------------------
+
+    public static async Task Main(string[] args)
+    {
+            var loginResponse = await IdentityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
+            var authToken = loginResponse.Token;
+            string scanId = Guid.NewGuid().ToString();
+
+            var labelsArray = new object[]
+            {
+                new { id = "adult-v1" },
+                new { id = "toxic-v1" },
+                new { id = "violent-v1" },
+                new { id = "profanity-v1" },
+                new { id = "self-harm-v1" },
+                new { id = "harassment-v1" },
+                new { id = "hate-speech-v1" },
+                new { id = "drugs-v1" },
+                new { id = "firearms-v1" },
+                new { id = "cybersecurity-v1" },
+            };
+            var model = new CopyleaksTextModerationRequestModel(
+                 text: "This is some text to scan.",
+                 sandbox: true,
+                 language: "en",
+                 labels: labelsArray
+            );
+
+            var result = await new CopyleaksTextModerationApi().SubmitTextAsync(scanId, model, authToken).ConfigureAwait(false);
+    }
 }
-</pre>
+```
+For a full guide please refer to our step by step [Guide](https://docs.copyleaks.com/guides/moderation/moderate-text/)
 
-<p>To change the Identity server URI (default:"https://id.copyleaks.com"):</p>
-<pre>
-ConfigurationManager.IdEndPoint = "<your identity server URI>";
-</pre>
+For a detailed understanding of the Text moderation process, refer to the Copyleaks text moderation Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/text-moderation/check/)
+##
+## Further Resources
 
-<p>To change the API server URI (default:"https://api.copyleaks.com"):</p>
-<pre>
-ConfigurationManager.ApiEndPoint = "<your API server URI>";
-</pre>
+*   **Copyleaks API Dashboard:** Manage your API keys, monitor usage, and view analytics from your personalized dashboard. [Access Dashboard](https://api.copyleaks.com/dashboard)
+*   **Copyleaks SDK Documentation:** Explore comprehensive guides, API references, and code examples for seamless integration. [Read Documentation](https://docs.copyleaks.com/resources/sdks/overview/)
 
-<h3>Dependencies:</h3>
-<ul>
-<li><a href="https://dotnet.microsoft.com/download/dotnet-core/2.0">.Net Core 2.0</a></li>
-</ul>
-<h5>Referenced Assemblies:</h5>
-<ul>
-<li><a href="https://www.nuget.org/packages/Microsoft.Extensions.Configuration">Microsoft.Extensions.Configuration</a></li>
-<li><a href="https://www.nuget.org/packages/Microsoft.Extensions.Configuration.Json">Microsoft.Extensions.Configuration.Json</a></li>
-<li><a href="https://www.nuget.org/packages/Newtonsoft.Json">Newtonsoft.Json</a></li>
-<li><a href="https://www.nuget.org/packages/Microsoft.NETCore.App/2.0.0/">Microsoft.NETCore.App</a></li>
-</ul>
 
-<h3>Read More</h3>
-<ul>
-<li><a href="https://api.copyleaks.com/documentation/v3">Copyleaks API guide</a></li>
-<li><a href="https://www.nuget.org/packages/Copyleaks/">Copyleaks NuGet package</a></li>
-</ul>
+## Support
+* If you need assistance, please contact Copyleaks Support via our support portal: Contact Copyleaks [Support](https://help.copyleaks.com/s/contactsupport).
+* To arrange a product demonstration, book a demo here: [Booking Link](https://copyleaks.com/book-a-demo).
