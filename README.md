@@ -232,24 +232,25 @@ public class Program
             var authToken = loginResponse.Token;
             string scanId = Guid.NewGuid().ToString();
 
-            var labelsArray = new object[]
+            var labelsArray = new CopyleaksTextModerationLabel[]
             {
-                new { id = "adult-v1" },
-                new { id = "toxic-v1" },
-                new { id = "violent-v1" },
-                new { id = "profanity-v1" },
-                new { id = "self-harm-v1" },
-                new { id = "harassment-v1" },
-                new { id = "hate-speech-v1" },
-                new { id = "drugs-v1" },
-                new { id = "firearms-v1" },
-                new { id = "cybersecurity-v1" },
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.ADULT_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.TOXIC_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.VIOLENT_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.PROFANITY_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.SELF_HARM_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.HARASSMENT_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.HATE_SPEECH_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.DRUGS_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.FIREARMS_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.CYBERSECURITY_V1)
             };
+
             var model = new CopyleaksTextModerationRequestModel(
-                 text: "This is some text to scan.",
-                 sandbox: true,
-                 language: "en",
-                 labels: labelsArray
+                text: "This is some text to scan.",
+                sandbox: true,
+                language: CopyleaksTextModerationLanguages.ENGLISH,
+                labels: labelsArray
             );
 
             var result = await new CopyleaksTextModerationApi().SubmitTextAsync(scanId, model, authToken).ConfigureAwait(false);
