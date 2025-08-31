@@ -47,7 +47,7 @@ public class Program
         // Log in to the Copyleaks API
         Console.WriteLine("Authenticating...");
         var identityClient = new CopyleaksIdentityApi();
-        var loginResponse = await identityClient.LoginAsync(USER_EMAIL, USER_KEY);
+        var loginResponse = await identityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
         Console.WriteLine("✅ Logged in successfully!");
     }
 }
@@ -149,7 +149,7 @@ public class Program
                 Sandbox = true,
             };
 
-            var res = await AIDetectionClient.SubmitNaturalLanguageAsync(scanId, naturalLanguageDocument, authToken);
+            var res = await AIDetectionClient.SubmitNaturalLanguageAsync(scanId, naturalLanguageDocument, authToken).ConfigureAwait(false);
     }
 }
 ```
@@ -196,7 +196,7 @@ public class Program
                 },
             };
 
-            var res = await WritingAssistantClient.SubmitTextAsync(scanId, document, authToken);
+            var res = await WritingAssistantClient.SubmitTextAsync(scanId, document, authToken).ConfigureAwait(false);
     }
 }
 ```
