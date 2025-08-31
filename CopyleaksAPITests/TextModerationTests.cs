@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Copyleaks.SDK.V3.API;
+using Copyleaks.SDK.V3.API.Models.Constants;
 using Copyleaks.SDK.V3.API.Models.Requests.TextModeration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -37,24 +38,24 @@ namespace CopyleaksAPITests
             var authToken = loginResponse.Token;
             string scanId = Guid.NewGuid().ToString();
 
-            var labelsArray = new object[]
+            var labelsArray = new CopyleaksTextModerationLabel[]
             {
-                new { id = "other-v1" },
-                new { id = "adult-v1" },
-                new { id = "toxic-v1" },
-                new { id = "violent-v1" },
-                new { id = "profanity-v1" },
-                new { id = "self-harm-v1" },
-                new { id = "harassment-v1" },
-                new { id = "hate-speech-v1" },
-                new { id = "drugs-v1" },
-                new { id = "firearms-v1" },
-                new { id = "cybersecurity-v1" },
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.ADULT_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.TOXIC_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.VIOLENT_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.PROFANITY_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.SELF_HARM_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.HARASSMENT_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.HATE_SPEECH_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.DRUGS_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.FIREARMS_V1),
+                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.CYBERSECURITY_V1)
             };
+
             var model = new CopyleaksTextModerationRequestModel(
                  text: "This is some text to scan.",
                  sandbox: true,
-                 language: "en",
+                 language: CopyleaksTextModerationLanguages.ENGLISH,
                  labels: labelsArray
             );
 

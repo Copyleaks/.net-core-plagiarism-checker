@@ -1,4 +1,4 @@
-/********************************************************************************
+﻿/********************************************************************************
  The MIT License(MIT)
  
  Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
@@ -21,19 +21,13 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 ********************************************************************************/
-
-using Newtonsoft.Json;
-using System.ComponentModel.DataAnnotations;
-
-namespace Copyleaks.SDK.V3.API.Models.Requests.AIDetection
+namespace Copyleaks.SDK.V3.API.Models.Constants
 {
-    public class SourceCodeDocument : AIDetectionDocument
+    /// <summary>
+    /// Supported languages for text moderation.
+    /// </summary>
+    public static class CopyleaksTextModerationLanguages
     {
-        /// <summary>
-        /// The name of the file. Make sure to include the right extension for your file type.
-        /// </summary>
-        [JsonProperty("filename")]
-        [Required]
-        public string Filename { get; set; }
+        public const string ENGLISH = "en";
     }
 }

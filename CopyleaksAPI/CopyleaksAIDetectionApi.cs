@@ -27,7 +27,6 @@ using Copyleaks.SDK.V3.API.Extensions;
 using Copyleaks.SDK.V3.API.Helpers;
 using Copyleaks.SDK.V3.API.Models.Requests.AIDetection;
 using Copyleaks.SDK.V3.API.Models.Responses.AIDetector;
-using Copyleaks.SDK.V3.API.Services;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -89,47 +88,6 @@ namespace Copyleaks.SDK.V3.API
 
             var method = new HttpMethod("POST");
             string requestUri = $"{this.CopyleaksApiServer}{this.AIDetectionApiVersion}/writer-detector/{scanId}/check";
-            HttpRequestMessage msg = new HttpRequestMessage(method, requestUri);
-            msg.SetupHeaders(token);
-            msg.Content = new StringContent(JsonConvert.SerializeObject(documentModel), Encoding.UTF8, "application/json");
-
-            using (var stream = new MemoryStream())
-            using (var streamContent = new StreamContent(stream))
-            using (var response = await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false)).ConfigureAwait(false))
-            {
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new CopyleaksHttpException(response);
-                }
-                return await response.ExtractJsonResultsAsync<AIDetectionResult>().ConfigureAwait(false);
-            }
-        }
-
-
-        /// <summary>
-        /// Use Copyleaks AI Content Detection to differentiate between human source code and AI written source code.
-        /// </summary>
-        /// <param name="scanId">A unique scan Id</param>
-        /// <param name="documentModel">The submission document including the text to scan</param>
-        /// <param name="token">A copyleaks access token</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="CopyleaksHttpException"></exception>
-        public async Task<AIDetectionResult> SubmitSourceCodeAsync(string scanId, SourceCodeDocument documentModel, string token)
-        {
-            DeprecationService.ShowDeprecationMessgae();
-
-            if (string.IsNullOrEmpty(token))
-                throw new ArgumentException("Token is mandatory", nameof(token));
-
-            if (string.IsNullOrEmpty(documentModel.Text))
-                throw new ArgumentException("Text is mandatory.", nameof(documentModel.Text));
-
-            if (string.IsNullOrEmpty(documentModel.Filename))
-                throw new ArgumentException("Filename is mandatory.", nameof(documentModel.Filename));
-
-            var method = new HttpMethod("POST");
-            string requestUri = $"{this.CopyleaksApiServer}{this.AIDetectionApiVersion}/writer-detector/source-code/{scanId}/check";
             HttpRequestMessage msg = new HttpRequestMessage(method, requestUri);
             msg.SetupHeaders(token);
             msg.Content = new StringContent(JsonConvert.SerializeObject(documentModel), Encoding.UTF8, "application/json");

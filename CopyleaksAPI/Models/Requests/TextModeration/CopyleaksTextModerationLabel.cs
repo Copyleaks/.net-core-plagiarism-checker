@@ -21,23 +21,21 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 ********************************************************************************/
-using System;
-using System.Diagnostics;
-namespace Copyleaks.SDK.V3.API.Services
-{
-    public static class DeprecationService
-    {
-       public static void ShowDeprecationMessgae()
-        {
-            Trace.WriteLine("DEPRECATION NOTICE: AI Code Detection will be discontinued on August 29, 2025. Please remove AI code detection integrations before the sunset date.");
+using Newtonsoft.Json;
 
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("════════════════════════════════════════════════════════════════════");
-            Console.WriteLine("DEPRECATION NOTICE !!!");
-            Console.WriteLine("AI Code Detection will be discontinued on August 29, 2025.");
-            Console.WriteLine("Please remove AI code detection integrations before the sunset date.");
-            Console.WriteLine("════════════════════════════════════════════════════════════════════");
-            Console.ResetColor();
+namespace Copyleaks.SDK.V3.API.Models.Requests.TextModeration
+{
+    public class CopyleaksTextModerationLabel
+    {
+        /// <summary>
+        /// Id of the label
+        /// </summary>
+        [JsonProperty("id")]
+        public string Id { get; }
+
+        public CopyleaksTextModerationLabel(string id)
+        {
+            Id = id;
         }
     }
 }

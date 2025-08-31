@@ -24,25 +24,18 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using Copyleaks.SDK.V3.API.Exceptions;
 using Copyleaks.SDK.V3.API.Extensions;
 using Copyleaks.SDK.V3.API.Helpers;
-using Copyleaks.SDK.V3.API.Models.Constants;
-using Copyleaks.SDK.V3.API.Models.HttpCustomSend;
 using Copyleaks.SDK.V3.API.Models.Requests;
 using Copyleaks.SDK.V3.API.Models.Responses;
 using Copyleaks.SDK.V3.API.Models.Responses.Download;
 using Copyleaks.SDK.V3.API.Models.Responses.Result;
-using Copyleaks.SDK.V3.API.Models.Types;
-using Copyleaks.SDK.V3.API.Services;
 using Newtonsoft.Json;
-using Polly.Retry;
 
 namespace Copyleaks.SDK.V3.API
 {
@@ -163,11 +156,6 @@ namespace Copyleaks.SDK.V3.API
                 throw new ArgumentException("Base64 is mandatory.", nameof(documentModel.Base64));
             else if (documentModel.Filename == null)
                 throw new ArgumentException("Filename is mandatory.", nameof(documentModel.Filename));
-
-            var fileExtension = Path.GetExtension(documentModel.Filename).TrimStart('.');
-
-            if (SupportedFilesTypes.SupportedCodeExtensions.Contains(fileExtension))
-                DeprecationService.ShowDeprecationMessgae();
 
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/scans/submit/file/{scanId}";
             await SubmitAsync(documentModel, requestUri, token).ConfigureAwait(false);

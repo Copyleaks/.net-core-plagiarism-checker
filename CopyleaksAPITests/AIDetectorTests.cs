@@ -49,45 +49,5 @@ namespace CopyleaksAPITests
             Assert.IsNotNull(res, "Result should not be null.");
             Assert.AreEqual("sandbox", res.ScanType, "The ScanType should be sandbox");
         }
-
-
-        [TestMethod]
-        public async Task SUBMIT_SOURCE_CODE_TEST()
-        {
-            var loginResponse = await IdentityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
-            var authToken = loginResponse.Token;
-            string scanId = Guid.NewGuid().ToString();
-
-            var sampleCode = @"
-                def add(a, b):
-                    return a + b
-
-                def multiply(a, b):
-                    return a * b
-
-                def main():
-                    x = 5
-                    y = 10
-                    sum_result = add(x, y)
-                    product_result = multiply(x, y)
-                    print(f'Sum: {sum_result}')
-                    print(f'Product: {product_result}')
-
-                if __name__ == '__main__':
-                    main()
-                ";
-
-            var sourceCodeDocument = new SourceCodeDocument()
-            {
-                Text = sampleCode,
-                Filename = "example.py",
-                Sandbox = true
-            };
-
-            var res = await AIDetectionClient.SubmitSourceCodeAsync(scanId, sourceCodeDocument, authToken);
-
-            Assert.IsNotNull(res, "Result should not be null.");
-            Assert.AreEqual("sandbox", res.ScanType, "The ScanType should be sandbox");
-        }
     }
 }
