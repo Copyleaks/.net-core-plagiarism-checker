@@ -21,18 +21,26 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  SOFTWARE.
 ********************************************************************************/
-namespace Copyleaks.SDK.V3.API.Models.Constants
-{
-    public  class CopyleaksConstants
-    {
-        public const string ApiEndPoint = "apiEndPoint";
-        public const string IdEndPoint = "idEndPoint";
-        public const string RequestsTimeout = "RequestsTimeout";
-        public const string ApiVersion = "apiVersion";
-        public const string AiDetectionApiVersion = "aiDetectionApiVersion";
-        public const string WritingAssistantApiVersion = "writingAssistantApiVersion";
-        public const string TextModerationApiVersion = "textModerationApiVersion";
-        public const string ImageDetectionApiVersion = "imageDetectionApiVersion";
 
+using Newtonsoft.Json;
+
+namespace Copyleaks.SDK.V3.API.Models.Responses.AiImageDetection
+{
+    /// <summary>
+    /// Information about the analyzed image.
+    /// </summary>
+    public class CopyleaksAiImageDetectionImageInfoModel
+    {
+        /// <summary>
+        /// Dimensions of the analyzed image.
+        /// </summary>
+        [JsonProperty("shape")]
+        public CopyleaksImageShapeModel Shape { get; set; }
+
+        /// <summary>
+        /// Optional metadata extracted from the image.
+        /// </summary>
+        [JsonProperty("metadata")]
+        public CopyleaksImageMetadataModel Metadata { get; set; }
     }
 }
