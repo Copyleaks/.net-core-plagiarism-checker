@@ -39,7 +39,6 @@ public class Program
     // --- Your Credentials ---
     private const string USER_EMAIL = "YOUR_EMAIL_ADDRESS";
     private const string USER_KEY = "YOUR_API_KEY";
-    private const string WEBHOOK_URL = "https://your-server.com/webhook/{STATUS}";
     // --------------------
 
     public static async Task Main(string[] args)
@@ -133,7 +132,6 @@ public class Program
     // --- Your Credentials ---
     private const string USER_EMAIL = "YOUR_EMAIL_ADDRESS";
     private const string USER_KEY = "YOUR_API_KEY";
-    private const string WEBHOOK_URL = "https://your-server.com/webhook/{STATUS}";
     // --------------------
 
     public static async Task Main(string[] args)
@@ -173,7 +171,6 @@ public class Program
     // --- Your Credentials ---
     private const string USER_EMAIL = "YOUR_EMAIL_ADDRESS";
     private const string USER_KEY = "YOUR_API_KEY";
-    private const string WEBHOOK_URL = "https://your-server.com/webhook/{STATUS}";
     // --------------------
 
     public static async Task Main(string[] args)
@@ -220,7 +217,6 @@ public class Program
     // --- Your Credentials ---
     private const string USER_EMAIL = "YOUR_EMAIL_ADDRESS";
     private const string USER_KEY = "YOUR_API_KEY";
-    private const string WEBHOOK_URL = "https://your-server.com/webhook/{STATUS}";
     // --------------------
 
     public static async Task Main(string[] args)
@@ -269,6 +265,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Copyleaks.SDK.V3.API;
 using Copyleaks.SDK.V3.API.Models.Requests.AiImageDetection;
+using Copyleaks.SDK.V3.API.Models.Constants;
 
 public class Program
 {
@@ -283,14 +280,14 @@ public class Program
             var authToken = loginResponse.Token;
             string scanId = Guid.NewGuid().ToString();
 
-                        string imagePath = @"PATH TO YOUR IMAGE";
+            string imagePath = @"PATH TO YOUR IMAGE";
             byte[] imageBytes = File.ReadAllBytes(imagePath);
             string base64Image = Convert.ToBase64String(imageBytes);
 
             var model = new CopyleaksAiImageDetectionRequestModel(
                  base64: base64Image,
-                 fileName: "image-name",
-                 model: "ai-image-1-ultra-01-09-2025",
+                 fileName: "my-image.png",
+                 model: CopyleaksAiImageDetectionModels.AI_IMAGE_1_ULTRA,
                  sandbox: true
             );
 

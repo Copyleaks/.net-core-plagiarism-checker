@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Buffers.Text;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -7,7 +6,6 @@ using System.Threading.Tasks;
 using Copyleaks.SDK.V3.API;
 using Copyleaks.SDK.V3.API.Models.Constants;
 using Copyleaks.SDK.V3.API.Models.Requests.AiImageDetection;
-using Copyleaks.SDK.V3.API.Models.Requests.TextModeration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CopyleaksAPITests
@@ -48,8 +46,8 @@ namespace CopyleaksAPITests
 
             var model = new CopyleaksAiImageDetectionRequestModel(
                  base64: base64Image,
-                 fileName: "image-name",
-                 model: "ai-image-1-ultra-01-09-2025",
+                 fileName: "my-image.png",
+                 model: CopyleaksAiImageDetectionModels.AI_IMAGE_1_ULTRA,
                  sandbox: true
             );
 
