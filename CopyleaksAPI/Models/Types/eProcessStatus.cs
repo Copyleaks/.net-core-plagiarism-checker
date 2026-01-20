@@ -1,4 +1,4 @@
-﻿/********************************************************************************
+/********************************************************************************
  The MIT License(MIT)
  
  Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
@@ -22,26 +22,18 @@
  SOFTWARE.
 ********************************************************************************/
 
-using Copyleaks.SDK.V3.API.Models.Types;
-using Newtonsoft.Json;
-
-namespace Copyleaks.SDK.V3.API.Models.Responses
+namespace Copyleaks.SDK.V3.API.Models.Types
 {
-    /// <summary>
-    /// The progress of a scan
-    /// </summary>
-	public class ProgressResponse
+    public enum eProcessStatus
     {
-        /// <summary>
-        /// The progress of a scan request in percetns
-        /// </summary>
-        [JsonProperty("percents")]
-        public ushort Percents { get; set; }
-
-        [JsonProperty("status")]
-        public eProcessStatus Status { get; set; }
-
-        [JsonProperty("errorCode")]
-        public int? ErrorCode { get; set; }
+        Scanned = 0,
+        Failed = 1,
+        CreditsChecked = 2,
+        Indexed = 3,
+        Crawling = 4,
+        Paying = 5,
+        Refilling = 6,
+        Scanning = 7,
+        GenerateReport = 8
     }
 }
