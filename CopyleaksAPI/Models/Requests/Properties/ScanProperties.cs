@@ -116,5 +116,13 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		/// </summary>
 		[JsonProperty("customMetadata")]
 		public CustomMetadata[] CustomMetadata { get; set; } = Array.Empty<CustomMetadata>();
+
+		/// <summary>The language the PDF report is generated in: en, es, de, fr, it or pt.</summary>
+		[JsonProperty("displayLanguage", NullValueHandling = NullValueHandling.Ignore)]
+		public string DisplayLanguage { get; set; }
+
+		/// <summary>Identify online sources suspected of containing AI generated text.</summary>
+		[JsonProperty("aiSourceMatch", NullValueHandling = NullValueHandling.Ignore)]
+		public AISourceMatch AISourceMatch { get; set; }
 	}
 }

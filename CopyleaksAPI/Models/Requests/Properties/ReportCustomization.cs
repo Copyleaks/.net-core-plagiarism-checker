@@ -23,6 +23,7 @@
 ********************************************************************************/
 
 using Copyleaks.SDK.V3.API.Models.Types;
+using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
@@ -70,5 +71,9 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		/// Version 2 is our latest iteration of our PDF report.
 		/// </summary>
 		public ePdfReportVersion Version { get; set; } = ePdfReportVersion.V1;
+
+		/// <summary>PDF report version to generate: v1, v2, v3 or latest. Overrides Version when both are supplied; Version always ships, so leaving this unset yields v1.</summary>
+		[JsonProperty("reportVersion", NullValueHandling = NullValueHandling.Ignore)]
+		public string ReportVersion { get; set; }
 	}
 }
