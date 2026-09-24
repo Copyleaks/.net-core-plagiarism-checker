@@ -51,8 +51,10 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
 
 		/// <summary>
 		/// Decode the additionalData of a "suspected-ai-text" alert into an AI detection result.
-		/// Returns null when this is not a "suspected-ai-text" alert, or when it carries no data
-		/// (null, empty, or only NUL characters and whitespace). Trailing NUL characters and whitespace are ignored.
+		/// Returns null when this is not a "suspected-ai-text" alert, when it carries no data
+		/// (null, empty, or only NUL characters and ASCII whitespace), or when the data is valid JSON
+		/// that is not a JSON object (an array, number, string, true/false or null).
+		/// Trailing NUL characters and ASCII whitespace (tab, line feed, vertical tab, form feed, carriage return, space) are ignored.
 		/// The raw string stays available in AdditionalData.
 		/// </summary>
 		/// <returns>The AI detection result, or null</returns>

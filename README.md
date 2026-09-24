@@ -123,6 +123,7 @@ When a scan runs AI detection (`clientScanProperties.AIGeneratedText.Detect = tr
 using System;
 using Copyleaks.SDK.V3.API.Models.Responses.Webhooks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 [ApiController]
 [Route("/webhook")]
@@ -134,28 +135,35 @@ public class WebhookController : ControllerBase
     {
         // The first "suspected-ai-text" alert, or null when the scan produced no AI alert
         var aiAlert = completedWebhook.GetAIDetectionAlert();
-        if (aiAlert == null)
-            return Ok();
-
-        // additionalData decoded into AIDetectionResult (null when the alert carries no data).
-        // Same as completedWebhook.GetAIDetectionResult().
-        var aiResult = aiAlert.GetAIDetectionResult();
-        if (aiResult != null)
+        if (aiAlert != null)
         {
-            Console.WriteLine($"AI: {aiResult.Summary.AI:P0}, human: {aiResult.Summary.Human:P0}, model: {aiResult.ModelVersion}");
-            foreach (var section in aiResult.Results)
+            try
             {
-                // Classification: 1 = human, 2 = AI
-                foreach (var match in section.Matches)
-                    Console.WriteLine($"Classification {section.Classification} at chars {string.Join(",", match.Text.Chars.Starts)}");
+                // additionalData decoded into AIDetectionResult. Same as completedWebhook.GetAIDetectionResult().
+                // null when the alert has no data; throws a Newtonsoft JsonException when additionalData is not valid JSON.
+                var aiResult = aiAlert.GetAIDetectionResult();
+                if (aiResult != null && aiResult.Summary != null)
+                {
+                    Console.WriteLine($"AI: {aiResult.Summary.AI:P0}, human: {aiResult.Summary.Human:P0}, model: {aiResult.ModelVersion}");
+                    foreach (var section in aiResult.Results ?? new())
+                    {
+                        // Classification: 1 = human, 2 = AI
+                        Console.WriteLine($"Classification {section.Classification}, matches: {section.Matches?.Count ?? 0}");
+                    }
+                }
+            }
+            catch (JsonException ex)
+            {
+                Console.Error.WriteLine($"Could not decode the AI alert of scan {scanId}: {ex.Message}");
             }
         }
+        // Acknowledge the webhook even when the AI alert could not be decoded.
         return Ok();
     }
 }
 ```
-* No AI alert means the scan produced no AI alert. On its own it does not prove that AI detection ran: check that `AIGeneratedText.Detect` was set and look for the category 2 failure codes in `CopyleaksAlertCodes` (`AI_DETECTION_FAILED`, `AI_DETECTION_LANG_NOT_SUPPORTED`, `AI_DETECTION_TEXT_TOO_SHORT`, `FILE_TYPE_NOT_SUPPORTED`).
-* `GetAIDetectionResult()` throws a Newtonsoft `JsonException` when `additionalData` is not valid JSON. Catch it if one bad alert must not fail your webhook handler. The raw string stays available in `aiAlert.AdditionalData`.
+* No AI alert does not by itself prove that AI detection ran: check the scan's `aiGeneratedText.detect` setting (`AIGeneratedText.Detect` in `ClientScanProperties`) and the other AI alert codes in `CopyleaksAlertCodes` (`AI_DETECTION_FAILED`, `AI_DETECTION_LANG_NOT_SUPPORTED`, `AI_DETECTION_TEXT_TOO_SHORT`, `FILE_TYPE_NOT_SUPPORTED`).
+* `GetAIDetectionResult()` returns null when the alert has no data or when the data is valid JSON that is not a JSON object. It throws a Newtonsoft `JsonException` when `additionalData` is not valid JSON. The raw string stays available in `aiAlert.AdditionalData`.
 * The legacy `CompletedCallback` model has the same `GetAIDetectionResult()` method on each `AlertNotification`.
 
 For more details, refer to the Copyleaks scan completed webhook [Documentation](https://docs.copyleaks.com/reference/data-types/authenticity/webhooks/scan-completed)

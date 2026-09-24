@@ -24,6 +24,7 @@
 using Copyleaks.SDK.V3.API.Models.Constants;
 using Copyleaks.SDK.V3.API.Models.Responses.AIDetector;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.IO;
@@ -55,8 +56,9 @@ namespace Copyleaks.SDK.V3.API.Helpers
         /// <param name="code">The alert code</param>
         /// <param name="additionalData">The alert additionalData, a JSON document encoded as a string</param>
         /// <returns>
-        /// The AI detection result, or null when the code is not "suspected-ai-text"
-        /// or the data is null, empty or only NUL characters and whitespace
+        /// The AI detection result, or null when the code is not "suspected-ai-text",
+        /// the data is null, empty or only NUL characters and ASCII whitespace,
+        /// or the data is valid JSON that is not a JSON object (an array, number, string, true/false or null)
         /// </returns>
         /// <exception cref="JsonException">The data is not a valid AI detection result JSON document</exception>
         public static AIDetectionResult Parse(string code, string additionalData)
@@ -66,17 +68,44 @@ namespace Copyleaks.SDK.V3.API.Helpers
             if (additionalData == null)
                 return null;
 
-            // The server can pad the data with a tail of NUL characters; drop it and any trailing whitespace.
+            // The server can pad the data with a tail of NUL characters; drop it and any trailing ASCII whitespace.
             int length = additionalData.Length;
-            while (length > 0 && (additionalData[length - 1] == '\0' || char.IsWhiteSpace(additionalData[length - 1])))
+            while (length > 0 && IsTrailingPadding(additionalData[length - 1]))
                 length--;
             if (length == 0)
                 return null;
 
             using (var reader = new JsonTextReader(new StringReader(additionalData.Substring(0, length))))
             {
-                return Serializer.Deserialize<AIDetectionResult>(reader);
+                // Move to the first token, skipping comments. Only comments means there is no data.
+                do
+                {
+                    if (!reader.Read())
+                        return null;
+                } while (reader.TokenType == JsonToken.Comment);
+
+                if (reader.TokenType == JsonToken.StartObject)
+                    return Serializer.Deserialize<AIDetectionResult>(reader);
+
+                // Valid JSON that is not an object (an array, number, string, true/false or null) is not an AI detection result.
+                // Read the whole document first, so malformed data still throws.
+                JToken.ReadFrom(reader);
+                while (reader.Read())
+                {
+                    // The reader throws on any content after the document other than a comment.
+                }
+                return null;
             }
+        }
+
+        /// <summary>
+        /// The characters trimmed from the end of the data: NUL and the ASCII whitespace characters
+        /// (tab, line feed, vertical tab, form feed, carriage return and space).
+        /// Unicode whitespace such as a no-break space is not trimmed.
+        /// </summary>
+        private static bool IsTrailingPadding(char c)
+        {
+            return c == '\0' || c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r' || c == ' ';
         }
     }
 }

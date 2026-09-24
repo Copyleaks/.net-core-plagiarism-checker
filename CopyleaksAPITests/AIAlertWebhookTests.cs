@@ -174,6 +174,28 @@ namespace CopyleaksAPITests
         }
 
         [TestMethod]
+        public void NON_OBJECT_AI_ALERT_DATA_RETURNS_NULL()
+        {
+            // Valid JSON that is not an object: an array, a number, a string, the null literal and a boolean.
+            var nonObjectData = new[] { "[]", "5", "\"x\"", "null", "true" };
+            foreach (var data in nonObjectData)
+            {
+                var alert = new Alerts { Code = CopyleaksAlertCodes.SUSPECTED_AI_TEXT, AdditionalData = data };
+                Assert.IsNull(alert.GetAIDetectionResult(), $"Alerts with data {data} should return null.");
+
+                var legacyAlert = new AlertNotification { Code = CopyleaksAlertCodes.SUSPECTED_AI_TEXT, AdditionalData = data };
+                Assert.IsNull(legacyAlert.GetAIDetectionResult(), $"AlertNotification with data {data} should return null.");
+            }
+
+            // Control: malformed data that does not start with an object still throws.
+            foreach (var data in new[] { "[1,", "5 x" })
+            {
+                var alert = new Alerts { Code = CopyleaksAlertCodes.SUSPECTED_AI_TEXT, AdditionalData = data };
+                Assert.ThrowsException<JsonReaderException>(() => alert.GetAIDetectionResult(), $"Data {data} should throw.");
+            }
+        }
+
+        [TestMethod]
         public void HOST_JSON_DEFAULT_SETTINGS_ARE_NOT_USED()
         {
             var alert = new Alerts

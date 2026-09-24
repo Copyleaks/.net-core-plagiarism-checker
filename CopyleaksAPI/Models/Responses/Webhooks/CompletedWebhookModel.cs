@@ -60,7 +60,8 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks
         /// <summary>
         /// Get the AI detection result decoded from the <see cref="CopyleaksAlertCodes.SUSPECTED_AI_TEXT"/> alert.
         /// Same as GetAIDetectionAlert()?.GetAIDetectionResult().
-        /// Returns null when there is no AI alert (see <see cref="GetAIDetectionAlert"/>) or the alert carries no data.
+        /// Returns null when there is no AI alert (see <see cref="GetAIDetectionAlert"/>), the alert carries no data,
+        /// or the data is valid JSON that is not a JSON object.
         /// </summary>
         /// <returns>The AI detection result, or null</returns>
         /// <exception cref="JsonException">The alert's additionalData is not valid JSON (JsonReaderException or JsonSerializationException)</exception>

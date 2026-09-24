@@ -32,6 +32,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AIDetector
     {
         /// <summary>
         /// The classification of the section: 1 = human, 2 = AI.
+        /// Reads 0 when the server omits it.
         /// </summary>
         [JsonProperty("classification")]
         public int Classification { get; set; }
@@ -39,6 +40,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AIDetector
         /// <summary>
         /// The probability of the classification.
         /// Deprecated by the server, which plans to remove it.
+        /// Reads 0 when the server omits it.
         /// </summary>
         [JsonProperty("probability")]
         public double Probability { get; set; }
