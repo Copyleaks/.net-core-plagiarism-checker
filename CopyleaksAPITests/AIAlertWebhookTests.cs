@@ -4,6 +4,7 @@ using System.Linq;
 using Copyleaks.SDK.V3.API.Models.Callbacks;
 using Copyleaks.SDK.V3.API.Models.Constants;
 using Copyleaks.SDK.V3.API.Models.Responses.AIDetector;
+using Copyleaks.SDK.V3.API.Models.Responses.Result;
 using Copyleaks.SDK.V3.API.Models.Responses.Webhooks;
 using Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.NotificationsModels;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -121,6 +122,28 @@ namespace CopyleaksAPITests
             var otherAlert = webhook.Notifications.Alerts.Single();
             Assert.AreEqual("suspected-character-replacement", otherAlert.Code);
             Assert.IsNull(otherAlert.GetAIDetectionResult());
+        }
+
+        [TestMethod]
+        public void NON_AI_ALERT_WITH_AI_DATA_RETURNS_NULL()
+        {
+            // Real AI data from the prod fixture, so only the alert code decides the outcome.
+            var aiData = LoadWebhook("completed_prod_ai.json").GetAIDetectionAlert().AdditionalData;
+
+            // Other codes, a different-case code (the match is ordinal) and a missing code all return null.
+            var otherCodes = new[] { CopyleaksAlertCodes.AI_DETECTION_FAILED, "suspected-character-replacement", "Suspected-AI-Text", null };
+            foreach (var code in otherCodes)
+            {
+                var alert = new Alerts { Code = code, AdditionalData = aiData };
+                Assert.IsNull(alert.GetAIDetectionResult(), $"Alerts with code '{code}' should return null.");
+
+                var legacyAlert = new AlertNotification { Code = code, AdditionalData = aiData };
+                Assert.IsNull(legacyAlert.GetAIDetectionResult(), $"AlertNotification with code '{code}' should return null.");
+            }
+
+            // Control: the same data under the AI code is decoded.
+            AssertProdResult(new Alerts { Code = CopyleaksAlertCodes.SUSPECTED_AI_TEXT, AdditionalData = aiData }.GetAIDetectionResult());
+            AssertProdResult(new AlertNotification { Code = CopyleaksAlertCodes.SUSPECTED_AI_TEXT, AdditionalData = aiData }.GetAIDetectionResult());
         }
 
         [TestMethod]
