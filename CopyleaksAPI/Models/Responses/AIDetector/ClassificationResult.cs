@@ -30,9 +30,16 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AIDetector
 {
     public class ClassificationResult
     {
+        /// <summary>
+        /// The classification of the section: 1 = human, 2 = AI.
+        /// </summary>
         [JsonProperty("classification")]
         public int Classification { get; set; }
 
+        /// <summary>
+        /// The probability of the classification.
+        /// Deprecated by the server, which plans to remove it.
+        /// </summary>
         [JsonProperty("probability")]
         public double Probability { get; set; }
 
@@ -44,6 +51,13 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AIDetector
     {
         [JsonProperty("text")]
         public MatchText Text { get; set; }
+
+        /// <summary>
+        /// The section positions in the HTML version of the document.
+        /// Present only for HTML sources; null otherwise.
+        /// </summary>
+        [JsonProperty("html")]
+        public MatchText Html { get; set; }
     }
 
     public class MatchText
@@ -62,5 +76,11 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AIDetector
 
         [JsonProperty("lengths")]
         public List<int> Lengths { get; set; }
+
+        /// <summary>
+        /// The HTML group of each position. Present only for HTML positions; null otherwise.
+        /// </summary>
+        [JsonProperty("groupIds")]
+        public List<int> GroupIds { get; set; }
     }
 }

@@ -17,4 +17,10 @@
     <ProjectReference Include="..\CopyleaksAPI\CopyleaksAPI.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Resources\**\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
