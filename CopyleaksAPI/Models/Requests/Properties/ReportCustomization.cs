@@ -66,11 +66,9 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		public ReportCustomizationColors Colors { get; set; }
 
 		/// <summary>
-		/// Legacy PDF report version to generate (sent as the integer pdf.version).
-		/// This SDK always sends it, and the default is V1. This enum only offers V1 and V2.
-		/// Ignored by the server when ReportVersion is set.
-		/// To get the newest report, set ReportVersion to "v3" or "latest" instead.
-		/// Only takes effect when Create is true.
+		/// PDF version to generate. 
+		/// By default version 1 will be generated as it our current stable version. 
+		/// Version 2 is our latest iteration of our PDF report.
 		/// </summary>
 		public ePdfReportVersion Version { get; set; } = ePdfReportVersion.V1;
 
