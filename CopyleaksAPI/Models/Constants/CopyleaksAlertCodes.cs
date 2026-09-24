@@ -34,25 +34,5 @@ namespace Copyleaks.SDK.V3.API.Models.Constants
         /// The alert's additionalData holds the AI detection result as a JSON string.
         /// </summary>
         public const string SUSPECTED_AI_TEXT = "suspected-ai-text";
-
-        /// <summary>
-        /// AI detection could not be completed for the scanned document (category 2).
-        /// </summary>
-        public const string AI_DETECTION_FAILED = "ai-detection-failed";
-
-        /// <summary>
-        /// AI detection was not executed because the document language is not supported (category 2).
-        /// </summary>
-        public const string AI_DETECTION_LANG_NOT_SUPPORTED = "ai-detection-lang-not-supported";
-
-        /// <summary>
-        /// AI detection was not executed because the text is too short (category 2).
-        /// </summary>
-        public const string AI_DETECTION_TEXT_TOO_SHORT = "ai-detection-text-too-short";
-
-        /// <summary>
-        /// AI detection was not executed because the file type is not supported (category 2).
-        /// </summary>
-        public const string FILE_TYPE_NOT_SUPPORTED = "file-type-not-supported";
     }
 }

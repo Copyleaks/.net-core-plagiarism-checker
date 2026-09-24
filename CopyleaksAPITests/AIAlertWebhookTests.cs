@@ -131,7 +131,7 @@ namespace CopyleaksAPITests
             var aiData = LoadWebhook("completed_prod_ai.json").GetAIDetectionAlert().AdditionalData;
 
             // Other codes, a different-case code (the match is ordinal) and a missing code all return null.
-            var otherCodes = new[] { CopyleaksAlertCodes.AI_DETECTION_FAILED, "suspected-character-replacement", "Suspected-AI-Text", null };
+            var otherCodes = new[] { "ai-detection-failed", "suspected-character-replacement", "Suspected-AI-Text", null };
             foreach (var code in otherCodes)
             {
                 var alert = new Alerts { Code = code, AdditionalData = aiData };

@@ -162,7 +162,7 @@ public class WebhookController : ControllerBase
     }
 }
 ```
-* No AI alert does not by itself prove that AI detection ran: check the scan's `aiGeneratedText.detect` setting (`AIGeneratedText.Detect` in `ClientScanProperties`) and the other AI alert codes in `CopyleaksAlertCodes` (`AI_DETECTION_FAILED`, `AI_DETECTION_LANG_NOT_SUPPORTED`, `AI_DETECTION_TEXT_TOO_SHORT`, `FILE_TYPE_NOT_SUPPORTED`).
+* `GetAIDetectionAlert()` returns null when the completed webhook contains no suspected-ai-text alert.
 * `GetAIDetectionResult()` returns null when the alert has no data or when the data is valid JSON that is not a JSON object. It throws a Newtonsoft `JsonException` when `additionalData` is not valid JSON. The raw string stays available in `aiAlert.AdditionalData`.
 * The legacy `CompletedCallback` model has the same `GetAIDetectionResult()` method on each `AlertNotification`.
 

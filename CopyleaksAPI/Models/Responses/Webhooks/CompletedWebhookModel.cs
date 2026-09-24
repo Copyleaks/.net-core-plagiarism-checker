@@ -44,11 +44,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks
 
         /// <summary>
         /// Get the first <see cref="CopyleaksAlertCodes.SUSPECTED_AI_TEXT"/> alert of the scan.
-        /// Returns null when the webhook has no notifications, no alerts, or no such alert.
-        /// A null alert means the scan produced no AI alert. It does not by itself prove that AI detection ran:
-        /// check the scan's aiGeneratedText.detect setting and the category 2 failure codes
-        /// (<see cref="CopyleaksAlertCodes.AI_DETECTION_FAILED"/>, <see cref="CopyleaksAlertCodes.AI_DETECTION_LANG_NOT_SUPPORTED"/>,
-        /// <see cref="CopyleaksAlertCodes.AI_DETECTION_TEXT_TOO_SHORT"/>, <see cref="CopyleaksAlertCodes.FILE_TYPE_NOT_SUPPORTED"/>).
+        /// Returns null when the completed webhook contains no suspected-ai-text alert.
         /// </summary>
         /// <returns>The AI alert, or null</returns>
         public Alerts GetAIDetectionAlert()
