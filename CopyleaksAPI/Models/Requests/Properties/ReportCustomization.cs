@@ -72,7 +72,15 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		/// </summary>
 		public ePdfReportVersion Version { get; set; } = ePdfReportVersion.V1;
 
-		/// <summary>PDF report version to generate: v1, v2, v3 or latest. Overrides Version when both are supplied; Version always ships, so leaving this unset yields v1.</summary>
+		/// <summary>
+		/// PDF report version to generate (sent as pdf.reportVersion).
+		/// Allowed values are lowercase and case-sensitive: "v1", "v2", "v3" or "latest".
+		/// Any other value, such as "V3", "Latest" or "", is rejected by the server with HTTP 400.
+		/// Only takes effect when Create is true.
+		/// When set, it overrides Version.
+		/// Leave it unset (null) to omit it from the request. The server then falls back to Version,
+		/// which this SDK always sends (default V1), so leaving this unset yields the v1 report.
+		/// </summary>
 		[JsonProperty("reportVersion", NullValueHandling = NullValueHandling.Ignore)]
 		public string ReportVersion { get; set; }
 	}

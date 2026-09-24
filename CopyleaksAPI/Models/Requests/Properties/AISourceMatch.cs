@@ -26,9 +26,17 @@ using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
+    /// <summary>
+    /// AI Source Match settings (sent as properties.aiSourceMatch).
+    /// Currently only applies to documents detected as English.
+    /// </summary>
     public class AISourceMatch
     {
-        /// <summary>Activates identification of online sources suspected of containing AI generated text.</summary>
+        /// <summary>
+        /// Activates identification of online sources suspected of containing AI generated text.
+        /// Currently only applies to documents detected as English.
+        /// Leave it unset (null) to omit it from the request and get the server default (false).
+        /// </summary>
         [JsonProperty("enable", NullValueHandling = NullValueHandling.Ignore)]
         public bool? Enable { get; set; }
     }

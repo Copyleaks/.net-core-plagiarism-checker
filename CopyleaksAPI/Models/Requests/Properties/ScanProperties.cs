@@ -117,11 +117,22 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		[JsonProperty("customMetadata")]
 		public CustomMetadata[] CustomMetadata { get; set; } = Array.Empty<CustomMetadata>();
 
-		/// <summary>The language the PDF report is generated in: en, es, de, fr, it or pt.</summary>
+		/// <summary>
+		/// The language the PDF report is generated in (sent as properties.displayLanguage).
+		/// Allowed values are lowercase and case-sensitive: "en", "es", "pt", "fr", "de" or "it".
+		/// Any other value, such as "EN" or "en-US", is rejected by the server with HTTP 400.
+		/// Only takes effect when the PDF report is created (ReportSection.Create is true).
+		/// Leave it unset (null) to omit it from the request and get the server default ("en").
+		/// Do not set an empty string: it is sent as-is and replaces the default.
+		/// </summary>
 		[JsonProperty("displayLanguage", NullValueHandling = NullValueHandling.Ignore)]
 		public string DisplayLanguage { get; set; }
 
-		/// <summary>Identify online sources suspected of containing AI generated text.</summary>
+		/// <summary>
+		/// AI Source Match: identify online sources suspected of containing AI generated text.
+		/// Currently only applies to documents detected as English.
+		/// Leave it unset (null) to omit it from the request and get the server default (disabled).
+		/// </summary>
 		[JsonProperty("aiSourceMatch", NullValueHandling = NullValueHandling.Ignore)]
 		public AISourceMatch AISourceMatch { get; set; }
 	}
