@@ -120,7 +120,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		/// <summary>
 		/// The language the PDF report is generated in (sent as properties.displayLanguage).
 		/// Allowed values are lowercase and case-sensitive: "en", "es", "pt", "fr", "de" or "it".
-		/// Any other value, such as "EN" or "en-US", is rejected by the server with HTTP 400.
+		/// Any other non-empty value, such as "EN" or "en-US", is rejected by the server with HTTP 400.
 		/// Only takes effect when the PDF report is created (ReportSection.Create is true).
 		/// Leave it unset (null) to omit it from the request and get the server default ("en").
 		/// Do not set an empty string: it is sent as-is and replaces the default.
