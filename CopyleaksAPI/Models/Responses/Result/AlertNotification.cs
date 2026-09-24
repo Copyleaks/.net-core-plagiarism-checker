@@ -22,6 +22,8 @@
  SOFTWARE.
 ********************************************************************************/
 
+using Copyleaks.SDK.V3.API.Helpers;
+using Copyleaks.SDK.V3.API.Models.Responses.AIDetector;
 using Copyleaks.SDK.V3.API.Models.Types;
 using Newtonsoft.Json;
 
@@ -46,5 +48,20 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
 
 		[JsonProperty("title")]
 		public string Title { get; set; }
+
+		/// <summary>
+		/// Decode the additionalData of a "suspected-ai-text" alert into an AI detection result.
+		/// Returns null when this is not a "suspected-ai-text" alert, when it carries no data
+		/// (null, empty, or only NUL characters and ASCII whitespace), or when the data is valid JSON
+		/// that is not a JSON object (an array, number, string, true/false or null).
+		/// Trailing NUL characters and ASCII whitespace (tab, line feed, vertical tab, form feed, carriage return, space) are ignored.
+		/// The raw string stays available in AdditionalData.
+		/// </summary>
+		/// <returns>The AI detection result, or null</returns>
+		/// <exception cref="JsonException">AdditionalData is not valid JSON (JsonReaderException or JsonSerializationException)</exception>
+		public AIDetectionResult GetAIDetectionResult()
+		{
+			return AIDetectionAlertParser.Parse(Code, AdditionalData);
+		}
 	}
 }
