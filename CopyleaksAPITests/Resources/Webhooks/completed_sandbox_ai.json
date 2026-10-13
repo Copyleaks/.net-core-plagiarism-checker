@@ -1,0 +1,50 @@
+{
+  "status": 0,
+  "developerPayload": "dp-123",
+  "scannedDocument": {
+    "scanId": "scan-1",
+    "totalWords": 230,
+    "totalExcluded": 0,
+    "credits": 1,
+    "expectedCredits": 1,
+    "creationTime": "2026-09-24T08:00:00.000000Z",
+    "metadata": {},
+    "enabled": {
+      "plagiarismDetection": true,
+      "aiDetection": true,
+      "explainableAi": true,
+      "writingFeedback": false,
+      "pdfReport": false,
+      "cheatDetection": false,
+      "referencesValidation": false,
+      "aiSourceMatch": false,
+      "internalAiSourceMatch": false
+    },
+    "detectedLanguage": "en"
+  },
+  "results": {
+    "score": {
+      "identicalWords": 0,
+      "minorChangedWords": 0,
+      "relatedMeaningWords": 0,
+      "aggregatedScore": 0
+    },
+    "internet": [],
+    "database": [],
+    "batch": [],
+    "repositories": [],
+    "internalAIData": []
+  },
+  "notifications": {
+    "alerts": [
+      {
+        "code": "suspected-ai-text",
+        "title": "Potential AI-Generated Text Detected",
+        "message": "We are unable to verify that the text was written by a human.",
+        "severity": 4,
+        "category": 2,
+        "additionalData": "{\"results\":[{\"classification\":2,\"probability\":0.7308,\"matches\":[{\"text\":{\"chars\":{\"Starts\":[0],\"Lengths\":[1453]},\"words\":{\"Starts\":[0],\"Lengths\":[230]}}}]}],\"summary\":{\"Human\":0.0,\"Ai\":1.0},\"modelVersion\":\"v8.0\",\"translationProvider\":0}"
+      }
+    ]
+  }
+}

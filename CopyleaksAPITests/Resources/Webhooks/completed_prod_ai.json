@@ -1,0 +1,59 @@
+{
+  "status": 0,
+  "developerPayload": "dp-123",
+  "scannedDocument": {
+    "scanId": "scan-1",
+    "totalWords": 230,
+    "totalExcluded": 0,
+    "credits": 1,
+    "expectedCredits": 1,
+    "creationTime": "2026-09-24T08:00:00.000000Z",
+    "metadata": {},
+    "enabled": {
+      "plagiarismDetection": true,
+      "aiDetection": true,
+      "explainableAi": true,
+      "writingFeedback": false,
+      "pdfReport": false,
+      "cheatDetection": false,
+      "referencesValidation": false,
+      "aiSourceMatch": false,
+      "internalAiSourceMatch": false
+    },
+    "detectedLanguage": "en"
+  },
+  "results": {
+    "score": {
+      "identicalWords": 0,
+      "minorChangedWords": 0,
+      "relatedMeaningWords": 0,
+      "aggregatedScore": 0
+    },
+    "internet": [],
+    "database": [],
+    "batch": [],
+    "repositories": [],
+    "internalAIData": []
+  },
+  "notifications": {
+    "alerts": [
+      {
+        "code": "suspected-character-replacement",
+        "title": "Suspected Cheating: Character Replacement",
+        "message": "We found characters replaced by similar looking characters.",
+        "helpLink": "https://help.copyleaks.com/x",
+        "severity": 3,
+        "additionalData": "",
+        "category": 3
+      },
+      {
+        "code": "suspected-ai-text",
+        "title": "Potential AI-Generated Text Detected",
+        "message": "We are unable to verify that the text was written by a human.",
+        "severity": 4,
+        "category": 2,
+        "additionalData": "{\"results\": [{\"classification\": 1, \"probability\": 0.9124, \"matches\": [{\"text\": {\"chars\": {\"starts\": [0], \"lengths\": [702]}, \"words\": {\"starts\": [0], \"lengths\": [110]}}}]}, {\"classification\": 2, \"probability\": 0.9731, \"matches\": [{\"text\": {\"chars\": {\"starts\": [702], \"lengths\": [751]}, \"words\": {\"starts\": [110], \"lengths\": [120]}}, \"html\": {\"chars\": {\"starts\": [812], \"lengths\": [790], \"groupIds\": [3]}, \"words\": {\"starts\": [131], \"lengths\": [120], \"groupIds\": [3]}}}]}], \"summary\": {\"human\": 0.4783, \"ai\": 0.5217}, \"modelVersion\": \"v11.0\", \"translationProvider\": 1, \"translation\": \"Hello  world, this text was machine translated to English.\", \"explain\": {\"patterns\": {\"statistics\": {\"aiCount\": [18.386, 1.407], \"humanCount\": [1.137, 0.395], \"proportion\": [16.174, 3.565], \"source\": [1, 2]}, \"text\": {\"chars\": {\"starts\": [17, 72], \"lengths\": [20, 21]}, \"words\": {\"starts\": [3, 10], \"lengths\": [3, 4]}}}}}"
+      }
+    ]
+  }
+}
