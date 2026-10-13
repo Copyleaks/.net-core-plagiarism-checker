@@ -28,6 +28,11 @@ using System.Collections.Generic;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.AIDetector
 {
+    /// <summary>
+    /// AI text detection result.
+    /// Returned by the writer-detector check, and decoded from the additionalData of the
+    /// "suspected-ai-text" alert of the completed webhook.
+    /// </summary>
     public class AIDetectionResult
     {
         [JsonProperty("scanType")]
@@ -56,5 +61,27 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AIDetector
         /// </summary>
         [JsonProperty("scannedDocument")]
         public ScannedDocument ScannedDocument { get; set; }
+
+        /// <summary>
+        /// The translation provider, when the text was machine-translated to English before detection.
+        /// 0 means the text was not translated.
+        /// Sent in the completed webhook AI alert data; null when absent.
+        /// </summary>
+        [JsonProperty("translationProvider")]
+        public int? TranslationProvider { get; set; }
+
+        /// <summary>
+        /// The full English translation that was scanned, when the text was machine-translated.
+        /// Sent in the completed webhook AI alert data; null when absent.
+        /// </summary>
+        [JsonProperty("translation")]
+        public string Translation { get; set; }
+
+        /// <summary>
+        /// AI Logic explanation of the result.
+        /// Present only when AI Logic (explain) was enabled; null otherwise.
+        /// </summary>
+        [JsonProperty("explain")]
+        public AIExplain Explain { get; set; }
     }
 }
