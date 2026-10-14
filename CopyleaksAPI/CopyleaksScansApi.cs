@@ -245,6 +245,7 @@ namespace Copyleaks.SDK.V3.API
         public async Task<uint> ProgressAsync(string scanId, string token, CancellationToken cancellationToken = default)
         {
             RequireToken(token);
+            RequireScanId(scanId);
 
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/scans/{PathSegment(scanId)}/progress";
             var progress = await SendForJsonAsync<ProgressResponse>(
@@ -325,6 +326,7 @@ namespace Copyleaks.SDK.V3.API
         public async Task<Result> ResultAsync(string scanId, string token, CancellationToken cancellationToken = default)
         {
             RequireToken(token);
+            RequireScanId(scanId);
 
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/scans/{PathSegment(scanId)}/result";
             return await SendForJsonAsync<Result>(
@@ -343,6 +345,7 @@ namespace Copyleaks.SDK.V3.API
         public async Task<DownloadResultResponse> DownloadResultAsync(string scanId, string resultId, string token, CancellationToken cancellationToken = default)
         {
             RequireToken(token);
+            RequireScanId(scanId);
 
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/downloads/{PathSegment(scanId)}/results/{PathSegment(resultId)}";
             return await SendForJsonAsync<DownloadResultResponse>(
@@ -387,6 +390,7 @@ namespace Copyleaks.SDK.V3.API
         public async Task<DownloadSourceResponse> DownloadSourceReportAsync(string scanId, string token, CancellationToken cancellationToken = default)
         {
             RequireToken(token);
+            RequireScanId(scanId);
 
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/downloads/{PathSegment(scanId)}";
             return await SendForJsonAsync<DownloadSourceResponse>(
@@ -405,6 +409,7 @@ namespace Copyleaks.SDK.V3.API
         public async Task<Stream> DownloadPdfReportAsync(string scanId, string token, CancellationToken cancellationToken = default)
         {
             RequireToken(token);
+            RequireScanId(scanId);
 
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/downloads/{PathSegment(scanId)}/report.pdf";
             MemoryStream pdf = null;

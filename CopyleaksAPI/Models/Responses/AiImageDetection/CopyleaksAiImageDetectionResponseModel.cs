@@ -23,7 +23,7 @@
 ********************************************************************************/
 
 using System.Collections.Generic;
-using Copyleaks.SDK.V3.API.Models.Responses.Shared;
+using Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.ErrorModels;
 using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.AiImageDetection
@@ -83,7 +83,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AiImageDetection
         /// Set in a webhook when the asynchronous detection failed; the result fields are then empty. Check Error first.
         /// </summary>
         [JsonProperty("error")]
-        public CopyleaksAsyncDetectionError Error { get; set; }
+        public Error Error { get; set; }
 
         /// <summary>
         /// The developer payload from the asynchronous submit request, or null.

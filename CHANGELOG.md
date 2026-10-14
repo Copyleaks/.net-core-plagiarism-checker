@@ -42,7 +42,7 @@ This is a major release. It makes the HTTP layer reliable (one shared connection
   - New result webhook: `DeveloperPayload` and `InternalAIData`.
   - Error webhook: `error.Type`, `error.Id`, `error.Url` and `error.Details`.
   - Crawled version (`DownloadSourceResponse`): `ReferencesValidation`, with the per-reference Citation Checker results.
-  - AI Video Detection and asynchronous AI Image Detection webhooks: `Error` (a `CopyleaksAsyncDetectionError` with `Type`, `Id`, `Code`, `Message` and the optional `Url` and `Details`) and `DeveloperPayload`. A failed detection posts only these two fields, so check `Error` first.
+  - AI Video Detection and asynchronous AI Image Detection webhooks: `Error` (the same `Error` model as the error webhook: `Type`, `Id`, `Code`, `Message` and the optional `Url` and `Details`) and `DeveloperPayload`. A failed detection posts only these two fields, so check `Error` first.
   - `CopyleaksHttpException` now has `ResponseBody`, `ErrorType`, `ErrorId`, `ErrorCode`, `RetryAfter` and `Attempt` (the 1-based attempt that got the error response).
   - `CopyleaksHttpException.CreateAsync(response)` creates the exception for an error response without blocking.
 - **`CopyleaksClientOptions`** sets the per-attempt timeout, the number of retries, the retry delays and, optionally, the API and identity server addresses. Pass it to any API constructor, or register it in dependency injection.
@@ -52,10 +52,10 @@ This is a major release. It makes the HTTP layer reliable (one shared connection
 ### Changed
 
 - **One shared HttpClient.** When you do not pass an `HttpClient`, every API object now uses one shared, pooled client instead of creating a new one per object. You can create API objects freely.
-- **Retries.** Calls that are safe to repeat (GET requests, login, start, delete, and submits to a fixed scan id) are retried up to 3 times on network errors, timeouts and HTTP 408, 429, 500, 502, 503 and 504, with exponential backoff and jitter. Calls that are charged per call or trigger an action (AI Text Detection, Grammar Checker, Text Moderation, AI Image Detection, Image Plagiarism Detection, export and resend webhook) are retried only on HTTP 429. The SDK waits as long as the `Retry-After` header asks, and does not retry when it asks for more than 30 seconds. An attempt can time out after the server accepted it: a submit (or start) whose retry fails with 409 Conflict and `CopyleaksHttpException.Attempt` greater than 1 was accepted by an earlier attempt, so treat it as successful.
+- **Retries.** Calls that are safe to repeat (GET requests, login, start, delete, and submits to a fixed scan id) are retried up to 3 times on network errors, timeouts and HTTP 408, 429, 500, 502, 503 and 504, with exponential backoff and jitter. Calls that are charged per call or trigger an action (AI Text Detection, Grammar Checker, Text Moderation, AI Image Detection, Image Plagiarism Detection, export and resend webhook) are retried only on HTTP 429. The SDK waits as long as the `Retry-After` header asks, and does not retry when it asks for more than 30 seconds. An attempt can time out after the server accepted it: if you use a new scan id for every submit, a submit whose retry fails with 409 Conflict and `CopyleaksHttpException.Attempt` greater than 1 was accepted by an earlier attempt, so treat it as successful.
 - **Timeout.** Each attempt now times out after 60 seconds (the `RequestsTimeout` configuration value) and throws a `TimeoutException`. Change it with `CopyleaksClientOptions.Timeout`.
 - `DownloadPdfReportAsync` and `GetUserUsageAsync` stream the download instead of buffering it and copying it again. The per-attempt timeout covers reading the body too, and a failure while the body is read is not retried.
-- Pooled buffers that held request data are cleared when they are returned to the shared pool.
+- The SDK's pooled buffers that held request data are cleared when they are returned to the shared pool.
 - `pdf.version` is no longer sent unless you set it, so the server generates the latest PDF report version. `ReportCustomization.Version` is now nullable and marked obsolete; use `ReportVersion`.
 - `ScanProperties.Priority` is no longer sent unless you set it, so the server default applies. It is now nullable.
 - `ScanProperties.Expiration` now defaults to 2880 hours, the API default and maximum (it was 2800).
@@ -79,7 +79,7 @@ This is a major release. It makes the HTTP layer reliable (one shared connection
 - `DownloadPdfReportAsync` returned a stream that belonged to a disposed response. It now returns a stream you own.
 - The usage history dates depended on the current culture. They are now always formatted with the invariant culture.
 - Scan ids and other path values are now URL-encoded.
-- A null or empty scan id on the plagiarism submits (URL, file and OCR), AI Text Detection and Grammar Checker now throws `ArgumentException` instead of calling a wrong URL.
+- A null or empty scan id on the plagiarism submits (URL, file and OCR), progress, result and report downloads, AI Text Detection and Grammar Checker now throws `ArgumentException` instead of calling a wrong URL.
 - `dotnet pack` failed on a clean checkout (NU5026). It now builds the project first.
 
 ### Upgrade notes
@@ -98,4 +98,4 @@ This is a major release. It makes the HTTP layer reliable (one shared connection
 - `WritingAssistantDocument.Score` weights you do not set are now sent as 1.0 instead of 0.0.
 - The package no longer brings in `Microsoft.Extensions.Configuration.Json`. If your code calls `AddJsonFile` and got that package through this one, add a direct package reference.
 - The public `CopyleaksHttpException(HttpResponseMessage)` constructor is obsolete, because it blocks while it reads the response body. Use `await CopyleaksHttpException.CreateAsync(response)`.
-- A null or empty scan id on the plagiarism submits, AI Text Detection and Grammar Checker now throws `ArgumentException` before any request is sent (it used to call a wrong URL).
+- A null or empty scan id on the plagiarism submits, progress, result and report downloads, AI Text Detection and Grammar Checker now throws `ArgumentException` before any request is sent (it used to call a wrong URL).

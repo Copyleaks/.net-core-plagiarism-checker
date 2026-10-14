@@ -83,7 +83,7 @@ var scans = new CopyleaksScansApi(options: options);
 * Calls that are charged per call or trigger an action (AI Text Detection, Grammar Checker, Text Moderation, AI Image Detection, Image Plagiarism Detection, export and resend webhook) are retried only on HTTP 429.
 * The SDK honors the `Retry-After` header. When it asks for a longer wait than `MaxRetryDelay`, the SDK returns the error instead of waiting.
 * A request that runs out of time throws `TimeoutException`. An error response throws `CopyleaksHttpException`, with `HttpErrorCode`, `ResponseBody`, `ErrorType`, `ErrorId`, `ErrorCode`, `RetryAfter` and `Attempt` (the 1-based attempt that got the error).
-* An attempt can time out after the server accepted it. The retry of such a submit (or start) then fails with 409 Conflict. A 409 with `Attempt` greater than 1 means an earlier attempt was accepted, so treat the call as successful:
+* An attempt can time out after the server accepted it. The retry of such a submit then fails with 409 Conflict. If you use a new scan id for every submit, a 409 with `Attempt` greater than 1 means an earlier attempt was accepted, so treat the call as successful:
 
 ```csharp
 try
@@ -92,11 +92,11 @@ try
 }
 catch (CopyleaksHttpException ex) when (ex.HttpErrorCode == HttpStatusCode.Conflict && ex.Attempt > 1)
 {
-    // An earlier attempt created the scan; only its response was lost.
+    // With a new scan id per submit, an earlier attempt created this scan; only its response was lost.
 }
 ```
 
-* The PDF report and usage history downloads are streamed. Their timeout also covers reading the body, and a failure while the body is read is not retried.
+* The PDF report and usage history downloads are streamed. Their timeout also covers reading the body (and, for the usage history, writing it to your stream), and a failure while the body is read is not retried. If a usage history download fails partway, your stream may already hold part of the CSV.
 * Every async method takes an optional `CancellationToken`:
 
 ```csharp

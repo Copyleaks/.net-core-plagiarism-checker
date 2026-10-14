@@ -69,8 +69,9 @@ namespace Copyleaks.SDK.V3.API.Exceptions
 
         /// <summary>
         /// The 1-based attempt that got this error response. It is greater than 1 when the SDK retried the call.
-        /// A submit (or start) that fails with 409 Conflict and an Attempt greater than 1 means an earlier attempt
-        /// of the same call was accepted but its response was lost, for example to a timeout: treat the call as successful.
+        /// If you use a new scan id for every submit, a submit that fails with 409 Conflict and an Attempt greater than 1
+        /// means an earlier attempt of the same call was accepted but its response was lost, for example to a timeout:
+        /// treat the call as successful.
         /// </summary>
         public int Attempt { get; private set; } = 1;
 

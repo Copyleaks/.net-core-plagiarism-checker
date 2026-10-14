@@ -307,7 +307,7 @@ namespace CopyleaksAPITests
             Assert.AreEqual(400, payload.Error.Code);
             Assert.AreEqual("The video could not be downloaded.", payload.Error.Message);
             Assert.AreEqual("https://docs.copyleaks.com/", payload.Error.Url);
-            Assert.AreEqual(1, payload.Error.Details.Count);
+            Assert.AreEqual(1, payload.Error.Details.Length);
             Assert.AreEqual("url", payload.Error.Details[0].Param);
             Assert.AreEqual("Not reachable.", payload.Error.Details[0].Message);
             Assert.AreEqual("order-18", payload.DeveloperPayload);
