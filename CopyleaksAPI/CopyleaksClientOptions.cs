@@ -20,6 +20,8 @@ namespace Copyleaks.SDK.V3.API
         /// Use <see cref="System.Threading.Timeout.InfiniteTimeSpan"/> to turn the SDK timeout off.
         /// The timeout of an <see cref="System.Net.Http.HttpClient"/> you pass in still applies as well.
         /// When an attempt times out, the SDK throws a <see cref="TimeoutException"/> (after any retries).
+        /// The PDF report and usage history downloads are streamed: their timeout also covers reading the body,
+        /// and a failure while the body is read is not retried.
         /// </summary>
         public TimeSpan Timeout { get; set; } = ReadConfiguredTimeout();
 
@@ -32,6 +34,11 @@ namespace Copyleaks.SDK.V3.API
         /// Calls that are charged per call or that trigger an action (AI text detection, Grammar Checker, Text Moderation,
         /// AI image check, Image Plagiarism Detection, export and resend webhook) are retried only on HTTP 429,
         /// because then the server rejected them without running them.
+        /// </para>
+        /// <para>
+        /// An attempt can time out after the server accepted it. The retry of such a submit (or start) then fails with
+        /// 409 Conflict. <see cref="Exceptions.CopyleaksHttpException.Attempt"/> is the attempt that got the error:
+        /// a 409 with an Attempt greater than 1 means an earlier attempt was accepted, so treat the call as successful.
         /// </para>
         /// </summary>
         public int MaxRetries { get; set; } = 3;

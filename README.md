@@ -82,7 +82,21 @@ var scans = new CopyleaksScansApi(options: options);
 * Calls that are safe to repeat (GET requests, login, start, delete, and submits to a fixed scan id) are retried on network errors, timeouts and HTTP 408, 429, 500, 502, 503 and 504.
 * Calls that are charged per call or trigger an action (AI Text Detection, Grammar Checker, Text Moderation, AI Image Detection, Image Plagiarism Detection, export and resend webhook) are retried only on HTTP 429.
 * The SDK honors the `Retry-After` header. When it asks for a longer wait than `MaxRetryDelay`, the SDK returns the error instead of waiting.
-* A request that runs out of time throws `TimeoutException`. An error response throws `CopyleaksHttpException`, with `HttpErrorCode`, `ResponseBody`, `ErrorType`, `ErrorId`, `ErrorCode` and `RetryAfter`.
+* A request that runs out of time throws `TimeoutException`. An error response throws `CopyleaksHttpException`, with `HttpErrorCode`, `ResponseBody`, `ErrorType`, `ErrorId`, `ErrorCode`, `RetryAfter` and `Attempt` (the 1-based attempt that got the error).
+* An attempt can time out after the server accepted it. The retry of such a submit (or start) then fails with 409 Conflict. A 409 with `Attempt` greater than 1 means an earlier attempt was accepted, so treat the call as successful:
+
+```csharp
+try
+{
+    await scans.SubmitFileAsync(scanId, document, token);
+}
+catch (CopyleaksHttpException ex) when (ex.HttpErrorCode == HttpStatusCode.Conflict && ex.Attempt > 1)
+{
+    // An earlier attempt created the scan; only its response was lost.
+}
+```
+
+* The PDF report and usage history downloads are streamed. Their timeout also covers reading the body, and a failure while the body is read is not retried.
 * Every async method takes an optional `CancellationToken`:
 
 ```csharp
@@ -535,6 +549,8 @@ await imageDetectionClient.SubmitUrlAsync(scanId, new CopyleaksAiImageDetectionA
     Sandbox = true,
 }, authToken);
 ```
+If the asynchronous detection failed, the webhook body has `Error` (`Type`, `Id`, `Code`, `Message`, and the optional `Url` and `Details`) instead of the result, so check `Error` first. `DeveloperPayload` echoes the value from the submit request.
+
 For a full guide please refer to our step by step [Guide](https://docs.copyleaks.com/guides/ai-detector/ai-image-detection/)
 
 For a detailed understanding of the AI Image Detection process, refer to the Copyleaks image detection Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/ai-image-detector/check/)
@@ -559,7 +575,15 @@ await videoClient.SubmitAsync("my-video-scan-1", new CopyleaksAiVideoDetectionRe
 }, authToken);
 ```
 
-In your webhook, read the body as a `CopyleaksAiVideoDetectionResponseModel` (namespace `Copyleaks.SDK.V3.API.Models.Responses.AiVideoDetection`).
+In your webhook, read the body as a `CopyleaksAiVideoDetectionResponseModel` (namespace `Copyleaks.SDK.V3.API.Models.Responses.AiVideoDetection`). Check `Error` first: when the detection failed, the body has only `Error` (`Type`, `Id`, `Code`, `Message`, and the optional `Url` and `Details`) and `DeveloperPayload`, which echoes the value from the submit request.
+
+```csharp
+var result = JsonConvert.DeserializeObject<CopyleaksAiVideoDetectionResponseModel>(body);
+if (result.Error != null)
+    Console.WriteLine($"Detection failed: {result.Error.Id} ({result.Error.Code}): {result.Error.Message}");
+else
+    Console.WriteLine($"AI detected: {result.IsAiDetected}, overall AI share: {result.Summary.OverallAIRatio:P0}");
+```
 
 For a detailed understanding of the AI Video Detection process, refer to the Copyleaks AI video detection Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/ai-video-detector/submit/)
 ##

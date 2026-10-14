@@ -170,7 +170,8 @@ namespace Copyleaks.SDK.V3.API
                 throw new ArgumentException("Webhooks.Url is mandatory.", nameof(requestModel.Webhooks));
 
             string requestUri = $"{this.CopyleaksApiServer}{this.ImageDetectionApiVersion}/ai-image-detector-async/{PathSegment(scanId)}/submit";
-            // A submit to a fixed scan id is safe to repeat: a duplicate is rejected with 409 Conflict.
+            // A submit to a fixed scan id is safe to repeat: a duplicate is rejected with 409 Conflict,
+            // and CopyleaksHttpException.Attempt tells the caller when that 409 answered a retry.
             await SendJsonAndEnsureSuccessAsync(
                 HttpMethod.Put, requestUri, token, requestModel, gzip: false, eRetryMode.Safe, cancellationToken).ConfigureAwait(false);
         }

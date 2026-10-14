@@ -8,7 +8,7 @@
     <Company>Copyleaks LTD</Company>
     <Product>Copyleaks</Product>
     <Description>The official Copyleaks .NET SDK for AI Text Detection, AI Image Detection, AI Video Detection, Plagiarism Checker, Image Plagiarism Detection, Grammar Checker and Text Moderation.</Description>
-    <Copyright>All rights reserved to Copyleaks Ltd.</Copyright>
+    <Copyright>Copyright (c) Copyleaks Ltd.</Copyright>
     <PackageId>Copyleaks</PackageId>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://copyleaks.com/</PackageProjectUrl>
@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 

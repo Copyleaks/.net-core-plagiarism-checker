@@ -310,6 +310,37 @@ namespace CopyleaksAPITests
         }
 
         [TestMethod]
+        public async Task Submits_require_a_scan_id()
+        {
+            var handler = new FakeHttpHandler().Respond(HttpStatusCode.Created, "{}");
+            var client = Fakes.Client(handler);
+            var scans = new CopyleaksScansApi(client);
+            var aiText = new CopyleaksAIDetectionApi(client);
+            var grammar = new CopyleaksWritingAssistantApi(client);
+            var properties = new ClientScanProperties { Sandbox = true };
+
+            foreach (string scanId in new[] { null, "" })
+            {
+                await Assert.ThrowsExceptionAsync<ArgumentException>(() => scans.SubmitUrlAsync(scanId,
+                    new UrlDocument { Url = new Uri("https://example.com/"), PropertiesSection = properties }, Fakes.Token));
+                await Assert.ThrowsExceptionAsync<ArgumentException>(() => scans.SubmitFileAsync(scanId,
+                    new FileDocument { Base64 = "aGk=", Filename = "a.txt", PropertiesSection = properties }, Fakes.Token));
+                await Assert.ThrowsExceptionAsync<ArgumentException>(() => scans.SubmitFileAsync(scanId,
+                    new MemoryStream(new byte[] { 1 }), "a.txt", properties, Fakes.Token));
+                await Assert.ThrowsExceptionAsync<ArgumentException>(() => scans.SubmitImageOCRAsync(scanId,
+                    new FileOcrDocument { Base64 = "aGk=", Filename = "a.png", Language = "en", PropertiesSection = properties }, Fakes.Token));
+                await Assert.ThrowsExceptionAsync<ArgumentException>(() => scans.SubmitImageOCRAsync(scanId,
+                    new MemoryStream(new byte[] { 1 }), "a.png", "en", properties, Fakes.Token));
+                await Assert.ThrowsExceptionAsync<ArgumentException>(() => aiText.SubmitNaturalLanguageAsync(scanId,
+                    new NaturalLanguageDocument { Text = new string('a', 300), Sandbox = true }, Fakes.Token));
+                await Assert.ThrowsExceptionAsync<ArgumentException>(() => grammar.SubmitTextAsync(scanId,
+                    new WritingAssistantDocument { Text = "Some text", Sandbox = true }, Fakes.Token));
+            }
+
+            Assert.AreEqual(0, handler.RequestList.Count, "an empty scan id must never reach the server");
+        }
+
+        [TestMethod]
         public async Task Supported_file_types_and_ocr_languages_use_the_documented_v3_paths()
         {
             var handler = new FakeHttpHandler()

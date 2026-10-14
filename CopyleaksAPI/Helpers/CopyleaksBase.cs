@@ -23,9 +23,9 @@
 ********************************************************************************/
 
 using Copyleaks.SDK.V3.API.Exceptions;
-using Copyleaks.SDK.V3.API.Extensions;
 using Copyleaks.SDK.V3.API.Models.Constants;
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.ExceptionServices;
@@ -120,12 +120,9 @@ namespace Copyleaks.SDK.V3.API.Helpers
         }
 
         /// <summary>
-        /// Send a request with retries, per-attempt timeout and cancellation.
-        /// A new HttpRequestMessage (and a new content from <paramref name="createContent"/>) is built for every attempt.
-        /// Returns the last response, whatever its status code. Throws the last network error or a TimeoutException
-        /// when no attempt got a response.
+        /// Send a request with retries, per-attempt timeout and cancellation, and buffer the response body.
         /// </summary>
-        private protected async Task<HttpResponseMessage> SendAsync(
+        private protected Task<ApiResponse> SendAsync(
             HttpMethod method,
             string requestUri,
             string token,
@@ -133,58 +130,102 @@ namespace Copyleaks.SDK.V3.API.Helpers
             eRetryMode retryMode,
             CancellationToken cancellationToken)
         {
+            return SendAsync(method, requestUri, token, createContent, retryMode, HttpCompletionOption.ResponseContentRead, cancellationToken);
+        }
+
+        /// <summary>
+        /// Send a request with retries, per-attempt timeout and cancellation.
+        /// A new HttpRequestMessage (and a new content from <paramref name="createContent"/>) is built for every attempt.
+        /// Returns the last response, whatever its status code, with the number of the attempt that got it.
+        /// Throws the last network error or a TimeoutException when no attempt got a response.
+        /// With <see cref="HttpCompletionOption.ResponseHeadersRead"/> the body is not buffered, and the returned response
+        /// keeps the timeout of its attempt running, so reading the body with <see cref="ApiResponse.Token"/> is still bounded by it.
+        /// </summary>
+        private protected async Task<ApiResponse> SendAsync(
+            HttpMethod method,
+            string requestUri,
+            string token,
+            Func<HttpContent> createContent,
+            eRetryMode retryMode,
+            HttpCompletionOption completionOption,
+            CancellationToken cancellationToken)
+        {
             CopyleaksClientOptions options = this.Options;
             int maxRetries = retryMode == eRetryMode.None ? 0 : Math.Max(0, options.MaxRetries);
             TimeSpan timeout = options.Timeout;
-            bool hasTimeout = timeout > TimeSpan.Zero && timeout != Timeout.InfiniteTimeSpan;
+            bool hasTimeout = HasTimeout(timeout);
 
-            for (int attempt = 0; ; attempt++)
+            for (int attempt = 1; ; attempt++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
                 HttpResponseMessage response = null;
                 ExceptionDispatchInfo failure = null;
-
-                using (var request = new HttpRequestMessage(method, requestUri))
-                using (var attemptCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
+                var attemptCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                try
                 {
-                    request.Headers.TryAddWithoutValidation("User-Agent", AssemblyHelper.UserAgent);
-                    if (!string.IsNullOrEmpty(token))
-                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    if (createContent != null)
-                        request.Content = createContent();
+                    using (var request = new HttpRequestMessage(method, requestUri))
+                    {
+                        request.Headers.TryAddWithoutValidation("User-Agent", AssemblyHelper.UserAgent);
+                        if (!string.IsNullOrEmpty(token))
+                            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        if (createContent != null)
+                            request.Content = createContent();
 
-                    if (hasTimeout)
-                        attemptCts.CancelAfter(timeout);
+                        if (hasTimeout)
+                            attemptCts.CancelAfter(timeout);
 
-                    try
-                    {
-                        response = await Client.SendAsync(request, HttpCompletionOption.ResponseContentRead, attemptCts.Token).ConfigureAwait(false);
+                        try
+                        {
+                            response = await Client.SendAsync(request, completionOption, attemptCts.Token).ConfigureAwait(false);
+                        }
+                        catch (OperationCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+                        {
+                            // Our per-attempt timeout or the HttpClient's own timeout, not the caller.
+                            failure = ExceptionDispatchInfo.Capture(CreateTimeoutException(method, requestUri, timeout, ex));
+                        }
+                        catch (HttpRequestException ex)
+                        {
+                            failure = ExceptionDispatchInfo.Capture(ex);
+                        }
                     }
-                    catch (OperationCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+
+                    if (attempt <= maxRetries && TryGetRetryDelay(retryMode, attempt - 1, response, failure != null, options, out TimeSpan delay))
                     {
-                        // Our per-attempt timeout or the HttpClient's own timeout, not the caller.
-                        string limit = hasTimeout ? $" within {timeout.TotalSeconds:0.###} seconds" : string.Empty;
-                        failure = ExceptionDispatchInfo.Capture(new TimeoutException(
-                            $"The request {method} {new Uri(requestUri).AbsolutePath} did not complete{limit}.", ex));
+                        response?.Dispose();
+                        attemptCts.Dispose();
+                        attemptCts = null;
+                        if (delay > TimeSpan.Zero)
+                            await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
+                        continue;
                     }
-                    catch (HttpRequestException ex)
-                    {
-                        failure = ExceptionDispatchInfo.Capture(ex);
-                    }
+
+                    failure?.Throw();
+
+                    if (completionOption != HttpCompletionOption.ResponseHeadersRead)
+                        return new ApiResponse(response, attempt, cancellationToken);
+
+                    // The body is still on the network: hand the attempt timeout over to the response.
+                    var streamed = new ApiResponse(response, attempt, attemptCts.Token, attemptCts);
+                    attemptCts = null;
+                    return streamed;
                 }
-
-                if (attempt < maxRetries && TryGetRetryDelay(retryMode, attempt, response, failure != null, options, out TimeSpan delay))
+                finally
                 {
-                    response?.Dispose();
-                    if (delay > TimeSpan.Zero)
-                        await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
-                    continue;
+                    attemptCts?.Dispose();
                 }
-
-                failure?.Throw();
-                return response;
             }
+        }
+
+        private static bool HasTimeout(TimeSpan timeout)
+        {
+            return timeout > TimeSpan.Zero && timeout != Timeout.InfiniteTimeSpan;
+        }
+
+        private static TimeoutException CreateTimeoutException(HttpMethod method, string requestUri, TimeSpan timeout, Exception inner)
+        {
+            string limit = HasTimeout(timeout) ? $" within {timeout.TotalSeconds:0.###} seconds" : string.Empty;
+            return new TimeoutException($"The request {method} {new Uri(requestUri).AbsolutePath} did not complete{limit}.", inner);
         }
 
         private static bool TryGetRetryDelay(eRetryMode mode, int attempt, HttpResponseMessage response, bool failed,
@@ -225,7 +266,7 @@ namespace Copyleaks.SDK.V3.API.Helpers
         {
             using (var response = await SendAsync(method, requestUri, token, createContent, retryMode, cancellationToken).ConfigureAwait(false))
             {
-                await response.EnsureCopyleaksSuccessAsync(cancellationToken).ConfigureAwait(false);
+                await response.EnsureSuccessAsync().ConfigureAwait(false);
             }
         }
 
@@ -238,8 +279,50 @@ namespace Copyleaks.SDK.V3.API.Helpers
         {
             using (var response = await SendAsync(method, requestUri, token, createContent, retryMode, cancellationToken).ConfigureAwait(false))
             {
-                return await response.ExtractJsonResultsAsync<T>(cancellationToken).ConfigureAwait(false);
+                return await response.ReadJsonAsync<T>().ConfigureAwait(false);
             }
+        }
+
+        /// <summary>
+        /// Send a GET request and pass the body of a successful response to <paramref name="readBody"/> as it arrives,
+        /// without buffering it first. The per-attempt timeout keeps running while the body is read.
+        /// Retries cover the request until the response headers arrive. A failure while the body is read is not retried,
+        /// because part of the body may already have been consumed.
+        /// </summary>
+        /// <param name="requestUri">The download address</param>
+        /// <param name="token">Login Token</param>
+        /// <param name="readBody">Reads the body stream; gets the Content-Length when the server sent one</param>
+        /// <param name="cancellationToken">Cancels the request</param>
+        private protected async Task DownloadAsync(
+            string requestUri, string token, Func<Stream, long?, CancellationToken, Task> readBody, CancellationToken cancellationToken)
+        {
+            using (var response = await SendAsync(
+                HttpMethod.Get, requestUri, token, null, eRetryMode.Safe, HttpCompletionOption.ResponseHeadersRead, cancellationToken).ConfigureAwait(false))
+            {
+                try
+                {
+                    await response.EnsureSuccessAsync().ConfigureAwait(false);
+                    HttpContent content = response.Message.Content;
+                    using (Stream body = await content.ReadAsStreamAsync(response.Token).ConfigureAwait(false))
+                    {
+                        await readBody(body, content.Headers.ContentLength, response.Token).ConfigureAwait(false);
+                    }
+                }
+                catch (OperationCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+                {
+                    // The attempt timeout ran out while the body was read.
+                    throw CreateTimeoutException(HttpMethod.Get, requestUri, this.Options.Timeout, ex);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Throw an <see cref="ArgumentException"/> for an empty scan id, before it is used in a URL path.
+        /// </summary>
+        private protected static void RequireScanId(string scanId)
+        {
+            if (string.IsNullOrEmpty(scanId))
+                throw new ArgumentException("ScanId is mandatory", nameof(scanId));
         }
 
         /// <summary>

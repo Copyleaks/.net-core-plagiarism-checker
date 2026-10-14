@@ -40,10 +40,13 @@ namespace Copyleaks.SDK.V3.API.Extensions
         /// <summary>
         /// Throw a <see cref="CopyleaksHttpException"/> when the response is not a success.
         /// </summary>
-        public static async Task EnsureCopyleaksSuccessAsync(this HttpResponseMessage message, CancellationToken cancellationToken = default)
+        /// <param name="message">The response</param>
+        /// <param name="attempt">The 1-based attempt that got the response</param>
+        /// <param name="cancellationToken">Cancels reading the error body</param>
+        public static async Task EnsureCopyleaksSuccessAsync(this HttpResponseMessage message, int attempt, CancellationToken cancellationToken = default)
         {
             if (!message.IsSuccessStatusCode)
-                throw await CopyleaksHttpException.CreateAsync(message, cancellationToken).ConfigureAwait(false);
+                throw await CopyleaksHttpException.CreateAsync(message, attempt, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -51,11 +54,12 @@ namespace Copyleaks.SDK.V3.API.Extensions
         /// </summary>
         /// <typeparam name="T">The expected result type</typeparam>
         /// <param name="message">The response</param>
+        /// <param name="attempt">The 1-based attempt that got the response</param>
         /// <param name="cancellationToken">Cancels reading the response</param>
         /// <returns>A deserialized object from the response</returns>
-        public static async Task<T> ExtractJsonResultsAsync<T>(this HttpResponseMessage message, CancellationToken cancellationToken = default)
+        public static async Task<T> ExtractJsonResultsAsync<T>(this HttpResponseMessage message, int attempt, CancellationToken cancellationToken = default)
         {
-            await message.EnsureCopyleaksSuccessAsync(cancellationToken).ConfigureAwait(false);
+            await message.EnsureCopyleaksSuccessAsync(attempt, cancellationToken).ConfigureAwait(false);
 
             if (message.Content == null || message.Content.Headers.ContentLength == 0)
                 throw new JsonException("This request could not be processed.");

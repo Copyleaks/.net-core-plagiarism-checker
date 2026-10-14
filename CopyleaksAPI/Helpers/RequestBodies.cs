@@ -63,34 +63,26 @@ namespace Copyleaks.SDK.V3.API.Helpers
 
         /// <summary>
         /// Write a JSON object whose "base64" property is the base64 encoding of <paramref name="source"/>,
-        /// followed by the other properties of <paramref name="rest"/>. The file is encoded while it is read,
-        /// so the base64 string is never held in memory.
+        /// followed by the other properties of <paramref name="rest"/>. The file is read asynchronously and encoded
+        /// while it is read, so the base64 string is never held in memory and streams that only support async reads work.
         /// </summary>
-        public static BufferedBody JsonWithStreamedBase64(Stream source, JObject rest, bool gzip)
+        public static async Task<BufferedBody> JsonWithStreamedBase64Async(Stream source, JObject rest, bool gzip, CancellationToken cancellationToken)
         {
             var body = new BufferedBody(gzip);
             try
             {
-                body.Write(writer =>
+                await body.WriteAsync(async writer =>
                 {
-                    writer.Write("{\"base64\":\"");
-                    WriteBase64(source, writer);
-                    writer.Write('"');
+                    await writer.WriteAsync("{\"base64\":\"".AsMemory(), cancellationToken).ConfigureAwait(false);
+                    await WriteBase64Async(source, writer, cancellationToken).ConfigureAwait(false);
+
+                    // The other properties are small: same JSON as JsonTextWriter, written with one call.
+                    var tail = new StringBuilder("\"");
                     foreach (JProperty property in rest.Properties())
-                    {
-                        writer.Write(',');
-                        using (var json = new JsonTextWriter(writer) { CloseOutput = false })
-                        {
-                            json.WriteValue(property.Name);
-                        }
-                        writer.Write(':');
-                        using (var json = new JsonTextWriter(writer) { CloseOutput = false })
-                        {
-                            property.Value.WriteTo(json);
-                        }
-                    }
-                    writer.Write('}');
-                });
+                        tail.Append(',').Append(JsonConvert.ToString(property.Name)).Append(':').Append(property.Value.ToString(Formatting.None));
+                    tail.Append('}');
+                    await writer.WriteAsync(tail, cancellationToken).ConfigureAwait(false);
+                }).ConfigureAwait(false);
                 return body;
             }
             catch
@@ -122,7 +114,7 @@ namespace Copyleaks.SDK.V3.API.Helpers
                 return;
             _disposed = true;
             foreach (byte[] segment in _segments)
-                ArrayPool<byte>.Shared.Return(segment);
+                ArrayPool<byte>.Shared.Return(segment, clearArray: true);
             _segments.Clear();
         }
 
@@ -142,6 +134,27 @@ namespace Copyleaks.SDK.V3.API.Helpers
                 {
                     if (Gzip)
                         target.Dispose();
+                }
+            }
+        }
+
+        private async Task WriteAsync(Func<TextWriter, Task> write)
+        {
+            using (var sink = new SegmentWriteStream(this))
+            {
+                Stream target = Gzip ? new GZipStream(sink, CompressionLevel.Optimal, leaveOpen: true) : (Stream)sink;
+                try
+                {
+                    var writer = new StreamWriter(target, Utf8, 16 * 1024, leaveOpen: true);
+                    await using (writer.ConfigureAwait(false))
+                    {
+                        await write(writer).ConfigureAwait(false);
+                    }
+                }
+                finally
+                {
+                    if (Gzip)
+                        await target.DisposeAsync().ConfigureAwait(false);
                 }
             }
         }
@@ -173,7 +186,7 @@ namespace Copyleaks.SDK.V3.API.Helpers
             }
         }
 
-        private static void WriteBase64(Stream source, TextWriter writer)
+        private static async Task WriteBase64Async(Stream source, TextWriter writer, CancellationToken cancellationToken)
         {
             // A multiple of 3 bytes, so every chunk encodes without padding until the last one.
             const int chunkBytes = 3 * 16 * 1024;
@@ -184,7 +197,7 @@ namespace Copyleaks.SDK.V3.API.Helpers
                 int filled = 0;
                 while (true)
                 {
-                    int read = source.Read(buffer, filled, chunkBytes - filled);
+                    int read = await source.ReadAsync(buffer.AsMemory(filled, chunkBytes - filled), cancellationToken).ConfigureAwait(false);
                     if (read > 0)
                     {
                         filled += read;
@@ -195,7 +208,7 @@ namespace Copyleaks.SDK.V3.API.Helpers
                     if (filled > 0)
                     {
                         int charCount = Convert.ToBase64CharArray(buffer, 0, filled, chars, 0);
-                        writer.Write(chars, 0, charCount);
+                        await writer.WriteAsync(chars.AsMemory(0, charCount), cancellationToken).ConfigureAwait(false);
                         filled = 0;
                     }
 
@@ -205,8 +218,8 @@ namespace Copyleaks.SDK.V3.API.Helpers
             }
             finally
             {
-                ArrayPool<byte>.Shared.Return(buffer);
-                ArrayPool<char>.Shared.Return(chars);
+                ArrayPool<byte>.Shared.Return(buffer, clearArray: true);
+                ArrayPool<char>.Shared.Return(chars, clearArray: true);
             }
         }
 
@@ -230,6 +243,21 @@ namespace Copyleaks.SDK.V3.API.Helpers
             public override void SetLength(long value) => throw new NotSupportedException();
             public override void Write(byte[] buffer, int offset, int count) => _owner.Append(buffer.AsSpan(offset, count));
             public override void Write(ReadOnlySpan<byte> buffer) => _owner.Append(buffer);
+
+            // Writes only copy into pooled memory, so the async versions complete at once instead of going to the thread pool.
+            public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+            {
+                _owner.Append(buffer.AsSpan(offset, count));
+                return Task.CompletedTask;
+            }
+
+            public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
+            {
+                _owner.Append(buffer.Span);
+                return default;
+            }
+
+            public override Task FlushAsync(CancellationToken cancellationToken) => Task.CompletedTask;
         }
 
         private sealed class SegmentsContent : HttpContent

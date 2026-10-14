@@ -126,6 +126,7 @@ namespace CopyleaksAPITests
 
             Assert.AreEqual(HttpStatusCode.ServiceUnavailable, ex.HttpErrorCode);
             Assert.AreEqual(3, handler.RequestList.Count, "1 attempt + 2 retries");
+            Assert.AreEqual(3, ex.Attempt, "the error came from the third attempt");
         }
 
         [TestMethod]
@@ -214,6 +215,7 @@ namespace CopyleaksAPITests
             var ex = await Assert.ThrowsExceptionAsync<CopyleaksHttpException>(() => api.CreditBalanceAsync(Fakes.Token));
             Assert.AreEqual(HttpStatusCode.BadRequest, ex.HttpErrorCode);
             Assert.AreEqual(1, handler.RequestList.Count);
+            Assert.AreEqual(1, ex.Attempt);
             Assert.IsNull(ex.ErrorType, "a string error is not an error envelope");
         }
 
@@ -244,6 +246,25 @@ namespace CopyleaksAPITests
 
             await Assert.ThrowsExceptionAsync<TimeoutException>(() => api.SubmitNaturalLanguageAsync("scan1", AiDocument(), Fakes.Token));
             Assert.AreEqual(1, handler.RequestList.Count);
+        }
+
+        [TestMethod]
+        public async Task Conflict_on_the_retry_of_a_timed_out_submit_reports_the_attempt()
+        {
+            // The first attempt reaches the server but its response never arrives; the retry finds the scan already exists.
+            var handler = new FakeHttpHandler()
+                .Hang()
+                .Respond(HttpStatusCode.Conflict, "{\"error\":{\"type\":\"invalid_request_error\",\"id\":\"scan_exists\",\"code\":409,\"message\":\"exists\"}}");
+            var options = Fakes.FastRetries();
+            options.Timeout = TimeSpan.FromMilliseconds(200);
+            var api = new CopyleaksScansApi(Fakes.Client(handler), options);
+            var document = new FileDocument { Base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes("Hello")), Filename = "file.txt" };
+
+            var ex = await Assert.ThrowsExceptionAsync<CopyleaksHttpException>(() => api.SubmitFileAsync("scan1", document, Fakes.Token));
+
+            Assert.AreEqual(HttpStatusCode.Conflict, ex.HttpErrorCode);
+            Assert.AreEqual(2, ex.Attempt, "a 409 on a retry means an earlier attempt was accepted");
+            Assert.AreEqual(2, handler.RequestList.Count);
         }
 
         [TestMethod]
@@ -447,6 +468,110 @@ namespace CopyleaksAPITests
         }
 
         [TestMethod]
+        public async Task Stream_submit_reads_streams_that_only_support_async_reads()
+        {
+            var bytes = new byte[200001];
+            new Random(7).NextBytes(bytes);
+            var handler = new FakeHttpHandler().Respond(HttpStatusCode.Created);
+            var api = new CopyleaksScansApi(Fakes.Client(handler));
+
+            using (var stream = new AsyncOnlyStream(bytes))
+                await api.SubmitFileAsync("async1", stream, "file.pdf", new ClientScanProperties { Sandbox = true }, Fakes.Token);
+
+            var request = handler.Single;
+            Assert.AreEqual(Convert.ToBase64String(bytes), request.Json["base64"].Value<string>());
+            Assert.AreEqual("file.pdf", request.Json["filename"].Value<string>());
+            Assert.AreEqual(request.RawBody.Length, request.ContentLength);
+        }
+
+        [TestMethod]
+        public async Task Stream_submit_passes_the_cancellation_token_to_the_stream()
+        {
+            var handler = new FakeHttpHandler().Respond(HttpStatusCode.Created);
+            var api = new CopyleaksScansApi(Fakes.Client(handler));
+
+            using (var stream = new AsyncOnlyStream(new byte[10], stall: true))
+            using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(200)))
+            {
+                await AssertCanceledAsync(() => api.SubmitImageOCRAsync("async2", stream, "scan.png", "en", new ClientScanProperties(), Fakes.Token, cts.Token));
+            }
+            Assert.AreEqual(0, handler.RequestList.Count, "nothing is sent when reading the stream was cancelled");
+        }
+
+        [TestMethod]
+        public async Task Pdf_download_is_retried_until_headers_arrive_and_returned_read_only()
+        {
+            var bytes = new byte[300000];
+            new Random(3).NextBytes(bytes);
+            var handler = new FakeHttpHandler()
+                .Respond(HttpStatusCode.ServiceUnavailable, "{}")
+                .RespondBytes(HttpStatusCode.OK, bytes, "application/pdf");
+            var api = new CopyleaksScansApi(Fakes.Client(handler), Fakes.FastRetries());
+
+            using (var pdf = await api.DownloadPdfReportAsync("s1", Fakes.Token))
+            using (var copy = new MemoryStream())
+            {
+                Assert.AreEqual(0, pdf.Position);
+                Assert.IsFalse(pdf.CanWrite);
+                await pdf.CopyToAsync(copy);
+                CollectionAssert.AreEqual(bytes, copy.ToArray());
+            }
+            Assert.AreEqual(2, handler.RequestList.Count);
+        }
+
+        [TestMethod]
+        public async Task Download_error_is_reported_with_its_body()
+        {
+            var handler = new FakeHttpHandler().Respond(HttpStatusCode.NotFound,
+                "{\"error\":{\"type\":\"invalid_request_error\",\"id\":\"not_found\",\"code\":404,\"message\":\"missing\"}}");
+            var api = new CopyleaksScansApi(Fakes.Client(handler), Fakes.FastRetries());
+
+            using (var csv = new MemoryStream())
+            {
+                var ex = await Assert.ThrowsExceptionAsync<CopyleaksHttpException>(
+                    () => api.GetUserUsageAsync(new DateTime(2026, 1, 1), new DateTime(2026, 1, 2), csv, Fakes.Token));
+
+                Assert.AreEqual(HttpStatusCode.NotFound, ex.HttpErrorCode);
+                Assert.AreEqual("not_found", ex.ErrorId);
+                Assert.AreEqual(1, ex.Attempt);
+                Assert.AreEqual(0, csv.Length, "nothing is written to the caller's stream for an error");
+            }
+        }
+
+        [TestMethod]
+        public async Task Download_timeout_covers_reading_the_body_and_is_not_retried()
+        {
+            var handler = new FakeHttpHandler().Respond((request, ct) =>
+                Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StalledContent() }));
+            var options = Fakes.FastRetries();
+            options.Timeout = TimeSpan.FromMilliseconds(300);
+            var api = new CopyleaksScansApi(Fakes.Client(handler), options);
+
+            var watch = Stopwatch.StartNew();
+            var ex = await Assert.ThrowsExceptionAsync<TimeoutException>(() => api.DownloadPdfReportAsync("s1", Fakes.Token));
+            watch.Stop();
+
+            StringAssert.Contains(ex.Message, "/v3/downloads/s1/report.pdf");
+            Assert.IsTrue(watch.Elapsed < TimeSpan.FromSeconds(10));
+            Assert.AreEqual(1, handler.RequestList.Count, "a failure while the body is read is not retried");
+        }
+
+        [TestMethod]
+        public async Task Cancelling_a_download_while_the_body_is_read_throws_OperationCanceledException()
+        {
+            var handler = new FakeHttpHandler().Respond((request, ct) =>
+                Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StalledContent() }));
+            var api = new CopyleaksScansApi(Fakes.Client(handler), Fakes.FastRetries());
+
+            using (var csv = new MemoryStream())
+            using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(200)))
+            {
+                await AssertCanceledAsync(() => api.GetUserUsageAsync(new DateTime(2026, 1, 1), new DateTime(2026, 1, 2), csv, Fakes.Token, cts.Token));
+            }
+            Assert.AreEqual(1, handler.RequestList.Count);
+        }
+
+        [TestMethod]
         public async Task Empty_success_body_for_a_json_call_is_reported()
         {
             var handler = new FakeHttpHandler().Respond(HttpStatusCode.OK, "");
@@ -473,11 +598,32 @@ namespace CopyleaksAPITests
                 Content = new StringContent("{\"error\":{\"type\":\"invalid_request_error\",\"id\":\"scan_exists\",\"code\":\"409\",\"message\":\"exists\"}}"),
             };
 
+#pragma warning disable CS0618 // The obsolete constructor is kept for compatibility, and this test covers it.
             var ex = new CopyleaksHttpException(response);
+#pragma warning restore CS0618
 
             Assert.AreEqual(HttpStatusCode.Conflict, ex.HttpErrorCode);
             Assert.AreEqual("scan_exists", ex.ErrorId);
             Assert.AreEqual(409, ex.ErrorCode);
+            Assert.AreEqual(1, ex.Attempt);
+        }
+
+        [TestMethod]
+        public async Task CopyleaksHttpException_CreateAsync_reads_the_body_without_blocking()
+        {
+            var response = new HttpResponseMessage(HttpStatusCode.PaymentRequired)
+            {
+                Content = new StringContent("{\"error\":{\"type\":\"payment_error\",\"id\":\"insufficient_credits\",\"code\":2,\"message\":\"no credits\"}}"),
+            };
+
+            var ex = await CopyleaksHttpException.CreateAsync(response);
+
+            Assert.AreEqual(HttpStatusCode.PaymentRequired, ex.HttpErrorCode);
+            Assert.AreEqual("insufficient_credits", ex.ErrorId);
+            Assert.AreEqual(2, ex.ErrorCode);
+            Assert.AreEqual(1, ex.Attempt);
+            StringAssert.Contains(ex.ResponseBody, "no credits");
+            await Assert.ThrowsExceptionAsync<ArgumentNullException>(() => CopyleaksHttpException.CreateAsync(null));
         }
 
         private static async Task AssertCanceledAsync(Func<Task> call)
@@ -517,6 +663,62 @@ namespace CopyleaksAPITests
             public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
             public override void SetLength(long value) => throw new NotSupportedException();
             public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// A stream that can only be read asynchronously, like a web server request body when synchronous IO is not allowed.
+        /// </summary>
+        private sealed class AsyncOnlyStream : Stream
+        {
+            private readonly MemoryStream _inner;
+            private readonly bool _stall;
+
+            public AsyncOnlyStream(byte[] data, bool stall = false)
+            {
+                _inner = new MemoryStream(data);
+                _stall = stall;
+            }
+
+            public override bool CanRead => true;
+            public override bool CanSeek => false;
+            public override bool CanWrite => false;
+            public override long Length => throw new NotSupportedException();
+            public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+            public override void Flush() { }
+            public override int Read(byte[] buffer, int offset, int count) => throw new InvalidOperationException("Synchronous reads are not allowed.");
+            public override int Read(Span<byte> buffer) => throw new InvalidOperationException("Synchronous reads are not allowed.");
+
+            public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+                => ReadAsync(buffer.AsMemory(offset, count), cancellationToken).AsTask();
+
+            public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default)
+            {
+                if (_stall)
+                    await Task.Delay(Timeout.Infinite, cancellationToken);
+                await Task.Yield();
+                // Short reads exercise the chunk handling.
+                return _inner.Read(buffer.Span.Slice(0, Math.Min(buffer.Length, 1000)));
+            }
+
+            public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+            public override void SetLength(long value) => throw new NotSupportedException();
+            public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        }
+
+        /// <summary>
+        /// A response body whose headers arrived but whose bytes never do.
+        /// </summary>
+        private sealed class StalledContent : HttpContent
+        {
+            protected override Task<Stream> CreateContentReadStreamAsync() => Task.FromResult<Stream>(new AsyncOnlyStream(Array.Empty<byte>(), stall: true));
+            protected override Task<Stream> CreateContentReadStreamAsync(CancellationToken cancellationToken) => CreateContentReadStreamAsync();
+            protected override Task SerializeToStreamAsync(Stream stream, TransportContext context) => throw new NotSupportedException();
+
+            protected override bool TryComputeLength(out long length)
+            {
+                length = 0;
+                return false;
+            }
         }
     }
 }

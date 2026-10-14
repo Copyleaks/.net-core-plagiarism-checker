@@ -68,28 +68,52 @@ namespace Copyleaks.SDK.V3.API.Exceptions
         public TimeSpan? RetryAfter { get; private set; }
 
         /// <summary>
-        /// A new error response from Copyleaks API
+        /// The 1-based attempt that got this error response. It is greater than 1 when the SDK retried the call.
+        /// A submit (or start) that fails with 409 Conflict and an Attempt greater than 1 means an earlier attempt
+        /// of the same call was accepted but its response was lost, for example to a timeout: treat the call as successful.
+        /// </summary>
+        public int Attempt { get; private set; } = 1;
+
+        /// <summary>
+        /// A new error response from Copyleaks API. This constructor blocks while it reads the response body;
+        /// use <see cref="CreateAsync(HttpResponseMessage, CancellationToken)"/> instead.
         /// </summary>
         /// <param name="response">The error response from Copyleaks API</param>
+        [Obsolete("Use CreateAsync")]
         public CopyleaksHttpException(HttpResponseMessage response) :
-            this(response, ReadBody(response))
+            this(response, ReadBody(response), attempt: 1)
         {
         }
 
-        private CopyleaksHttpException(HttpResponseMessage response, string body) :
+        private CopyleaksHttpException(HttpResponseMessage response, string body, int attempt) :
             base(GetMessage(response, body))
         {
             this.HttpErrorCode = response.StatusCode;
             this.ResponseBody = body;
             this.RetryAfter = RetryHelper.GetRetryAfter(response);
+            this.Attempt = attempt;
             ParseErrorEnvelope(body);
         }
 
         /// <summary>
-        /// Read the response body without blocking and create the exception.
+        /// Create the exception for an error response from Copyleaks API. The response body is read without blocking.
         /// </summary>
-        internal static async Task<CopyleaksHttpException> CreateAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+        /// <param name="response">The error response from Copyleaks API</param>
+        /// <param name="cancellationToken">Cancels reading the response body</param>
+        /// <returns>The exception, with the response body and the parsed error fields</returns>
+        public static Task<CopyleaksHttpException> CreateAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
         {
+            return CreateAsync(response, attempt: 1, cancellationToken);
+        }
+
+        /// <summary>
+        /// Read the response body without blocking and create the exception for the given 1-based attempt.
+        /// </summary>
+        internal static async Task<CopyleaksHttpException> CreateAsync(HttpResponseMessage response, int attempt, CancellationToken cancellationToken)
+        {
+            if (response == null)
+                throw new ArgumentNullException(nameof(response));
+
             string body = null;
             try
             {
@@ -100,7 +124,7 @@ namespace Copyleaks.SDK.V3.API.Exceptions
             {
                 body = null;
             }
-            return new CopyleaksHttpException(response, body);
+            return new CopyleaksHttpException(response, body, attempt);
         }
 
         private static string ReadBody(HttpResponseMessage response)
@@ -109,7 +133,7 @@ namespace Copyleaks.SDK.V3.API.Exceptions
                 throw new ArgumentNullException(nameof(response));
             try
             {
-                // The SDK buffers responses, so this does not wait on the network.
+                // Blocking read, kept only for the obsolete public constructor. The SDK itself uses CreateAsync.
                 return response.Content?.ReadAsStringAsync().GetAwaiter().GetResult();
             }
             catch (Exception)

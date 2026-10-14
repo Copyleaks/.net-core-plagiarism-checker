@@ -267,6 +267,85 @@ namespace CopyleaksAPITests
         }
 
         [TestMethod]
+        public void Ai_video_webhook_success_echoes_the_developer_payload()
+        {
+            const string json = @"{
+                ""model"": ""ai-video-1-pro"",
+                ""summary"": { ""audioAIRatio"": 0.1, ""visualAIRatio"": 0.2, ""overallAIRatio"": 0.2 },
+                ""isAiDetected"": false,
+                ""scannedVideo"": { ""scanId"": ""my-video-scan-2"", ""actualCredits"": 1, ""expectedCredits"": 1 },
+                ""developerPayload"": ""order-17""
+            }";
+
+            var payload = JsonConvert.DeserializeObject<CopyleaksAiVideoDetectionResponseModel>(json);
+
+            Assert.IsNull(payload.Error);
+            Assert.AreEqual("order-17", payload.DeveloperPayload);
+            Assert.IsFalse(payload.IsAiDetected.Value);
+        }
+
+        [TestMethod]
+        public void Ai_video_webhook_failure_has_the_error()
+        {
+            const string json = @"{
+                ""error"": {
+                    ""type"": ""invalid_request_error"",
+                    ""id"": ""invalid_video"",
+                    ""code"": 400,
+                    ""message"": ""The video could not be downloaded."",
+                    ""url"": ""https://docs.copyleaks.com/"",
+                    ""details"": [ { ""param"": ""url"", ""message"": ""Not reachable."" } ]
+                },
+                ""developerPayload"": ""order-18""
+            }";
+
+            var payload = JsonConvert.DeserializeObject<CopyleaksAiVideoDetectionResponseModel>(json);
+
+            Assert.IsNotNull(payload.Error);
+            Assert.AreEqual("invalid_request_error", payload.Error.Type);
+            Assert.AreEqual("invalid_video", payload.Error.Id);
+            Assert.AreEqual(400, payload.Error.Code);
+            Assert.AreEqual("The video could not be downloaded.", payload.Error.Message);
+            Assert.AreEqual("https://docs.copyleaks.com/", payload.Error.Url);
+            Assert.AreEqual(1, payload.Error.Details.Count);
+            Assert.AreEqual("url", payload.Error.Details[0].Param);
+            Assert.AreEqual("Not reachable.", payload.Error.Details[0].Message);
+            Assert.AreEqual("order-18", payload.DeveloperPayload);
+            Assert.IsNull(payload.Summary);
+            Assert.IsNull(payload.IsAiDetected);
+        }
+
+        [TestMethod]
+        public void Ai_image_async_webhook_failure_has_the_error()
+        {
+            const string json = @"{
+                ""error"": { ""type"": ""api_error"", ""id"": ""processing_failed"", ""code"": 500, ""message"": ""The image could not be processed."" },
+                ""developerPayload"": ""img-7""
+            }";
+
+            var payload = JsonConvert.DeserializeObject<CopyleaksAiImageDetectionResponseModel>(json);
+
+            Assert.AreEqual("api_error", payload.Error.Type);
+            Assert.AreEqual("processing_failed", payload.Error.Id);
+            Assert.AreEqual(500, payload.Error.Code);
+            Assert.AreEqual("The image could not be processed.", payload.Error.Message);
+            Assert.IsNull(payload.Error.Url, "url is optional");
+            Assert.IsNull(payload.Error.Details, "details is optional");
+            Assert.AreEqual("img-7", payload.DeveloperPayload);
+            Assert.IsNull(payload.Summary);
+        }
+
+        [TestMethod]
+        public void Ai_image_result_without_error_has_null_error()
+        {
+            var payload = JsonConvert.DeserializeObject<CopyleaksAiImageDetectionResponseModel>(
+                @"{ ""model"": ""ai-image-1-ultra"", ""summary"": { ""human"": 1, ""ai"": 0 }, ""developerPayload"": ""img-8"" }");
+
+            Assert.IsNull(payload.Error);
+            Assert.AreEqual("img-8", payload.DeveloperPayload);
+        }
+
+        [TestMethod]
         public void Crawled_version_has_citation_checker_results()
         {
             const string json = @"{

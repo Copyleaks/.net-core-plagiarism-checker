@@ -81,6 +81,7 @@ namespace Copyleaks.SDK.V3.API
         /// <exception cref="CopyleaksHttpException"></exception>
         public async Task<AIDetectionResult> SubmitNaturalLanguageAsync(string scanId, NaturalLanguageDocument documentModel, string token, CancellationToken cancellationToken = default)
         {
+            RequireScanId(scanId);
             if (string.IsNullOrEmpty(token))
                 throw new ArgumentException("Token is mandatory", nameof(token));
             if (documentModel == null)

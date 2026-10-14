@@ -30,7 +30,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using Copyleaks.SDK.V3.API.Exceptions;
-using Copyleaks.SDK.V3.API.Extensions;
 using Copyleaks.SDK.V3.API.Helpers;
 using Copyleaks.SDK.V3.API.Models.Requests;
 using Copyleaks.SDK.V3.API.Models.Requests.Properties;
@@ -83,12 +82,6 @@ namespace Copyleaks.SDK.V3.API
                 throw new ArgumentException("Token is mandatory", nameof(token));
         }
 
-        private static void RequireScanId(string scanId)
-        {
-            if (string.IsNullOrEmpty(scanId))
-                throw new ArgumentException("ScanId is mandatory", nameof(scanId));
-        }
-
         /// <summary>
         /// Get your current credit balance
         /// </summary>
@@ -110,6 +103,7 @@ namespace Copyleaks.SDK.V3.API
             RequireToken(token);
 
             // A submit to a fixed scan id is safe to repeat: a duplicate is rejected with 409 Conflict and is not charged twice.
+            // CopyleaksHttpException.Attempt tells the caller when that 409 answered a retry.
             await SendJsonAndEnsureSuccessAsync(
                 HttpMethod.Put, requestUri, token, model, gzip: true, eRetryMode.Safe, cancellationToken).ConfigureAwait(false);
         }
@@ -124,6 +118,7 @@ namespace Copyleaks.SDK.V3.API
         /// <returns>A task that represents the asynchronous submit operation.</returns>
         public async Task SubmitUrlAsync(string scanId, UrlDocument documentModel, string token, CancellationToken cancellationToken = default)
         {
+            RequireScanId(scanId);
             RequireToken(token);
             if (documentModel == null)
                 throw new ArgumentNullException(nameof(documentModel));
@@ -144,6 +139,7 @@ namespace Copyleaks.SDK.V3.API
         /// <returns>A task that represents the asynchronous submit operation.</returns>
         public async Task SubmitFileAsync(string scanId, FileDocument documentModel, string token, CancellationToken cancellationToken = default)
         {
+            RequireScanId(scanId);
             if (documentModel == null)
                 throw new ArgumentNullException(nameof(documentModel));
             if (documentModel.Base64 == null)
@@ -158,7 +154,7 @@ namespace Copyleaks.SDK.V3.API
         /// <summary>
         /// Submit a file to plagiarism scan straight from a stream. The file is base64-encoded while it is read,
         /// so the SDK never holds a base64 string of the file in memory. Use this for large files.
-        /// The stream is read to its end and is not disposed.
+        /// The stream is read asynchronously to its end (so a request body stream works too) and is not disposed.
         /// </summary>
         /// <param name="scanId">A unique scan Id</param>
         /// <param name="file">The file content</param>
@@ -168,6 +164,7 @@ namespace Copyleaks.SDK.V3.API
         /// <param name="cancellationToken">Cancels the request</param>
         public async Task SubmitFileAsync(string scanId, Stream file, string filename, ScanProperties properties, string token, CancellationToken cancellationToken = default)
         {
+            RequireScanId(scanId);
             if (file == null)
                 throw new ArgumentNullException(nameof(file));
             if (filename == null)
@@ -188,6 +185,7 @@ namespace Copyleaks.SDK.V3.API
         /// <returns>A task that represents the asynchronous submit operation.</returns>
         public async Task SubmitImageOCRAsync(string scanId, FileOcrDocument documentModel, string token, CancellationToken cancellationToken = default)
         {
+            RequireScanId(scanId);
             if (documentModel == null)
                 throw new ArgumentNullException(nameof(documentModel));
             if (documentModel.Base64 == null)
@@ -201,7 +199,7 @@ namespace Copyleaks.SDK.V3.API
 
         /// <summary>
         /// Submit an image with text to a plagiarism scan (OCR) straight from a stream. The image is base64-encoded while it is read.
-        /// The stream is read to its end and is not disposed.
+        /// The stream is read asynchronously to its end and is not disposed.
         /// </summary>
         /// <param name="scanId">A unique scan Id</param>
         /// <param name="image">The image content</param>
@@ -212,6 +210,7 @@ namespace Copyleaks.SDK.V3.API
         /// <param name="cancellationToken">Cancels the request</param>
         public async Task SubmitImageOCRAsync(string scanId, Stream image, string filename, string language, ScanProperties properties, string token, CancellationToken cancellationToken = default)
         {
+            RequireScanId(scanId);
             if (image == null)
                 throw new ArgumentNullException(nameof(image));
             if (filename == null)
@@ -228,7 +227,7 @@ namespace Copyleaks.SDK.V3.API
 
             JObject restJson = JObject.FromObject(rest, JsonSerializer.CreateDefault());
             restJson.Remove("base64");
-            using (var payload = BufferedBody.JsonWithStreamedBase64(source, restJson, gzip: true))
+            using (var payload = await BufferedBody.JsonWithStreamedBase64Async(source, restJson, gzip: true, cancellationToken).ConfigureAwait(false))
             {
                 await SendAndEnsureSuccessAsync(
                     HttpMethod.Put, requestUri, token, payload.CreateContent, eRetryMode.Safe, cancellationToken).ConfigureAwait(false);
@@ -352,6 +351,7 @@ namespace Copyleaks.SDK.V3.API
 
         /// <summary>
         /// Get user usage as a stream.
+        /// The CSV is copied into <paramref name="stream"/> as it arrives, and <see cref="CopyleaksClientOptions.Timeout"/> covers the whole download.
         /// </summary>
         /// <param name="startDate">The start date of wanted usage history.</param>
         /// <param name="endDate">The end date of wanted usage history.</param>
@@ -371,11 +371,9 @@ namespace Copyleaks.SDK.V3.API
                 $"?start={startDate.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)}" +
                 $"&end={endDate.ToString("dd-MM-yyyy", CultureInfo.InvariantCulture)}";
 
-            using (var response = await SendAsync(HttpMethod.Get, requestUri, token, null, eRetryMode.Safe, cancellationToken).ConfigureAwait(false))
-            {
-                await response.EnsureCopyleaksSuccessAsync(cancellationToken).ConfigureAwait(false);
-                await response.Content.CopyToAsync(stream, cancellationToken).ConfigureAwait(false);
-            }
+            // Streamed straight into the caller's stream, without buffering the whole CSV first.
+            await DownloadAsync(requestUri, token,
+                (body, length, ct) => body.CopyToAsync(stream, 81920, ct), cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -396,7 +394,8 @@ namespace Copyleaks.SDK.V3.API
         }
 
         /// <summary>
-        /// Get the pdf report for your scan request
+        /// Get the pdf report for your scan request.
+        /// <see cref="CopyleaksClientOptions.Timeout"/> covers the whole download.
         /// </summary>
         /// <param name="scanId">The scan id</param>
         /// <param name="token">Login Token</param>
@@ -408,12 +407,15 @@ namespace Copyleaks.SDK.V3.API
             RequireToken(token);
 
             string requestUri = $"{this.CopyleaksApiServer}{this.ApiVersion}/downloads/{PathSegment(scanId)}/report.pdf";
-            using (var response = await SendAsync(HttpMethod.Get, requestUri, token, null, eRetryMode.Safe, cancellationToken).ConfigureAwait(false))
+            MemoryStream pdf = null;
+            await DownloadAsync(requestUri, token, async (body, length, ct) =>
             {
-                await response.EnsureCopyleaksSuccessAsync(cancellationToken).ConfigureAwait(false);
-                byte[] pdf = await response.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
-                return new MemoryStream(pdf, writable: false);
-            }
+                pdf = new MemoryStream(length > 0 && length <= Array.MaxLength ? (int)length.Value : 0);
+                await body.CopyToAsync(pdf, 81920, ct).ConfigureAwait(false);
+            }, cancellationToken).ConfigureAwait(false);
+
+            // Hand out the downloaded bytes without copying them again, read-only as before.
+            return new MemoryStream(pdf.GetBuffer(), 0, (int)pdf.Length, writable: false);
         }
 
         /// <summary>

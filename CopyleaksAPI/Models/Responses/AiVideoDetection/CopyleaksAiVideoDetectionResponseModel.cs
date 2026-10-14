@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Copyleaks.SDK.V3.API.Models.Responses.Shared;
 using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.AiVideoDetection
@@ -6,6 +7,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AiVideoDetection
     /// <summary>
     /// The AI video detection result that Copyleaks posts to your webhook.
     /// Positions and lengths are in milliseconds.
+    /// Check <see cref="Error"/> first: when the detection failed, only Error and DeveloperPayload are set.
     /// </summary>
     public class CopyleaksAiVideoDetectionResponseModel
     {
@@ -32,6 +34,18 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AiVideoDetection
 
         [JsonProperty("scannedVideo")]
         public CopyleaksAiVideoScannedVideo ScannedVideo { get; set; }
+
+        /// <summary>
+        /// Set when the detection failed; the result fields are then empty. Check Error first.
+        /// </summary>
+        [JsonProperty("error")]
+        public CopyleaksAsyncDetectionError Error { get; set; }
+
+        /// <summary>
+        /// The developer payload from the submit request, or null.
+        /// </summary>
+        [JsonProperty("developerPayload")]
+        public string DeveloperPayload { get; set; }
     }
 
     public class CopyleaksAiVideoTrackResult

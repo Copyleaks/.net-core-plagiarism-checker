@@ -23,6 +23,7 @@
 ********************************************************************************/
 
 using System.Collections.Generic;
+using Copyleaks.SDK.V3.API.Models.Responses.Shared;
 using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.AiImageDetection
@@ -30,6 +31,8 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AiImageDetection
     /// <summary>
     /// Response model for Copyleaks AI image detection analysis.
     /// Contains the AI detection results, image information, and scan metadata.
+    /// It is also the body of the asynchronous (URL submit) webhook. There, check <see cref="Error"/> first:
+    /// when the detection failed, only Error and DeveloperPayload are set.
     /// </summary>
     public class CopyleaksAiImageDetectionResponseModel
     {
@@ -75,6 +78,18 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AiImageDetection
         /// </summary>
         [JsonProperty("detectedObjects")]
         public List<CopyleaksAiImageDetectedObjectModel> DetectedObjects { get; set; }
+
+        /// <summary>
+        /// Set in a webhook when the asynchronous detection failed; the result fields are then empty. Check Error first.
+        /// </summary>
+        [JsonProperty("error")]
+        public CopyleaksAsyncDetectionError Error { get; set; }
+
+        /// <summary>
+        /// The developer payload from the asynchronous submit request, or null.
+        /// </summary>
+        [JsonProperty("developerPayload")]
+        public string DeveloperPayload { get; set; }
     }
 
     /// <summary>
