@@ -34,8 +34,18 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
         [Required]
         public Uri Url { get; set; }
 
+        /// <summary>
+        /// Custom headers for fetching the URL, as [name, value] rows. Example: new string[,] { { "header-key", "header-value" } }.
+        /// </summary>
         [JsonProperty("headers")]
         public string[,] Headers { get; set; } = null;
+
+        /// <summary>
+        /// The HTTP method used to fetch the URL: "GET", "POST" or "PUT".
+        /// Leave it unset (null) to omit it from the request and get the server default ("GET").
+        /// </summary>
+        [JsonProperty("verb", NullValueHandling = NullValueHandling.Ignore)]
+        public string Verb { get; set; }
 
     }
 }

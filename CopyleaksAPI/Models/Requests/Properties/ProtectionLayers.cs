@@ -55,6 +55,13 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		public ExcludeResults Exclude { get; set; } = new ExcludeResults();
 
 		/// <summary>
+		/// Include only internal database and repository results whose scan id matches a pattern (sent as scanning.include).
+		/// Leave it unset (null) to omit it from the request.
+		/// </summary>
+		[JsonProperty("include", NullValueHandling = NullValueHandling.Ignore)]
+		public ScanningInclude Include { get; set; }
+
+		/// <summary>
 		/// Specify which repositories to index the scanned document to.
 		/// </summary>
 		[JsonProperty("repositories")]

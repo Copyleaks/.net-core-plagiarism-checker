@@ -33,6 +33,8 @@ namespace Copyleaks.SDK.V3.API.Models.Constants
         public const string WritingAssistantApiVersion = "writingAssistantApiVersion";
         public const string TextModerationApiVersion = "textModerationApiVersion";
         public const string ImageDetectionApiVersion = "imageDetectionApiVersion";
+        public const string VideoDetectionApiVersion = "videoDetectionApiVersion";
+        public const string ImagePlagiarismApiVersion = "imagePlagiarismApiVersion";
 
     }
 }

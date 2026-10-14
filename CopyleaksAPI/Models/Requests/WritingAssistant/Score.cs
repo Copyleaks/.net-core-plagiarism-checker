@@ -29,27 +29,27 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.WritingAssistant
     public class Score
     {
         /// <summary>
-        /// Grammar correction category weight in the overall score. 0.0 >= weight <= 1.0
+        /// Grammar correction category weight in the overall score, from 0.0 to 1.0. The default is 1.0.
         /// </summary>
         [JsonProperty("grammarScoreWeight")]
-        public double GrammarScoreWeight { get; set; }
+        public double GrammarScoreWeight { get; set; } = 1.0;
 
         /// <summary>
-        /// Mechanics correction category weight in the overall score. 0.0 >= weight <= 1.0
+        /// Mechanics correction category weight in the overall score, from 0.0 to 1.0. The default is 1.0.
         /// </summary>
         [JsonProperty("mechanicsScoreWeight")]
-        public double MechanicsScoreWeight { get; set; }
+        public double MechanicsScoreWeight { get; set; } = 1.0;
 
         /// <summary>
-        /// Sentence structure correction category weight in the overall score. 0.0 >= weight <= 1.0
+        /// Sentence structure correction category weight in the overall score, from 0.0 to 1.0. The default is 1.0.
         /// </summary>
         [JsonProperty("sentenceStructureScoreWeight")]
-        public double SentenceStructureScoreWeight { get; set; }
+        public double SentenceStructureScoreWeight { get; set; } = 1.0;
 
         /// <summary>
-        /// Word choice correction category weight in the overall score. 0.0 >= weight <= 1.0
+        /// Word choice correction category weight in the overall score, from 0.0 to 1.0. The default is 1.0.
         /// </summary>
         [JsonProperty("wordChoiceScoreWeight")]
-        public double WordChoiceScoreWeight { get; set; }
+        public double WordChoiceScoreWeight { get; set; } = 1.0;
     }
 }

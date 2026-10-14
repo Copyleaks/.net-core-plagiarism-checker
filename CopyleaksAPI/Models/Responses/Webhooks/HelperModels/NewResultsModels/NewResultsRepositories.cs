@@ -38,7 +38,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.NewResults
         /// <summary>
         /// Metadata object
         /// </summary>
-        [JsonProperty("metdata")]
+        [JsonProperty("metadata")]
         public new RepositoryMetadata Metadata { get; set; }
     }
 }

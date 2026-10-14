@@ -51,6 +51,10 @@ namespace Copyleaks.SDK.V3.API.Helpers
 
         public const string imageDetectionApiVersion = "v1";
 
+        public const string videoDetectionApiVersion = "v1";
+
+        public const string imagePlagiarismApiVersion = "v1";
+
 
         #endregion
         static ConfigurationManager()
@@ -65,7 +69,9 @@ namespace Copyleaks.SDK.V3.API.Helpers
                     { CopyleaksConstants.AiDetectionApiVersion, aiDetectionApiVersion},
                     { CopyleaksConstants.WritingAssistantApiVersion, writingAssitantApiVersion},
                     { CopyleaksConstants.TextModerationApiVersion,textModerationApiVersion},
-                    {CopyleaksConstants.ImageDetectionApiVersion,imageDetectionApiVersion }
+                    {CopyleaksConstants.ImageDetectionApiVersion,imageDetectionApiVersion },
+                    { CopyleaksConstants.VideoDetectionApiVersion, videoDetectionApiVersion },
+                    { CopyleaksConstants.ImagePlagiarismApiVersion, imagePlagiarismApiVersion }
                 }).Build();
         }
 

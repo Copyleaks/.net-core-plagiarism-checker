@@ -24,15 +24,13 @@
 using System;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Copyleaks.SDK.V3.API.Exceptions;
-using Copyleaks.SDK.V3.API.Extensions;
 using Copyleaks.SDK.V3.API.Helpers;
 using Copyleaks.SDK.V3.API.Models.Constants;
 using Copyleaks.SDK.V3.API.Models.Requests.TextModeration;
 using Copyleaks.SDK.V3.API.Models.Responses.TextModeration;
-using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API
 {
@@ -42,19 +40,29 @@ namespace Copyleaks.SDK.V3.API
 
         private string TextModerationApiVersion { get; set; }
 
-        public CopyleaksTextModerationApi(HttpClient client) : base(client)
+        /// <summary>
+        /// Conection to Copyleaks Text Moderation API
+        /// </summary>
+        /// <param name="client">The HttpClient to use, for example one created by IHttpClientFactory. The SDK never disposes it.</param>
+        /// <param name="options">Optional timeout and retry settings</param>
+        public CopyleaksTextModerationApi(HttpClient client, CopyleaksClientOptions options = null) : base(client, options)
         {
             SetUpService();
         }
 
-        public CopyleaksTextModerationApi(X509Certificate2 clientCertificate = null) : base(clientCertificate)
+        /// <summary>
+        /// Conection to Copyleaks Text Moderation API, using the shared HttpClient of the SDK.
+        /// </summary>
+        /// <param name="clientCertificate">Optional Client certificate to be checked against.</param>
+        /// <param name="options">Optional timeout and retry settings</param>
+        public CopyleaksTextModerationApi(X509Certificate2 clientCertificate = null, CopyleaksClientOptions options = null) : base(clientCertificate, options)
         {
             SetUpService();
         }
 
         private void SetUpService()
         {
-            this.CopyleaksApiServer = ConfigurationManager.Configuration[CopyleaksConstants.ApiEndPoint];
+            this.CopyleaksApiServer = ResolveApiEndpoint();
             this.TextModerationApiVersion = ConfigurationManager.Configuration[CopyleaksConstants.TextModerationApiVersion];
         }
 
@@ -65,39 +73,31 @@ namespace Copyleaks.SDK.V3.API
         /// <param name="scanId"></param>
         /// <param name="textModerationRequestModel"></param>
         /// <param name="token"></param>
+        /// <param name="cancellationToken">Cancels the request</param>
         /// <returns> model of TextModerationResponseModel represents the response from copyleaks servers</returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="CopyleaksHttpException"></exception>
-        public async Task<CopyleaksTextModerationResponseModel> SubmitTextAsync(string scanId, CopyleaksTextModerationRequestModel textModerationRequestModel, string token)
+        public async Task<CopyleaksTextModerationResponseModel> SubmitTextAsync(string scanId, CopyleaksTextModerationRequestModel textModerationRequestModel, string token, CancellationToken cancellationToken = default)
         {
             #region Input validation
             if (string.IsNullOrEmpty(scanId))
-                throw new ArgumentNullException("ScanId is mandatory", nameof(scanId));
+                throw new ArgumentNullException(nameof(scanId), "ScanId is mandatory");
 
             if (string.IsNullOrEmpty(token))
-                throw new ArgumentNullException("Token is mandatory", nameof(token));
+                throw new ArgumentNullException(nameof(token), "Token is mandatory");
+
+            if (textModerationRequestModel == null)
+                throw new ArgumentNullException(nameof(textModerationRequestModel));
 
             if (string.IsNullOrEmpty(textModerationRequestModel.Text))
-                throw new ArgumentNullException("Text is mandatory.", nameof(textModerationRequestModel.Text));
+                throw new ArgumentNullException(nameof(textModerationRequestModel.Text), "Text is mandatory.");
             #endregion
 
-            string requestUri = $"{this.CopyleaksApiServer}{this.TextModerationApiVersion}/text-moderation/{scanId}/check";
+            string requestUri = $"{this.CopyleaksApiServer}{this.TextModerationApiVersion}/text-moderation/{PathSegment(scanId)}/check";
 
-            // Add requerst body and headers
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
-            request.Content = new StringContent(JsonConvert.SerializeObject(textModerationRequestModel), Encoding.UTF8, "application/json");
-            request.SetupHeaders(token);
-
-            using (var response = await Client.SendAsync(request).ConfigureAwait(false))
-            {
-                // if the response not success then thow CopyleaksHttpException
-                if (!response.IsSuccessStatusCode)
-                    throw new CopyleaksHttpException(response);
-
-                var json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                return JsonConvert.DeserializeObject<CopyleaksTextModerationResponseModel>(json);
-            };
+            // Charged per call, so only a rate-limited (429) attempt is retried.
+            return await SendJsonForJsonAsync<CopyleaksTextModerationResponseModel>(
+                HttpMethod.Post, requestUri, token, textModerationRequestModel, gzip: false, eRetryMode.RateLimitOnly, cancellationToken).ConfigureAwait(false);
         }
     }
 }

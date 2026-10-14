@@ -4,7 +4,6 @@ using Copyleaks.SDK.V3.API.Models.Requests.Properties;
 using Copyleaks.SDK.V3.API.Models.Responses;
 using Copyleaks.SDK.V3.API.Models.Types;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Polly;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +14,11 @@ using System.Threading.Tasks;
 
 namespace CopyleaksAPITests
 {
+    /// <summary>
+    /// Live tests against the real Copyleaks API. Set real credentials below and run: dotnet test --filter TestCategory=Live
+    /// </summary>
     [TestClass]
+    [TestCategory("Live")]
     public class SubmitFileTest
     {
 		public const string USER_EMAIL = "<EMAIL>";
@@ -80,9 +83,12 @@ namespace CopyleaksAPITests
 
             var scanId = await SubmitFileScanAsync(authToken).ConfigureAwait(false);
 
-            var progress = await Policy.HandleResult<uint>((result) => result != 100)
-                .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(3))
-                .ExecuteAsync(() => APIClient.ProgressAsync(scanId, authToken)).ConfigureAwait(false);
+            uint progress = await APIClient.ProgressAsync(scanId, authToken).ConfigureAwait(false);
+            for (int attempt = 0; attempt < 6 && progress != 100; attempt++)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(3)).ConfigureAwait(false);
+                progress = await APIClient.ProgressAsync(scanId, authToken).ConfigureAwait(false);
+            }
 
             Assert.IsTrue(progress == 100, "Scan Progress didn't hit the 100%");
 

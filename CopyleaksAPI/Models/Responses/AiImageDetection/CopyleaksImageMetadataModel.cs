@@ -48,5 +48,11 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AiImageDetection
         /// </summary>
         [JsonProperty("appOrDeviceUsed")]
         public string AppOrDeviceUsed { get; set; }
+
+        /// <summary>
+        /// A summary of how the image was generated, when the metadata has one.
+        /// </summary>
+        [JsonProperty("contentSummary")]
+        public string ContentSummary { get; set; }
     }
 }

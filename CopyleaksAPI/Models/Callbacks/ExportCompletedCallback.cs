@@ -27,7 +27,7 @@ namespace Copyleaks.SDK.V3.API.Models.Callbacks
 		public string Endpoint { get; set; }
 
 		[JsonProperty("httpStatusCode")]
-		public uint HttpStatusCode { get; set; }
+		public uint? HttpStatusCode { get; set; }
 
 		[JsonProperty("isHealthy")]
 		public bool IsHealthy { get; set; }

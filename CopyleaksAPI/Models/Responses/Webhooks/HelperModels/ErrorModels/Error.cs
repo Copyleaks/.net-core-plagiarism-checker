@@ -29,6 +29,18 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.ErrorModel
     public class Error
     {
         /// <summary>
+        /// The error type, for example "authentication_error", "payment_error", "invalid_request_error" or "api_error".
+        /// </summary>
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        /// <summary>
+        /// The machine-readable error identifier, for example "invalid_credentials" or "insufficient_credits".
+        /// </summary>
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        /// <summary>
         /// Error code that represents the reason for failure. See below the full error table.
         /// </summary>
         [JsonProperty("code")]
@@ -38,6 +50,18 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.ErrorModel
         /// Error message that represents the reason for failure.
         /// </summary>
         [JsonProperty("message")]
-        public string Message { get; set; } 
+        public string Message { get; set; }
+
+        /// <summary>
+        /// A URL to the documentation page for this error.
+        /// </summary>
+        [JsonProperty("url")]
+        public string Url { get; set; }
+
+        /// <summary>
+        /// The request parameters that caused the error.
+        /// </summary>
+        [JsonProperty("details")]
+        public ErrorDetail[] Details { get; set; }
     }
 }

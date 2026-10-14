@@ -22,6 +22,7 @@
  SOFTWARE.
 ********************************************************************************/
 
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
@@ -29,10 +30,19 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.AiImageDetection
 {
     /// <summary>
     /// Request model for Copyleaks AI image detection.
-    /// The request body is a JSON object containing the image to analyze.
+    /// With <c>SubmitAsync</c> the request body is a JSON object containing the base64 image.
+    /// With <c>SubmitFileAsync</c> the image is uploaded as a file (multipart/form-data) and <see cref="Base64"/> is not used.
     /// </summary>
     public class CopyleaksAiImageDetectionRequestModel
     {
+        /// <summary>
+        /// A request for <c>SubmitFileAsync</c>, which uploads the image as a file instead of base64.
+        /// </summary>
+        public CopyleaksAiImageDetectionRequestModel(string fileName, string model, bool sandbox = false)
+            : this(null, fileName, model, sandbox)
+        {
+        }
+
         public CopyleaksAiImageDetectionRequestModel(string base64, string fileName, string model, bool sandbox = false)
         {
             Base64 = base64;
@@ -49,8 +59,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.AiImageDetection
         /// - Supported formats: PNG, JPEG, BMP, WebP, HEIC/HEIF
         /// </remarks>
         /// <example>"aGVsbG8gd29ybGQ="</example>
-        [Required]
-        [JsonProperty("base64")]
+        [JsonProperty("base64", NullValueHandling = NullValueHandling.Ignore)]
         public string Base64 { get; set; }
 
         /// <summary>
@@ -63,7 +72,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.AiImageDetection
         /// </remarks>
         /// <example>"my-image.png"</example>
         [Required]
-        [JsonProperty("fileName")]
+        [JsonProperty("filename")]
         public string FileName { get; set; }
 
         /// <summary>
@@ -92,5 +101,23 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.AiImageDetection
         /// <example>false</example>
         [JsonProperty("sandbox")]
         public bool Sandbox { get; set; } = false;
+
+        /// <summary>
+        /// The type of detection mask to return: "binary" (the default), "heatmap" or "none".
+        /// See <see cref="Constants.CopyleaksAiImageMaskTypes"/>. "heatmap" adds Result.Labels to the response,
+        /// and "none" omits Result.
+        /// Leave it unset (null) to omit it from the request and get the server default ("binary").
+        /// </summary>
+        [JsonProperty("maskType", NullValueHandling = NullValueHandling.Ignore)]
+        public string MaskType { get; set; }
+
+        /// <summary>
+        /// Objects to locate and segment in the image, for example
+        /// <c>new List&lt;CopyleaksAiImageObjectDetectionItem&gt; { new CopyleaksAiImageObjectDetectionItem("face") }</c>.
+        /// Up to 3 entries, each a non-empty name of at most 32 characters. The response then has DetectedObjects.
+        /// Leave it unset (null) to omit it from the request. Do not send an empty list: the server rejects it.
+        /// </summary>
+        [JsonProperty("objectDetection", NullValueHandling = NullValueHandling.Ignore)]
+        public List<CopyleaksAiImageObjectDetectionItem> ObjectDetection { get; set; }
     }
 }

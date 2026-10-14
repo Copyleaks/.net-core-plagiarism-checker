@@ -23,16 +23,15 @@
 ********************************************************************************/
 
 using Copyleaks.SDK.V3.API.Exceptions;
-using Copyleaks.SDK.V3.API.Extensions;
 using Copyleaks.SDK.V3.API.Helpers;
 using Copyleaks.SDK.V3.API.Models.Requests.AIDetection;
+using Copyleaks.SDK.V3.API.Models.Responses;
 using Copyleaks.SDK.V3.API.Models.Responses.AIDetector;
 using Newtonsoft.Json;
 using System;
-using System.IO;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Copyleaks.SDK.V3.API
@@ -44,28 +43,29 @@ namespace Copyleaks.SDK.V3.API
 
         private string AIDetectionApiVersion { get; set; }
 
-
         /// <summary>
-        /// Conection to Copyleaks scan API
+        /// Conection to Copyleaks AI Text Detection API
         /// </summary>
-        /// <param name="client">Override the underlying http client with custom settings</param>
-        public CopyleaksAIDetectionApi(HttpClient client) : base(client)
+        /// <param name="client">The HttpClient to use, for example one created by IHttpClientFactory. The SDK never disposes it.</param>
+        /// <param name="options">Optional timeout and retry settings</param>
+        public CopyleaksAIDetectionApi(HttpClient client, CopyleaksClientOptions options = null) : base(client, options)
         {
             SetUpService();
         }
 
         /// <summary>
-        /// Conection to Copyleaks scan API
+        /// Conection to Copyleaks AI Text Detection API, using the shared HttpClient of the SDK.
         /// </summary>
-        /// <param name="clientCertificate">Optional Client certificate to be checked against.
-        public CopyleaksAIDetectionApi(X509Certificate2 clientCertificate = null) : base(clientCertificate)
+        /// <param name="clientCertificate">Optional Client certificate to be checked against.</param>
+        /// <param name="options">Optional timeout and retry settings</param>
+        public CopyleaksAIDetectionApi(X509Certificate2 clientCertificate = null, CopyleaksClientOptions options = null) : base(clientCertificate, options)
         {
             SetUpService();
         }
 
         private void SetUpService()
         {
-            this.CopyleaksApiServer = ConfigurationManager.Configuration["ApiEndPoint"];
+            this.CopyleaksApiServer = ResolveApiEndpoint();
             AIDetectionApiVersion = ConfigurationManager.Configuration["aiDetectionApiVersion"];
         }
 
@@ -75,33 +75,57 @@ namespace Copyleaks.SDK.V3.API
         /// <param name="scanId">A unique scan Id</param>
         /// <param name="documentModel">The submission document including the text to scan</param>
         /// <param name="token">A copyleaks access token</param>
+        /// <param name="cancellationToken">Cancels the request</param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="CopyleaksHttpException"></exception>
-        public async Task<AIDetectionResult> SubmitNaturalLanguageAsync(string scanId, NaturalLanguageDocument documentModel, string token)
+        public async Task<AIDetectionResult> SubmitNaturalLanguageAsync(string scanId, NaturalLanguageDocument documentModel, string token, CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrEmpty(token))
+                throw new ArgumentException("Token is mandatory", nameof(token));
+            if (documentModel == null)
+                throw new ArgumentNullException(nameof(documentModel));
+            if (string.IsNullOrEmpty(documentModel.Text))
+                throw new ArgumentException("Text is mandatory.", nameof(documentModel.Text));
+
+            string requestUri = $"{this.CopyleaksApiServer}{this.AIDetectionApiVersion}/writer-detector/{PathSegment(scanId)}/check";
+            // Charged per call, so only a rate-limited (429) attempt is retried.
+            return await SendJsonForJsonAsync<AIDetectionResult>(
+                HttpMethod.Post, requestUri, token, documentModel, gzip: true, eRetryMode.RateLimitOnly, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get the credit balance of the AI Text Detection wallet.
+        /// </summary>
+        /// <param name="token">A copyleaks access token</param>
+        /// <param name="cancellationToken">Cancels the request</param>
+        /// <returns>The number of available credits</returns>
+        public async Task<uint> CreditBalanceAsync(string token, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(token))
                 throw new ArgumentException("Token is mandatory", nameof(token));
 
-            if (string.IsNullOrEmpty(documentModel.Text))
-                throw new ArgumentException("Text is mandatory.", nameof(documentModel.Text));
+            string requestUri = $"{this.CopyleaksApiServer}{this.AIDetectionApiVersion}/writer-detector/credits";
+            var response = await SendForJsonAsync<AIDetectionCreditsResponse>(
+                HttpMethod.Get, requestUri, token, null, eRetryMode.Safe, cancellationToken).ConfigureAwait(false);
+            return response.Credits;
+        }
 
-            var method = new HttpMethod("POST");
-            string requestUri = $"{this.CopyleaksApiServer}{this.AIDetectionApiVersion}/writer-detector/{scanId}/check";
-            HttpRequestMessage msg = new HttpRequestMessage(method, requestUri);
-            msg.SetupHeaders(token);
-            msg.Content = new StringContent(JsonConvert.SerializeObject(documentModel), Encoding.UTF8, "application/json");
+        /// <summary>
+        /// Get the file types supported by AI text detection in scans. No login is needed.
+        /// </summary>
+        /// <param name="cancellationToken">Cancels the request</param>
+        public async Task<SupportedAiTextFileTypesResult> GetSupportedFileTypesAsync(CancellationToken cancellationToken = default)
+        {
+            string requestUri = $"{this.CopyleaksApiServer}v3/miscellaneous/supported-ai-text-detection-file-types";
+            return await SendForJsonAsync<SupportedAiTextFileTypesResult>(
+                HttpMethod.Get, requestUri, null, null, eRetryMode.Safe, cancellationToken).ConfigureAwait(false);
+        }
 
-            using (var stream = new MemoryStream())
-            using (var streamContent = new StreamContent(stream))
-            using (var response = await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false)).ConfigureAwait(false))
-            {
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new CopyleaksHttpException(response);
-                }
-                return await response.ExtractJsonResultsAsync<AIDetectionResult>().ConfigureAwait(false);
-            }
+        internal sealed class AIDetectionCreditsResponse
+        {
+            [JsonProperty("credits")]
+            public uint Credits { get; set; }
         }
     }
 }

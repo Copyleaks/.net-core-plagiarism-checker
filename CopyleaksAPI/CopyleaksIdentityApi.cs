@@ -23,38 +23,33 @@
 ********************************************************************************/
 
 using Copyleaks.SDK.V3.API.Exceptions;
-using Copyleaks.SDK.V3.API.Extensions;
 using Copyleaks.SDK.V3.API.Helpers;
-using Copyleaks.SDK.V3.API.Models.HttpCustomSend;
 using Copyleaks.SDK.V3.API.Models.Responses;
-using Newtonsoft.Json;
-using Polly;
-using Polly.Retry;
 using System;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+
 namespace Copyleaks.SDK.V3.API
 {
+    /// <summary>
+    /// This class alows you the get the API token from Copyleaks API and manage your scans permissions
+    /// </summary>
     public class CopyleaksIdentityApi : CopyleaksBase
     {
         /// <summary>
-        /// This class alows you the get the API token from Copyleaks API and manage your scans permissions
+        /// The Copyleaks identity server address.
         /// </summary>
         public string CopyleaksIdServer { get; private set; }
 
         /// <summary>
-        /// Connection to Copyleaks identity API
+        /// Connection to Copyleaks identity API, using the shared HttpClient of the SDK.
         /// </summary>
         /// <param name="clientCertificate">Optional: client certificate to be checked against in Copyleaks API.
         /// Configure you client's certificate at https://copyleaks.com/Manage </param>
-        public CopyleaksIdentityApi(X509Certificate2 clientCertificate = null) : base(clientCertificate)
+        /// <param name="options">Optional timeout and retry settings</param>
+        public CopyleaksIdentityApi(X509Certificate2 clientCertificate = null, CopyleaksClientOptions options = null) : base(clientCertificate, options)
         {
             SetServerEndpoint();
         }
@@ -62,15 +57,16 @@ namespace Copyleaks.SDK.V3.API
         /// <summary>
         /// Connection to Copyleaks identity API
         /// </summary>
-        /// <param name="client">Override the underlying http client with custom settings</param>
-        public CopyleaksIdentityApi(HttpClient client) : base(client)
+        /// <param name="client">The HttpClient to use, for example one created by IHttpClientFactory. The SDK never disposes it.</param>
+        /// <param name="options">Optional timeout and retry settings</param>
+        public CopyleaksIdentityApi(HttpClient client, CopyleaksClientOptions options = null) : base(client, options)
         {
             SetServerEndpoint();
         }
 
         private void SetServerEndpoint()
         {
-            this.CopyleaksIdServer = ConfigurationManager.Configuration["idEndPoint"];
+            this.CopyleaksIdServer = ResolveIdentityEndpoint();
         }
 
         /// <summary>
@@ -78,45 +74,22 @@ namespace Copyleaks.SDK.V3.API
         /// </summary>
         /// <param name="email">Your email address</param>
         /// <param name="key">Copyleaks API key</param>
+        /// <param name="cancellationToken">Cancels the request</param>
         /// <returns>LoginToken.Token that can be used in order to invoke copyleaks api methods</returns>
-        public async Task<LoginResponse> LoginAsync(string email, string key)
+        /// <exception cref="CopyleaksHttpException">The server rejected the request</exception>
+        public async Task<LoginResponse> LoginAsync(string email, string key, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(email))
                 throw new ArgumentException("Email is mandatory.", nameof(email));
             else if (string.IsNullOrEmpty(key))
                 throw new ArgumentException("ApiKey is mandatory.", nameof(key));
 
-            string requestUri = $"{this.CopyleaksIdServer}{this.ApiVersion}/account/login/api";              
-            HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Post, requestUri);
-            msg.SetupHeaders();
+            string requestUri = $"{this.CopyleaksIdServer}{this.ApiVersion}/account/login/api";
 
-            string json = JsonConvert.SerializeObject(new
-            {
-                email,
-                key
-            });
-
-            msg.Content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            using (var stream = new MemoryStream())
-            {
-                var task = Task.Run(async () =>
-                {
-                    using (var streamContent = new StreamContent(stream))
-                        return await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false));
-                });
-                    
-                using (var response = await RetryPolicy.ExecuteAsync(() => task).ConfigureAwait(false))
-                {
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        throw new CopyleaksHttpException(response);
-                    }
-
-                    return await response.ExtractJsonResultsAsync<LoginResponse>().ConfigureAwait(false);
-                }
-            }
+            // Login has no side effects, so it is safe to retry.
+            return await SendJsonForJsonAsync<LoginResponse>(
+                HttpMethod.Post, requestUri, token: null, body: new { email, key }, gzip: true,
+                eRetryMode.Safe, cancellationToken).ConfigureAwait(false);
         }
     }
 }
-

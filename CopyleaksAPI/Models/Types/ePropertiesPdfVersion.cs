@@ -30,6 +30,7 @@ namespace Copyleaks.SDK.V3.API.Models.Types
 	public enum ePdfReportVersion
 	{
 		V1 = 1,
-		V2 = 2
+		V2 = 2,
+		V3 = 3
 	}
 }

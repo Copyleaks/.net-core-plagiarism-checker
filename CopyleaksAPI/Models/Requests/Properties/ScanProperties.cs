@@ -54,10 +54,10 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		public string DeveloperPayload { get; set; }
 
 		/// <summary>
-		/// Scan priority
+		/// Scan priority. Leave it unset (null) to omit it from the request, so the server default applies.
 		/// </summary>
-		[JsonProperty("priority")]
-		public eScanPriority Priority { get; set; } = eScanPriority.Normal;
+		[JsonProperty("priority", NullValueHandling = NullValueHandling.Ignore)]
+		public eScanPriority? Priority { get; set; } = null;
 
 		/// <summary>
 		/// Enable sandbox scan.
@@ -73,9 +73,10 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 
 		/// <summary>
 		/// How much time, in hours, to store the scan on the database.
+		/// Range: 1 to 2880. The default is 2880 (120 days), the API maximum.
 		/// </summary>
 		[JsonProperty("expiration")]
-		public uint Expiration { get; set; } = 2800;
+		public uint Expiration { get; set; } = 2880;
 
 		/// <summary>
 		/// Choose the algorithm goal
@@ -135,5 +136,59 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		/// </summary>
 		[JsonProperty("aiSourceMatch", NullValueHandling = NullValueHandling.Ignore)]
 		public AISourceMatch AISourceMatch { get; set; }
+
+		/// <summary>
+		/// Internal AI Source Match: identify sources in the Copyleaks internal AI database that contain AI-generated text
+		/// (sent as properties.internalAiSourceMatch).
+		/// Leave it unset (null) to omit it from the request and get the server default (disabled).
+		/// </summary>
+		[JsonProperty("internalAiSourceMatch", NullValueHandling = NullValueHandling.Ignore)]
+		public InternalAISourceMatch InternalAISourceMatch { get; set; }
+
+		/// <summary>
+		/// Citation Checker: detect, parse and validate every reference in the submitted text (sent as properties.references).
+		/// Leave it unset (null) to omit it from the request and get the server default (disabled).
+		/// </summary>
+		[JsonProperty("references", NullValueHandling = NullValueHandling.Ignore)]
+		public ReferencesSettings References { get; set; }
+
+		/// <summary>
+		/// Grammar Checker inside the scan (sent as properties.writingFeedback).
+		/// Leave it unset (null) to omit it from the request and get the server default (disabled).
+		/// </summary>
+		[JsonProperty("writingFeedback", NullValueHandling = NullValueHandling.Ignore)]
+		public WritingFeedbackSettings WritingFeedback { get; set; }
+
+		/// <summary>
+		/// Gen-AI Overview of the scan (sent as properties.overview).
+		/// Leave it unset (null) to omit it from the request and get the server default (disabled).
+		/// </summary>
+		[JsonProperty("overview", NullValueHandling = NullValueHandling.Ignore)]
+		public OverviewSettings Overview { get; set; }
+
+		/// <summary>
+		/// The IANA time zone name (case-sensitive), for example "America/New_York", used for the scan time shown on the PDF report.
+		/// Leave it unset (null) to omit it from the request. The server then uses the time zone of the user's country, or UTC.
+		/// </summary>
+		[JsonProperty("scanTimeZone", NullValueHandling = NullValueHandling.Ignore)]
+		public string ScanTimeZone { get; set; }
+
+		/// <summary>
+		/// The course of the submitted content, for analytics (sent as properties.course).
+		/// </summary>
+		[JsonProperty("course", NullValueHandling = NullValueHandling.Ignore)]
+		public CourseEntity Course { get; set; }
+
+		/// <summary>
+		/// The assignment of the submitted content, for analytics (sent as properties.assignment).
+		/// </summary>
+		[JsonProperty("assignment", NullValueHandling = NullValueHandling.Ignore)]
+		public AssignmentEntity Assignment { get; set; }
+
+		/// <summary>
+		/// The institution of the submitted content, for analytics (sent as properties.institution).
+		/// </summary>
+		[JsonProperty("institution", NullValueHandling = NullValueHandling.Ignore)]
+		public InstitutionEntity Institution { get; set; }
 	}
 }

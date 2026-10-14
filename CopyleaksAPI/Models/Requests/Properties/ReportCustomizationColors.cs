@@ -22,6 +22,7 @@
  SOFTWARE.
 ********************************************************************************/
 
+using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
@@ -30,6 +31,20 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
     /// </summary>
     public class ReportCustomizationColors
     {
+        /// <summary>
+        /// The highlight color for AI content detection, in HEX format (sent as pdf.colors.aiDetection).
+        /// Leave it unset (null) to omit it from the request and get the server default.
+        /// </summary>
+        [JsonProperty("aiDetection", NullValueHandling = NullValueHandling.Ignore)]
+        public string AIDetection { get; set; }
+
+        /// <summary>
+        /// The highlight color for Grammar Checker corrections, in HEX format (sent as pdf.colors.writingFeedback).
+        /// Leave it unset (null) to omit it from the request and get the server default.
+        /// </summary>
+        [JsonProperty("writingFeedback", NullValueHandling = NullValueHandling.Ignore)]
+        public string WritingFeedback { get; set; }
+
         /// <summary>
         /// The color of the main strip in the header
         /// </summary>

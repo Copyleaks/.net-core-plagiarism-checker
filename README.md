@@ -1,15 +1,19 @@
 # Copyleaks SDK
-The official [Copyleaks](https://copyleaks.com/) .NET library, supporting .NET versions:. NET8
+The official [Copyleaks](https://copyleaks.com/) .NET library, supporting .NET 8 and later.
 
 Copyleaks is the integrity layer for your tech stack that helps organizations and individuals understand what's human-made and original, AI-generated, or manipulated across text, image, audio and video.
 
 This SDK gives you access to the following Copyleaks products:
 
 *   AI Text Detection
-*   AI Image Detection
+*   AI Image Detection (synchronous, file upload and asynchronous)
+*   AI Video Detection
 *   Plagiarism Checker (Authenticity scans: file, URL, OCR)
+*   Image Plagiarism Detection
 *   Grammar Checker
 *   Text Moderation
+
+Upgrading from 4.x? See the upgrade notes in the [CHANGELOG](https://github.com/Copyleaks/.net-core-plagiarism-checker/blob/master/CHANGELOG.md).
 
 ## 🚀 Getting Started
 Before you start, ensure you have the following:
@@ -19,15 +23,72 @@ Before you start, ensure you have the following:
 
 Once you have your account and API key:
 
-**Install the SDK**: 
+**Install the SDK**:
 
-Add Copyleaks NuGet by running the following command in the Package Manager Consoleversion:   
+```bash
+dotnet add package Copyleaks
+```
+
+Or, in the Package Manager Console:
 ```bash
 Install-Package Copyleaks
 ```
 
 ## 📚 Documentation
-To learn more about how to use Copyleaks API please check out our [Documentation](https://docs.copyleaks.com/resources/sdks/csharp/). 
+To learn more about how to use Copyleaks API please check out our [Documentation](https://docs.copyleaks.com/resources/sdks/csharp/).
+
+## Creating the API clients
+The SDK has one class per product: `CopyleaksIdentityApi` (login), `CopyleaksScansApi` (plagiarism scans, exports and lookups), `CopyleaksAIDetectionApi`, `CopyleaksAiImageDetectionApi`, `CopyleaksAiVideoDetectionApi`, `CopyleaksImagePlagiarismApi`, `CopyleaksWritingAssistantApi` and `CopyleaksTextModerationApi`.
+
+API objects are thread-safe. When you do not pass an `HttpClient`, they all share one pooled `HttpClient`, so creating them is cheap. Still, create them once and reuse them:
+
+```csharp
+using Copyleaks.SDK.V3.API;
+
+var identity = new CopyleaksIdentityApi();
+var scans = new CopyleaksScansApi();
+```
+
+In ASP.NET Core, register them as typed clients with `IHttpClientFactory`:
+
+```csharp
+using Copyleaks.SDK.V3.API;
+
+builder.Services.AddSingleton(new CopyleaksClientOptions { MaxRetries = 3 }); // optional
+builder.Services.AddHttpClient<CopyleaksIdentityApi>();
+builder.Services.AddHttpClient<CopyleaksScansApi>();
+builder.Services.AddHttpClient<CopyleaksAIDetectionApi>();
+
+// Then inject them:
+public class ScanService(CopyleaksIdentityApi identity, CopyleaksScansApi scans) { /* ... */ }
+```
+
+You can also pass your own `HttpClient`: `new CopyleaksScansApi(httpClient)`. The SDK never disposes a client you pass in.
+
+### Timeouts, retries and cancellation
+`CopyleaksClientOptions` controls the HTTP behavior:
+
+```csharp
+var options = new CopyleaksClientOptions
+{
+    Timeout = TimeSpan.FromSeconds(60),          // per attempt; the default comes from ConfigurationManager ("RequestsTimeout", 60 seconds)
+    MaxRetries = 3,                              // 0 turns retries off
+    RetryBaseDelay = TimeSpan.FromSeconds(1),    // exponential backoff with jitter
+    MaxRetryDelay = TimeSpan.FromSeconds(30),    // longest wait, including Retry-After
+};
+var scans = new CopyleaksScansApi(options: options);
+```
+
+* Calls that are safe to repeat (GET requests, login, start, delete, and submits to a fixed scan id) are retried on network errors, timeouts and HTTP 408, 429, 500, 502, 503 and 504.
+* Calls that are charged per call or trigger an action (AI Text Detection, Grammar Checker, Text Moderation, AI Image Detection, Image Plagiarism Detection, export and resend webhook) are retried only on HTTP 429.
+* The SDK honors the `Retry-After` header. When it asks for a longer wait than `MaxRetryDelay`, the SDK returns the error instead of waiting.
+* A request that runs out of time throws `TimeoutException`. An error response throws `CopyleaksHttpException`, with `HttpErrorCode`, `ResponseBody`, `ErrorType`, `ErrorId`, `ErrorCode` and `RetryAfter`.
+* Every async method takes an optional `CancellationToken`:
+
+```csharp
+using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+uint credits = await scans.CreditBalanceAsync(token, cts.Token);
+```
 
 ## 💡 Usage Examples
 Here are some common usage examples for the Copyleaks SDK. You can also see a comprehensive code example in the SampleWebApplication.csproj on our GitHub repository: [SampleWebApplication](https://github.com/Copyleaks/.net-core-plagiarism-checker/tree/master/SampleWebApplication).
@@ -38,11 +99,8 @@ This example demonstrates how to log in to the Copyleaks API and obtain an authe
 
 ```csharp
 using System;
-using System.Text;
 using System.Threading.Tasks;
 using Copyleaks.SDK.V3.API;
-using Copyleaks.SDK.V3.API.Models.Requests;
-using Copyleaks.SDK.V3.API.Models.Requests.Properties;
 
 public class Program
 {
@@ -57,7 +115,8 @@ public class Program
         Console.WriteLine("Authenticating...");
         var identityClient = new CopyleaksIdentityApi();
         var loginResponse = await identityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
-        Console.WriteLine("✅ Logged in successfully!");
+        string authToken = loginResponse.Token; // valid for 48 hours; reuse it
+        Console.WriteLine("Logged in successfully!");
     }
 }
 ```
@@ -68,9 +127,6 @@ This example shows how to prepare and submit raw text content for a plagiarism s
 
 ```csharp
 using System;
-using System.IO;
-using System.Net;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Copyleaks.SDK.V3.API;
@@ -88,13 +144,16 @@ public class Program
 
     public static async Task Main(string[] args)
     {
-        var LoginResposne = await IdentityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
-        var authToken = LoginResposne.Token;
+        var identityClient = new CopyleaksIdentityApi();
+        var scansClient = new CopyleaksScansApi();
+
+        var loginResponse = await identityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
+        var authToken = loginResponse.Token;
 
         // A unique scan ID for the scan
         // In case this scan ID already exists for this user Copyleaks API will return HTTP 409 Conflict result
         string scanId = Guid.NewGuid().ToString();
-        string scannedText = "Hellow world";
+        string scannedText = "Hello world";
 
         ClientScanProperties clientScanProperties = new ClientScanProperties();
 
@@ -102,7 +161,6 @@ public class Program
         clientScanProperties.Webhooks = new Webhooks
         {
             // Copyleaks API will POST the scan results to the 'completed' callback
-            // See 'CompletedProcess' method for more details
             Status = new Uri(WEBHOOK_URL)
         };
 
@@ -112,7 +170,7 @@ public class Program
         clientScanProperties.ReportSection.Create = true;
 
         // Submit a file for scan in https://api.copyleaks.com
-        await new CopyleaksScansApi().SubmitFileAsync(scanId, new FileDocument
+        await scansClient.SubmitFileAsync(scanId, new FileDocument
         {
             Base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(scannedText)),
             Filename = "text.txt",
@@ -122,9 +180,85 @@ public class Program
     }
 }
 ```
+
+For large files, submit a stream instead of a base64 string. The SDK encodes the file while it reads it:
+
+```csharp
+using (var file = File.OpenRead("thesis.pdf"))
+    await scansClient.SubmitFileAsync(scanId, file, "thesis.pdf", clientScanProperties, authToken);
+```
+
 For a full guide please refer to our step by step [Guide](https://docs.copyleaks.com/guides/authenticity/detect-plagiarism-text)
 
-For a detailed understanding of the plagiarism detection process, refer to the Copyleaks Submit Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/scans/submit-file)
+For a detailed understanding of the plagiarism detection process, refer to the Copyleaks Submit Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/authenticity/submit-file)
+##
+### More scan features
+Every feature below is optional. Properties you leave unset are not sent, so the API default applies.
+
+```csharp
+using Copyleaks.SDK.V3.API.Models.Requests.Properties;
+using Copyleaks.SDK.V3.API.Models.Requests.WritingAssistant;
+
+var properties = new ClientScanProperties
+{
+    Sandbox = true,
+    Webhooks = new Webhooks { Status = new Uri("https://your-server.com/webhook/{STATUS}") },
+
+    // AI detection, with AI Logic explanations and a sensitivity from 1 to 3
+    AIGeneratedText = new AIGeneratedText { Detect = true, Sensitivity = 2, Explain = new AIExplainSettings { Enable = true } },
+
+    // Grammar Checker inside the scan (weights default to 1.0)
+    WritingFeedback = new WritingFeedbackSettings { Enable = true, Score = new Score { GrammarScoreWeight = 0.5 } },
+
+    // Gen-AI Overview of the scan
+    Overview = new OverviewSettings { Enable = true },
+
+    // Citation Checker
+    References = new ReferencesSettings { Validate = true },
+
+    // AI Source Match (online) and Internal AI Source Match
+    AISourceMatch = new AISourceMatch { Enable = true },
+    InternalAISourceMatch = new InternalAISourceMatch { Enable = true },
+
+    // PDF report time zone, and analytics ids
+    ScanTimeZone = "America/New_York",
+    Course = new CourseEntity { Id = "course-101" },
+    Assignment = new AssignmentEntity { Id = "essay-3" },
+    Institution = new InstitutionEntity { Id = "my-university" },
+};
+
+// Only compare against internal database and repository results whose scan id matches a pattern,
+// and drop results that link to some domains or contain some phrases
+properties.ProtectionLayersSection.Include = new ScanningInclude { IdPattern = "2026-*" };
+properties.ProtectionLayersSection.Exclude.BacklinksDomains = new[] { "example.com" };
+properties.ProtectionLayersSection.Exclude.Text = new[] { "lorem ipsum" };
+
+// PDF report: pick the version and the highlight colors
+properties.ReportSection.Create = true;
+properties.ReportSection.ReportVersion = "latest";
+properties.ReportSection.Colors = new ReportCustomizationColors { AIDetection = "#FE5758", WritingFeedback = "#FF9A02" };
+```
+
+The completed webhook has `ReferencesValidation` (Citation Checker summary) and `Results.InternalAIData`. Export the AI detection, Grammar Checker and overview reports with the export call:
+
+```csharp
+await scansClient.ExportAsync(scanId, "export-1", new ExportRequest
+{
+    CompletionWebhook = new Uri("https://your-server.com/export/completed"),
+    AIDetection = new ExportTask { Verb = "PUT", Endpoint = new Uri("https://your-server.com/export/ai") },
+    WritingFeedback = new ExportTask { Verb = "PUT", Endpoint = new Uri("https://your-server.com/export/grammar") },
+    Overview = new ExportTask { Verb = "PUT", Endpoint = new Uri("https://your-server.com/export/overview") },
+    CrawledVersion = new ExportTask { Verb = "PUT", Endpoint = new Uri("https://your-server.com/export/crawled") },
+}, authToken);
+```
+
+The uploaded files are an `AIDetectionResult`, a `WritingAssistantResult`, an `OverviewResult` and a `DownloadSourceResponse` (which includes the per-reference Citation Checker results).
+
+If a webhook did not arrive, ask for it again (for scans that completed, failed, were indexed or were price-checked):
+
+```csharp
+await scansClient.ResendWebhookAsync(scanId, authToken);
+```
 ##
 ### Reading the AI alert from the completed webhook
 When a scan runs AI detection (`clientScanProperties.AIGeneratedText.Detect = true`), the completed webhook reports AI-generated text as a `suspected-ai-text` alert. The alert's `additionalData` is a JSON string, and the SDK decodes it into an `AIDetectionResult`.
@@ -178,15 +312,14 @@ public class WebhookController : ControllerBase
 
 For more details, refer to the Copyleaks scan completed webhook [Documentation](https://docs.copyleaks.com/reference/data-types/authenticity/webhooks/scan-completed)
 ##
+##
 ### AI Text Detection
 Use the AI detection client to determine if content was generated by artificial intelligence.
 
 ```csharp
-using Copyleaks.SDK.V3.API;
 using System;
-using System.Net.Http;
-using System.Net;
 using System.Threading.Tasks;
+using Copyleaks.SDK.V3.API;
 using Copyleaks.SDK.V3.API.Models.Requests.AIDetection;
 
 public class Program
@@ -198,18 +331,28 @@ public class Program
 
     public static async Task Main(string[] args)
     {
-            var loginResponse = await IdentityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
-            var authToken = loginResponse.Token;
-            string scanId = Guid.NewGuid().ToString();
-            var text = @"Lions are social animals, living in groups called prides, typically consisting of several females, their offspring, and a few males.   Female lions are the primary hunters, working together to catch prey. Lions are known for their strength, teamwork, and complex social structures.";
+        var identityClient = new CopyleaksIdentityApi();
+        var aiDetectionClient = new CopyleaksAIDetectionApi();
 
-            var naturalLanguageDocument = new NaturalLanguageDocument()
-            {
-                Text = text,
-                Sandbox = true,
-            };
+        var loginResponse = await identityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
+        var authToken = loginResponse.Token;
+        string scanId = Guid.NewGuid().ToString();
+        var text = @"Lions are social animals, living in groups called prides, typically consisting of several females, their offspring, and a few males. Female lions are the primary hunters, working together to catch prey. Lions are known for their strength, teamwork, and complex social structures.";
 
-            var res = await AIDetectionClient.SubmitNaturalLanguageAsync(scanId, naturalLanguageDocument, authToken).ConfigureAwait(false);
+        var naturalLanguageDocument = new NaturalLanguageDocument()
+        {
+            Text = text,
+            Sandbox = true,
+            Explain = true,     // AI Logic (optional)
+            Sensitivity = 2,    // 1 to 3 (optional)
+        };
+
+        var res = await aiDetectionClient.SubmitNaturalLanguageAsync(scanId, naturalLanguageDocument, authToken).ConfigureAwait(false);
+        Console.WriteLine($"AI: {res.Summary.AI:P0}");
+
+        // The AI Text Detection credit balance, and the file types AI detection supports in scans
+        uint aiCredits = await aiDetectionClient.CreditBalanceAsync(authToken);
+        var aiFileTypes = await aiDetectionClient.GetSupportedFileTypesAsync(); // no login needed
     }
 }
 ```
@@ -221,11 +364,9 @@ For a detailed understanding of the AI Text Detection process, refer to the Copy
 Get intelligent suggestions for improving grammar, spelling, style, and overall writing quality.
 
 ```csharp
-using Copyleaks.SDK.V3.API;
 using System;
-using System.Net.Http;
-using System.Net;
 using System.Threading.Tasks;
+using Copyleaks.SDK.V3.API;
 using Copyleaks.SDK.V3.API.Models.Requests.WritingAssistant;
 
 public class Program
@@ -237,25 +378,32 @@ public class Program
 
     public static async Task Main(string[] args)
     {
-            var loginResponse = await IdentityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
-            var authToken = loginResponse.Token;
-            string scanId = Guid.NewGuid().ToString();
-            var text = @"Lions are the only cat that live in groups, called pride. A prides typically consists of a few adult males, several feales, and their offspring. This social structure is essential for hunting and raising young cubs. Female lions, or lionesses are the primary hunters of the prid. They work together in cordinated groups to take down prey usually targeting large herbiores like zbras, wildebeest and buffalo. Their teamwork and strategy during hunts highlight the intelligence and coperation that are key to their survival.";
+        var identityClient = new CopyleaksIdentityApi();
+        var writingAssistantClient = new CopyleaksWritingAssistantApi();
 
-            var document = new WritingAssistantDocument()
+        var loginResponse = await identityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
+        var authToken = loginResponse.Token;
+        string scanId = Guid.NewGuid().ToString();
+        var text = @"Lions are the only cat that live in groups, called pride. A prides typically consists of a few adult males, several feales, and their offspring. This social structure is essential for hunting and raising young cubs. Female lions, or lionesses are the primary hunters of the prid. They work together in cordinated groups to take down prey usually targeting large herbiores like zbras, wildebeest and buffalo. Their teamwork and strategy during hunts highlight the intelligence and coperation that are key to their survival.";
+
+        var document = new WritingAssistantDocument()
+        {
+            Sandbox = true,
+            Text = text,
+            // Optional. Every weight you do not set stays at 1.0.
+            Score = new Score()
             {
-                Sandbox = true,
-                Text = text,
-                Score = new Score()
-                {
-                    SentenceStructureScoreWeight = 0.2,
-                    GrammarScoreWeight = 0.3,
-                    MechanicsScoreWeight = 0.4,
-                    WordChoiceScoreWeight = 0.5,
-                },
-            };
+                SentenceStructureScoreWeight = 0.2,
+                GrammarScoreWeight = 0.3,
+                MechanicsScoreWeight = 0.4,
+                WordChoiceScoreWeight = 0.5,
+            },
+        };
 
-            var res = await WritingAssistantClient.SubmitTextAsync(scanId, document, authToken).ConfigureAwait(false);
+        var res = await writingAssistantClient.SubmitTextAsync(scanId, document, authToken).ConfigureAwait(false);
+
+        // The correction types are public, so no login is needed
+        var correctionTypes = await writingAssistantClient.GetCorrectionTypesAsync("en");
     }
 }
 ```
@@ -264,14 +412,13 @@ For a full guide please refer to our step by step [Guide](https://docs.copyleaks
 For a detailed understanding of the Grammar Checker (CopyleaksWritingAssistantApi) process, refer to the Copyleaks writing feedback Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/writing-assistant/check/)
 ##
 ### Text Moderation
-Scan and moderate text content for unsafe, inappropriate, or policy-violating material across various categories.
+Scan and moderate text content for unsafe, inappropriate, or policy-violating material across various categories. Send between 1 and 16 labels.
 
 ```csharp
 using System;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Copyleaks.SDK.V3.API;
+using Copyleaks.SDK.V3.API.Models.Constants;
 using Copyleaks.SDK.V3.API.Models.Requests.TextModeration;
 
 public class Program
@@ -283,32 +430,35 @@ public class Program
 
     public static async Task Main(string[] args)
     {
-            var loginResponse = await IdentityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
-            var authToken = loginResponse.Token;
-            string scanId = Guid.NewGuid().ToString();
+        var identityClient = new CopyleaksIdentityApi();
+        var textModerationClient = new CopyleaksTextModerationApi();
 
-            var labelsArray = new CopyleaksTextModerationLabel[]
-            {
-                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.ADULT_V1),
-                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.TOXIC_V1),
-                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.VIOLENT_V1),
-                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.PROFANITY_V1),
-                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.SELF_HARM_V1),
-                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.HARASSMENT_V1),
-                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.HATE_SPEECH_V1),
-                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.DRUGS_V1),
-                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.FIREARMS_V1),
-                new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.CYBERSECURITY_V1)
-            };
+        var loginResponse = await identityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
+        var authToken = loginResponse.Token;
+        string scanId = Guid.NewGuid().ToString();
 
-            var model = new CopyleaksTextModerationRequestModel(
-                text: "This is some text to scan.",
-                sandbox: true,
-                language: CopyleaksTextModerationLanguages.ENGLISH,
-                labels: labelsArray
-            );
+        var labelsArray = new CopyleaksTextModerationLabel[]
+        {
+            new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.ADULT_V1),
+            new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.TOXIC_V1),
+            new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.VIOLENT_V1),
+            new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.PROFANITY_V1),
+            new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.SELF_HARM_V1),
+            new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.HARASSMENT_V1),
+            new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.HATE_SPEECH_V1),
+            new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.DRUGS_V1),
+            new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.FIREARMS_V1),
+            new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.CYBERSECURITY_V1)
+        };
 
-            var result = await new CopyleaksTextModerationApi().SubmitTextAsync(scanId, model, authToken).ConfigureAwait(false);
+        var model = new CopyleaksTextModerationRequestModel(
+            text: "This is some text to scan.",
+            sandbox: true,
+            language: CopyleaksTextModerationLanguages.ENGLISH,
+            labels: labelsArray
+        );
+
+        var result = await textModerationClient.SubmitTextAsync(scanId, model, authToken).ConfigureAwait(false);
     }
 }
 ```
@@ -322,12 +472,12 @@ Determine if a given image was generated or partially generated by an AI.
 
 ```csharp
 using System;
-using System.Net;
-using System.Net.Http;
+using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Copyleaks.SDK.V3.API;
-using Copyleaks.SDK.V3.API.Models.Requests.AiImageDetection;
 using Copyleaks.SDK.V3.API.Models.Constants;
+using Copyleaks.SDK.V3.API.Models.Requests.AiImageDetection;
 
 public class Program
 {
@@ -338,28 +488,118 @@ public class Program
 
     public static async Task Main(string[] args)
     {
-            var loginResponse = await IdentityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
-            var authToken = loginResponse.Token;
-            string scanId = Guid.NewGuid().ToString();
+        var identityClient = new CopyleaksIdentityApi();
+        var imageDetectionClient = new CopyleaksAiImageDetectionApi();
 
-            string imagePath = @"PATH TO YOUR IMAGE";
-            byte[] imageBytes = File.ReadAllBytes(imagePath);
-            string base64Image = Convert.ToBase64String(imageBytes);
+        var loginResponse = await identityClient.LoginAsync(USER_EMAIL, USER_KEY).ConfigureAwait(false);
+        var authToken = loginResponse.Token;
+        string scanId = Guid.NewGuid().ToString();
 
-            var model = new CopyleaksAiImageDetectionRequestModel(
-                 base64: base64Image,
-                 fileName: "my-image.png",
-                 model: CopyleaksAiImageDetectionModels.AI_IMAGE_1_ULTRA,
-                 sandbox: true
-            );
+        // Upload the image as a file (recommended: no base64 overhead)
+        var model = new CopyleaksAiImageDetectionRequestModel(
+            fileName: "my-image.png",
+            model: CopyleaksAiImageDetectionModels.AI_IMAGE_1_ULTRA,
+            sandbox: true)
+        {
+            MaskType = CopyleaksAiImageMaskTypes.HEATMAP,     // optional: "binary" (default), "heatmap" or "none"
+            ObjectDetection = new List<CopyleaksAiImageObjectDetectionItem>   // optional: up to 3 objects
+            {
+                new CopyleaksAiImageObjectDetectionItem("face"),
+            },
+        };
 
-            var result = await new CopyleaksAiImageDetectionApi().SubmitAsync(scanId, model, authToken).ConfigureAwait(false);
+        using (var image = File.OpenRead("PATH TO YOUR IMAGE"))
+        {
+            var result = await imageDetectionClient.SubmitFileAsync(scanId, image, model, authToken).ConfigureAwait(false);
+            Console.WriteLine($"AI detected: {result.IsAiDetected}, AI share: {result.Summary.Ai:P0}");
+        }
+
+        // Or send base64 JSON, as before:
+        // var json = new CopyleaksAiImageDetectionRequestModel(base64Image, "my-image.png", CopyleaksAiImageDetectionModels.AI_IMAGE_1_ULTRA, sandbox: true);
+        // var result = await imageDetectionClient.SubmitAsync(scanId, json, authToken);
     }
 }
+```
+
+To analyze an image URL asynchronously, submit it and receive the result on your webhook (with the same shape as `CopyleaksAiImageDetectionResponseModel`):
+
+```csharp
+using Copyleaks.SDK.V3.API.Models.Requests.Shared;
+
+await imageDetectionClient.SubmitUrlAsync(scanId, new CopyleaksAiImageDetectionAsyncRequestModel
+{
+    Url = new Uri("https://example.com/image1.png"),
+    FileName = "image1.png",
+    Model = CopyleaksAiImageDetectionModels.AI_IMAGE_1_ULTRA,
+    Webhooks = new CopyleaksAsyncWebhooks { Url = new Uri("https://your-server.com/webhook/ai-image") },
+    Sandbox = true,
+}, authToken);
 ```
 For a full guide please refer to our step by step [Guide](https://docs.copyleaks.com/guides/ai-detector/ai-image-detection/)
 
 For a detailed understanding of the AI Image Detection process, refer to the Copyleaks image detection Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/ai-image-detector/check/)
+##
+### AI Video Detection
+Submit a video URL. The result is posted to your webhook as a `CopyleaksAiVideoDetectionResponseModel`.
+
+```csharp
+using Copyleaks.SDK.V3.API;
+using Copyleaks.SDK.V3.API.Models.Constants;
+using Copyleaks.SDK.V3.API.Models.Requests.AiVideoDetection;
+using Copyleaks.SDK.V3.API.Models.Requests.Shared;
+
+var videoClient = new CopyleaksAiVideoDetectionApi();
+await videoClient.SubmitAsync("my-video-scan-1", new CopyleaksAiVideoDetectionRequestModel
+{
+    Url = new Uri("https://example.com/my-video.mp4"),
+    Filename = "my-video.mp4",
+    Model = CopyleaksAiVideoDetectionModels.AI_VIDEO_1_PRO,
+    Webhooks = new CopyleaksAsyncWebhooks { Url = new Uri("https://your-server.com/webhook/ai-video") },
+    Sandbox = true,
+}, authToken);
+```
+
+In your webhook, read the body as a `CopyleaksAiVideoDetectionResponseModel` (namespace `Copyleaks.SDK.V3.API.Models.Responses.AiVideoDetection`).
+
+For a detailed understanding of the AI Video Detection process, refer to the Copyleaks AI video detection Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/ai-video-detector/submit/)
+##
+### Image Plagiarism Detection
+Search the web for copies of an image, in one synchronous call.
+
+```csharp
+using Copyleaks.SDK.V3.API;
+using Copyleaks.SDK.V3.API.Models.Requests.ImagePlagiarism;
+
+var imagePlagiarismClient = new CopyleaksImagePlagiarismApi();
+using (var image = File.OpenRead("my-photo.jpg"))
+{
+    var result = await imagePlagiarismClient.SubmitAsync("my-scan-1", image,
+        new CopyleaksImagePlagiarismRequestModel("my-photo.jpg", sandbox: true), authToken);
+
+    Console.WriteLine($"Total matches: {result.Matches.Score.TotalMatches}");
+    foreach (var match in result.Matches.Internet)
+        Console.WriteLine($"{(match.MatchType == 0 ? "Full" : "Partial")} match: {match.Url}");
+}
+```
+
+For a detailed understanding of the Image Plagiarism Detection process, refer to the Copyleaks image plagiarism Endpoint [Documentation](https://docs.copyleaks.com/reference/actions/image-plagiarism-detector/check/)
+##
+### Account and lookup calls
+
+```csharp
+var scansClient = new CopyleaksScansApi();
+
+uint credits = await scansClient.CreditBalanceAsync(authToken);
+
+// Private Cloud Hub repository information (requires the Admin or Super Admin role)
+var repository = await scansClient.GetRepositoryInfoAsync("my-repository-id", authToken);
+
+// Public lookups, no login needed
+var fileTypes = await scansClient.GetSupportedFileTypesAsync();
+string[] ocrLanguages = await scansClient.GetOcrLanguageListAsync();
+var crossLanguages = await scansClient.GetAllowedCrossLanguagesAsync();   // codes in crossLanguages.ResultLanguageCodes
+var releaseNotes = await scansClient.GetReleaseNotesAsync();
+```
 ##
 ### Further Resources
 

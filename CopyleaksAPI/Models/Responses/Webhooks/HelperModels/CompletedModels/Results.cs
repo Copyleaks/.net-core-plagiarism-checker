@@ -29,6 +29,12 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.CompletedM
 {
     public class Results
     {
+        /// <summary>
+        /// Matches found by Internal AI Source Match, present when the scan was submitted with InternalAISourceMatch enabled.
+        /// </summary>
+        [JsonProperty("internalAIData")]
+        public InternalAIData[] InternalAIData { get; set; }
+
         [JsonProperty("database")]
         public Database[] Database { get; set; }
         [JsonProperty("batch")]

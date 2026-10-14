@@ -23,6 +23,7 @@
 ********************************************************************************/
 
 using Copyleaks.SDK.V3.API.Models.Constants;
+using Copyleaks.SDK.V3.API.Models.Responses.CitationChecker;
 using Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.BaseModels;
 using Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.CompletedModels;
 using Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.NotificationsModels;
@@ -41,6 +42,13 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks
         public Notifications Notifications { get; set; }
         [JsonProperty("scannedDocument")]
         public ScannedDocument ScannedDocument { get; set; }
+
+        /// <summary>
+        /// The Citation Checker summary, present when the scan was submitted with References.Validate set to true.
+        /// The per-reference results are in the crawled version export.
+        /// </summary>
+        [JsonProperty("referencesValidation")]
+        public ReferencesValidation ReferencesValidation { get; set; }
 
         /// <summary>
         /// Get the first <see cref="CopyleaksAlertCodes.SUSPECTED_AI_TEXT"/> alert of the scan.

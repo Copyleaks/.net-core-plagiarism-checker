@@ -22,14 +22,25 @@
  SOFTWARE.
 ********************************************************************************/
 
+using Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.BaseModels;
 using Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.NewResultsModels;
 using Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.ResultsModels;
 using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks
 {
-    public class NewResultWebhookModel
+    /// <summary>
+    /// The new result webhook, sent while the scan is still running.
+    /// It has the developer payload of the submit request (DeveloperPayload).
+    /// </summary>
+    public class NewResultWebhookModel : Webhook
     {
+        /// <summary>
+        /// Matches found by Internal AI Source Match.
+        /// </summary>
+        [JsonProperty("internalAIData")]
+        public InternalAIData[] InternalAIData { get; set; }
+
         [JsonProperty("score")]
         public NewResultScore Score { get; set; }
         [JsonProperty("internet")]

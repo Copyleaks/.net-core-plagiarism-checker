@@ -22,7 +22,6 @@
  SOFTWARE.
 ********************************************************************************/
 
-using System.Diagnostics;
 using System.Reflection;
 
 namespace Copyleaks.SDK.V3.API.Helpers
@@ -33,14 +32,32 @@ namespace Copyleaks.SDK.V3.API.Helpers
     internal static class AssemblyHelper
     {
         /// <summary>
+        /// The SDK version, read once from the assembly metadata.
+        /// It does not touch the file system, so it also works in single-file and trimmed deployments.
+        /// </summary>
+        public static readonly string Version = ReadVersion();
+
+        /// <summary>
+        /// The User-Agent sent with every request.
+        /// </summary>
+        public static readonly string UserAgent = $"copyleaks-core-sdk/{Version}";
+
+        /// <summary>
         /// Return the version of Copyleaks SDK from assembly
         /// </summary>
         /// <returns></returns>
         public static string GetVersion()
         {
-            Assembly assembly = Assembly.GetExecutingAssembly();
-            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-            return fvi.FileVersion;
+            return Version;
+        }
+
+        private static string ReadVersion()
+        {
+            Assembly assembly = typeof(AssemblyHelper).Assembly;
+            string version = assembly.GetCustomAttribute<AssemblyFileVersionAttribute>()?.Version;
+            if (string.IsNullOrEmpty(version))
+                version = assembly.GetName().Version?.ToString();
+            return string.IsNullOrEmpty(version) ? "unknown" : version;
         }
     }
 }

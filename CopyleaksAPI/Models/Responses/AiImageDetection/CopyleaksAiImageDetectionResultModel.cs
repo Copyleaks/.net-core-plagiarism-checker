@@ -42,5 +42,11 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AiImageDetection
         /// </summary>
         [JsonProperty("lengths")]
         public int[] Lengths { get; set; }
+
+        /// <summary>
+        /// Present only when the request used the "heatmap" mask type: one confidence band (0 lowest to 4 highest) per segment.
+        /// </summary>
+        [JsonProperty("labels")]
+        public int[] Labels { get; set; }
     }
 }

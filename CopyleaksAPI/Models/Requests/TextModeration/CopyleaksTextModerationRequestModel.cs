@@ -31,6 +31,11 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.TextModeration
     public class CopyleaksTextModerationRequestModel
     {
         /// <summary>
+        /// The most labels one request can have.
+        /// </summary>
+        public const int MaxLabels = 16;
+
+        /// <summary>
         /// Text to produce Text Moderation report for.
         /// </summary>
         [JsonProperty("text")]
@@ -47,29 +52,27 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.TextModeration
         /// If the 'language' field is not specified, our system will automatically detect the language of the content.
         /// </summary>
         [JsonProperty("language")]
-        public string? Language { get; set; }
+        public string Language { get; set; }
 
         /// <summary>
-        /// A list of label configurations to be used for the moderation process.
+        /// The labels to moderate the text for, for example <c>new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.TOXIC_V1)</c>.
+        /// At least 1 and at most 16 labels are required.
         /// </summary>
         [JsonProperty("labels")]
-        [MinLength(1, ErrorMessage = "Labels array must have at least 1 elemnt.")]
-        [MaxLength(32, ErrorMessage = "Labels array must have at most 32 elemnts.")]
+        [MinLength(1, ErrorMessage = "Labels array must have at least 1 element.")]
+        [MaxLength(MaxLabels, ErrorMessage = "Labels array must have at most 16 elements.")]
         public object[] Labels { get; set; }
 
         // Constructor
-        public CopyleaksTextModerationRequestModel(string text, bool sandbox, string? language, object[] labels)
+        public CopyleaksTextModerationRequestModel(string text, bool sandbox, string language, object[] labels)
         {
             Text = text ?? throw new ArgumentNullException(nameof(text));
             Sandbox = sandbox;
             Language = language;
-
             if (labels == null || !labels.Any())
                 throw new ArgumentException("Labels array must have at least 1 element.", nameof(labels));
-
-            if (labels.Length > 32)
-                throw new ArgumentException("Labels array must have at most 32 elements.", nameof(labels));
-
+            if (labels.Length > MaxLabels)
+                throw new ArgumentException($"Labels array must have at most {MaxLabels} elements.", nameof(labels));
             Labels = labels;
         }
     }

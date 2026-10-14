@@ -24,6 +24,7 @@
 
 
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.AIDetector
@@ -42,6 +43,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AIDetector
         /// Deprecated by the server, which plans to remove it.
         /// Reads 0 when the server omits it.
         /// </summary>
+        [Obsolete("probability is deprecated by the API and will be removed. Use Classification and the summary instead.")]
         [JsonProperty("probability")]
         public double Probability { get; set; }
 

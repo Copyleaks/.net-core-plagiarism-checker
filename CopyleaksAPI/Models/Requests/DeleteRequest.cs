@@ -23,6 +23,7 @@
 ********************************************************************************/
 
 using Newtonsoft.Json;
+using System;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests
 {
@@ -43,6 +44,20 @@ namespace Copyleaks.SDK.V3.API.Models.Requests
         /// </summary>
         [JsonProperty("purge")]
         public bool Purge { get; set; } = false;
+
+        /// <summary>
+        /// A URL that Copyleaks calls with POST (and no body) once the removal is completed.
+        /// Leave it unset (null) to omit it from the request.
+        /// </summary>
+        [JsonProperty("completionWebhook", NullValueHandling = NullValueHandling.Ignore)]
+        public Uri CompletionWebhook { get; set; }
+
+        /// <summary>
+        /// Headers to add to the completion webhook, as [name, value] rows.
+        /// Leave it unset (null) to omit it from the request.
+        /// </summary>
+        [JsonProperty("headers", NullValueHandling = NullValueHandling.Ignore)]
+        public string[,] Headers { get; set; }
 
     }
 

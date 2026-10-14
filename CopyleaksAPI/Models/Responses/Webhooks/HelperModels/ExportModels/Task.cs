@@ -45,6 +45,6 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.ExportMode
         /// The status code reported by the customer servers. If the tasks.isHealthy is equal to false - this field will be null.
         /// </summary>
         [JsonProperty("httpStatusCode")]
-        public int HttpStatusCode { get; set; }
+        public int? HttpStatusCode { get; set; }
     }
 }

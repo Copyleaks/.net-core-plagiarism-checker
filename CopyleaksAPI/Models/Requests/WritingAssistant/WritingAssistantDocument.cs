@@ -31,7 +31,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.WritingAssistant
     public class WritingAssistantDocument
     {
         /// <summary>
-        /// Text to produce Writing Assistant report for. 1 >= characters <= 25000
+        /// Text to produce Writing Assistant report for. 1 to 25000 characters
         /// </summary>
         [Required]
         [JsonProperty("text")]

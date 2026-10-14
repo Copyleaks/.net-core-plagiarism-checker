@@ -33,5 +33,21 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
         /// </summary>
         [JsonProperty("detect")]
         public bool Detect { get; set; } = false;
+
+        /// <summary>
+        /// Controls the behavior of the AI detection, from 1 to 3:
+        /// 1 detects text copied from an LLM without edits, 2 also detects LLM text with minor changes,
+        /// and 3 also detects LLM text that was heavily modified.
+        /// Leave it unset (null) to omit it from the request and get the server default (2).
+        /// </summary>
+        [JsonProperty("sensitivity", NullValueHandling = NullValueHandling.Ignore)]
+        public int? Sensitivity { get; set; }
+
+        /// <summary>
+        /// AI Logic: explain the AI detection result (sent as aiGeneratedText.explain).
+        /// Leave it unset (null) to omit it from the request and get the server default (disabled).
+        /// </summary>
+        [JsonProperty("explain", NullValueHandling = NullValueHandling.Ignore)]
+        public AIExplainSettings Explain { get; set; }
     }
 }

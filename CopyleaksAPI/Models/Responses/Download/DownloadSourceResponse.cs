@@ -22,6 +22,7 @@
  SOFTWARE.
 ********************************************************************************/
 
+using Copyleaks.SDK.V3.API.Models.Responses.CitationChecker;
 using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.Download
@@ -38,5 +39,12 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Download
         public FullTextSourceSubVersionSection Text { get; set; }
         [JsonProperty("version")]
         public int Version { get; set; }
+
+        /// <summary>
+        /// The Citation Checker results (summary and one entry per reference), present when the scan was submitted
+        /// with References.Validate set to true.
+        /// </summary>
+        [JsonProperty("referencesValidation")]
+        public ReferencesValidation ReferencesValidation { get; set; }
     }
 }
