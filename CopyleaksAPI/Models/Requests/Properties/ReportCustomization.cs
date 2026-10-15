@@ -22,9 +22,7 @@
  SOFTWARE.
 ********************************************************************************/
 
-using Copyleaks.SDK.V3.API.Models.Types;
 using Newtonsoft.Json;
-using System;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
@@ -67,19 +65,11 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		public ReportCustomizationColors Colors { get; set; }
 
 		/// <summary>
-		/// Deprecated legacy PDF version, unset (not sent) by default so the server default applies.
-		/// </summary>
-		[Obsolete("PDF report versions 1 and 2 are deprecated. Use ReportVersion = \"v3\" instead.")]
-		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
-		public ePdfReportVersion? Version { get; set; }
-
-		/// <summary>
 		/// PDF report version to generate (sent as pdf.reportVersion).
-		/// Allowed values are lowercase and case-sensitive: "v1" and "v2" (both deprecated), "v3" or "latest".
+		/// Allowed values are lowercase and case-sensitive: "v3" or "latest".
 		/// Any other value, such as "V3", "Latest" or "", is rejected by the server with HTTP 400.
 		/// Only takes effect when Create is true.
-		/// When set, it overrides Version.
-		/// Leave it unset (null) to omit it from the request; if Version is unset too, the server default applies.
+		/// Leave it unset (null) to omit it from the request; the server default then applies.
 		/// </summary>
 		[JsonProperty("reportVersion", NullValueHandling = NullValueHandling.Ignore)]
 		public string ReportVersion { get; set; }

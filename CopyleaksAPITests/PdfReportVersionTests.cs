@@ -1,8 +1,5 @@
-using System;
-using System.Reflection;
 using Copyleaks.SDK.V3.API.Models.Requests;
 using Copyleaks.SDK.V3.API.Models.Requests.Properties;
-using Copyleaks.SDK.V3.API.Models.Types;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -19,7 +16,7 @@ namespace CopyleaksAPITests
         }
 
         [TestMethod]
-        public void Pdf_VersionUnset_IsNotSerialized()
+        public void Pdf_ReportVersionUnset_IsNotSerialized()
         {
             var properties = new ClientScanProperties();
             properties.ReportSection.Create = true;
@@ -31,7 +28,7 @@ namespace CopyleaksAPITests
         }
 
         [TestMethod]
-        public void Pdf_ReportVersionSet_IsSerializedWithoutVersion()
+        public void Pdf_ReportVersionV3_IsSerialized()
         {
             var properties = new ClientScanProperties();
             properties.ReportSection.Create = true;
@@ -43,25 +40,11 @@ namespace CopyleaksAPITests
             Assert.IsFalse(pdf.ContainsKey("Version"), pdf.ToString());
         }
 
-#pragma warning disable CS0618
         [TestMethod]
-        public void Pdf_VersionSet_IsStillSerialized()
+        public void Pdf_LegacyVersionAndEnum_AreRemoved()
         {
-            var properties = new ClientScanProperties();
-            properties.ReportSection.Create = true;
-            properties.ReportSection.Version = ePdfReportVersion.V2;
-
-            var pdf = SerializePdf(properties);
-
-            Assert.AreEqual(2, (int)pdf["Version"]);
+            Assert.IsNull(typeof(ReportCustomization).GetProperty("Version"));
+            Assert.IsNull(typeof(ReportCustomization).Assembly.GetType("Copyleaks.SDK.V3.API.Models.Types.ePdfReportVersion"));
         }
-
-        [TestMethod]
-        public void Pdf_VersionAndEnum_AreObsolete()
-        {
-            Assert.IsNotNull(typeof(ReportCustomization).GetProperty(nameof(ReportCustomization.Version)).GetCustomAttribute<ObsoleteAttribute>());
-            Assert.IsNotNull(typeof(ePdfReportVersion).GetCustomAttribute<ObsoleteAttribute>());
-        }
-#pragma warning restore CS0618
     }
 }
