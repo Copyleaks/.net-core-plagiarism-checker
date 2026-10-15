@@ -48,10 +48,8 @@ namespace Copyleaks.SDK.V3.API
         /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
         public async Task SubmitAsync(string scanId, CopyleaksAiVideoDetectionRequestModel requestModel, string token, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrEmpty(scanId))
-                throw new ArgumentNullException(nameof(scanId), "ScanId is mandatory");
-            if (string.IsNullOrEmpty(token))
-                throw new ArgumentNullException(nameof(token), "Token is mandatory");
+            RequireScanId(scanId, nullException: true);
+            RequireToken(token, nullException: true);
             if (requestModel == null)
                 throw new ArgumentNullException(nameof(requestModel));
             if (requestModel.Url == null)

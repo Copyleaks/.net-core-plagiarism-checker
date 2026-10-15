@@ -43,11 +43,8 @@ namespace Copyleaks.SDK.V3.API
         public async Task<CopyleaksTextModerationResponseModel> SubmitTextAsync(string scanId, CopyleaksTextModerationRequestModel textModerationRequestModel, string token, CancellationToken cancellationToken = default)
         {
             #region Input validation
-            if (string.IsNullOrEmpty(scanId))
-                throw new ArgumentNullException(nameof(scanId), "ScanId is mandatory");
-
-            if (string.IsNullOrEmpty(token))
-                throw new ArgumentNullException(nameof(token), "Token is mandatory");
+            RequireScanId(scanId, nullException: true);
+            RequireToken(token, nullException: true);
 
             if (textModerationRequestModel == null)
                 throw new ArgumentNullException(nameof(textModerationRequestModel));

@@ -258,7 +258,12 @@ namespace CopyleaksAPITests
             Assert.IsTrue(payload.IsAiDetected.Value);
             Assert.AreEqual(55.7, payload.VideoInfo.Duration);
             Assert.AreEqual("Sora", payload.VideoInfo.Metadata.AppOrDeviceUsed);
+            Assert.AreEqual("OpenAI", payload.VideoInfo.Metadata.IssuedBy);
+            Assert.AreEqual("Created using generative AI", payload.VideoInfo.Metadata.ContentSummary);
             Assert.AreEqual("my-video-scan-1", payload.ScannedVideo.ScanId);
+            Assert.AreEqual(1, payload.ScannedVideo.ActualCredits);
+            Assert.AreEqual(1, payload.ScannedVideo.ExpectedCredits);
+            Assert.AreEqual("2026-05-05T12:37:50Z", payload.ScannedVideo.CreationTime);
         }
 
         [TestMethod]

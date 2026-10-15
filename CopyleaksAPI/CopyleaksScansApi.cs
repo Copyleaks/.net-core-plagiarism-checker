@@ -46,12 +46,6 @@ namespace Copyleaks.SDK.V3.API
             this.CopyleaksApiServer = ResolveApiEndpoint();
         }
 
-        private static void RequireToken(string token)
-        {
-            if (string.IsNullOrEmpty(token))
-                throw new ArgumentException("Token is mandatory", nameof(token));
-        }
-
         /// <summary>Get the current credit balance.</summary>
         public async Task<uint> CreditBalanceAsync(string token, CancellationToken cancellationToken = default)
         {

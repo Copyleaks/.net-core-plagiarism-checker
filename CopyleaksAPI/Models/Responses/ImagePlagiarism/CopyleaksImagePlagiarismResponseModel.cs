@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Copyleaks.SDK.V3.API.Models.Responses.AiImageDetection;
 using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.ImagePlagiarism
@@ -19,21 +20,8 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.ImagePlagiarism
         public CopyleaksImagePlagiarismMatches Matches { get; set; }
     }
 
-    public class CopyleaksImagePlagiarismScannedImage
+    public class CopyleaksImagePlagiarismScannedImage : CopyleaksAiImageDetectionScannedDocumentModel
     {
-        [JsonProperty("scanId")]
-        public string ScanId { get; set; }
-
-        [JsonProperty("expectedCredits")]
-        public int ExpectedCredits { get; set; }
-
-        [JsonProperty("actualCredits")]
-        public int ActualCredits { get; set; }
-
-        /// <summary>UTC time when the scan was created, in ISO 8601 format.</summary>
-        [JsonProperty("creationTime")]
-        public string CreationTime { get; set; }
-
         [JsonProperty("width")]
         public int Width { get; set; }
 

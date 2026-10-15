@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Copyleaks.SDK.V3.API.Models.Responses.AiImageDetection;
 using Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.ErrorModels;
 using Newtonsoft.Json;
 
@@ -29,8 +30,9 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AiVideoDetection
         [JsonProperty("videoInfo")]
         public CopyleaksAiVideoInfo VideoInfo { get; set; }
 
+        /// <summary>Scan id, credits and creation time.</summary>
         [JsonProperty("scannedVideo")]
-        public CopyleaksAiVideoScannedVideo ScannedVideo { get; set; }
+        public CopyleaksAiImageDetectionScannedDocumentModel ScannedVideo { get; set; }
 
         /// <summary>Set when the detection failed; then only Error and DeveloperPayload are set.</summary>
         [JsonProperty("error")]
@@ -81,37 +83,8 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AiVideoDetection
         [JsonProperty("duration")]
         public double Duration { get; set; }
 
+        /// <summary>Optional metadata extracted from the video.</summary>
         [JsonProperty("metadata")]
-        public CopyleaksAiVideoMetadata Metadata { get; set; }
-    }
-
-    public class CopyleaksAiVideoMetadata
-    {
-        [JsonProperty("issuedTime")]
-        public string IssuedTime { get; set; }
-
-        [JsonProperty("issuedBy")]
-        public string IssuedBy { get; set; }
-
-        [JsonProperty("appOrDeviceUsed")]
-        public string AppOrDeviceUsed { get; set; }
-
-        [JsonProperty("contentSummary")]
-        public string ContentSummary { get; set; }
-    }
-
-    public class CopyleaksAiVideoScannedVideo
-    {
-        [JsonProperty("scanId")]
-        public string ScanId { get; set; }
-
-        [JsonProperty("actualCredits")]
-        public int ActualCredits { get; set; }
-
-        [JsonProperty("expectedCredits")]
-        public int ExpectedCredits { get; set; }
-
-        [JsonProperty("creationTime")]
-        public string CreationTime { get; set; }
+        public CopyleaksImageMetadataModel Metadata { get; set; }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Copyleaks.SDK.V3.API.Models.Responses.AiImageDetection
 {
-    /// <summary>Metadata about the AI image detection scan operation.</summary>
+    /// <summary>Scan id, credits and creation time; also used by AI video detection and image plagiarism.</summary>
     public class CopyleaksAiImageDetectionScannedDocumentModel
     {
         /// <summary>The unique identifier for this scan.</summary>
@@ -14,7 +14,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AiImageDetection
         public int ActualCredits { get; set; }
 
         /// <summary>The expected number of credits for this scan.</summary>
-        [JsonProperty("expectedCredits")]   
+        [JsonProperty("expectedCredits")]
         public int ExpectedCredits { get; set; }
 
         /// <summary>ISO 8601 timestamp of when the scan was created.</summary>

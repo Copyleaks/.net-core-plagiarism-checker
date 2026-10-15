@@ -39,15 +39,6 @@ namespace Copyleaks.SDK.V3.API
             this.ImageDetectionApiVersion = ConfigurationManager.Configuration[CopyleaksConstants.ImageDetectionApiVersion];
         }
 
-        private static void Validate(string scanId, string token)
-        {
-            if (string.IsNullOrEmpty(scanId))
-                throw new ArgumentNullException(nameof(scanId), "ScanId is mandatory");
-
-            if (string.IsNullOrEmpty(token))
-                throw new ArgumentNullException(nameof(token), "Token is mandatory");
-        }
-
         private string CheckUri(string scanId) =>
             $"{this.CopyleaksApiServer}{this.ImageDetectionApiVersion}/ai-image-detector/{PathSegment(scanId)}/check";
 
@@ -58,7 +49,8 @@ namespace Copyleaks.SDK.V3.API
         /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
         public async Task<CopyleaksAiImageDetectionResponseModel> SubmitAsync(string scanId, CopyleaksAiImageDetectionRequestModel requestModel, string token, CancellationToken cancellationToken = default)
         {
-            Validate(scanId, token);
+            RequireScanId(scanId, nullException: true);
+            RequireToken(token, nullException: true);
             if (requestModel == null)
                 throw new ArgumentNullException(nameof(requestModel));
 
@@ -75,7 +67,8 @@ namespace Copyleaks.SDK.V3.API
         /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
         public async Task<CopyleaksAiImageDetectionResponseModel> SubmitFileAsync(string scanId, Stream image, CopyleaksAiImageDetectionRequestModel requestModel, string token, CancellationToken cancellationToken = default)
         {
-            Validate(scanId, token);
+            RequireScanId(scanId, nullException: true);
+            RequireToken(token, nullException: true);
             if (image == null)
                 throw new ArgumentNullException(nameof(image));
             ValidateFileRequest(requestModel);
@@ -94,7 +87,8 @@ namespace Copyleaks.SDK.V3.API
         /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
         public async Task<CopyleaksAiImageDetectionResponseModel> SubmitFileAsync(string scanId, byte[] image, CopyleaksAiImageDetectionRequestModel requestModel, string token, CancellationToken cancellationToken = default)
         {
-            Validate(scanId, token);
+            RequireScanId(scanId, nullException: true);
+            RequireToken(token, nullException: true);
             if (image == null)
                 throw new ArgumentNullException(nameof(image));
             ValidateFileRequest(requestModel);
@@ -112,11 +106,16 @@ namespace Copyleaks.SDK.V3.API
         /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
         public async Task SubmitUrlAsync(string scanId, CopyleaksAiImageDetectionAsyncRequestModel requestModel, string token, CancellationToken cancellationToken = default)
         {
-            Validate(scanId, token);
+            RequireScanId(scanId, nullException: true);
+            RequireToken(token, nullException: true);
             if (requestModel == null)
                 throw new ArgumentNullException(nameof(requestModel));
             if (requestModel.Url == null)
                 throw new ArgumentException("Url is mandatory.", nameof(requestModel.Url));
+            if (string.IsNullOrEmpty(requestModel.FileName))
+                throw new ArgumentException("FileName is mandatory.", nameof(requestModel.FileName));
+            if (string.IsNullOrEmpty(requestModel.Model))
+                throw new ArgumentException("Model is mandatory.", nameof(requestModel.Model));
             if (requestModel.Webhooks?.Url == null)
                 throw new ArgumentException("Webhooks.Url is mandatory.", nameof(requestModel.Webhooks));
 

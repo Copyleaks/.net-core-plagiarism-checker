@@ -11,7 +11,7 @@ This is a major release. It makes the HTTP layer reliable (one shared connection
 - **New endpoints.**
   - Image Plagiarism Detection: `CopyleaksImagePlagiarismApi.SubmitAsync` uploads an image (a `Stream` or a `byte[]`) and returns the web pages where copies were found.
   - AI Video Detection: `CopyleaksAiVideoDetectionApi.SubmitAsync` submits a video URL. The result is posted to your webhook as a `CopyleaksAiVideoDetectionResponseModel`.
-  - Asynchronous AI Image Detection: `CopyleaksAiImageDetectionApi.SubmitUrlAsync` submits an image URL. The result is posted to your webhook with the shape of `CopyleaksAiImageDetectionResponseModel`.
+  - Asynchronous AI Image Detection: `CopyleaksAiImageDetectionApi.SubmitUrlAsync` submits an image URL. The result is posted to your webhook with the shape of `CopyleaksAiImageDetectionResponseModel`. A missing `Url`, `FileName`, `Model` or `Webhooks.Url` throws `ArgumentException` before any request is sent.
   - AI Image Detection file upload: `CopyleaksAiImageDetectionApi.SubmitFileAsync` uploads the image as a file (multipart) instead of base64.
   - Resend webhook: `CopyleaksScansApi.ResendWebhookAsync`.
   - AI Text Detection credit balance: `CopyleaksAIDetectionApi.CreditBalanceAsync`.

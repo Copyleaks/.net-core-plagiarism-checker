@@ -257,11 +257,26 @@ namespace Copyleaks.SDK.V3.API.Helpers
             }
         }
 
-        /// <summary>Throw <see cref="ArgumentException"/> for an empty scan id, before it goes into a URL path.</summary>
-        private protected static void RequireScanId(string scanId)
+        /// <summary>
+        /// Throw for an empty scan id, before it goes into a URL path: <see cref="ArgumentException"/>, or
+        /// <see cref="ArgumentNullException"/> when <paramref name="nullException"/>, for the clients that throw that.
+        /// </summary>
+        private protected static void RequireScanId(string scanId, bool nullException = false)
         {
             if (string.IsNullOrEmpty(scanId))
-                throw new ArgumentException("ScanId is mandatory", nameof(scanId));
+                throw Missing(nameof(scanId), "ScanId is mandatory", nullException);
+        }
+
+        /// <summary>Throw for an empty login token, like <see cref="RequireScanId"/>.</summary>
+        private protected static void RequireToken(string token, bool nullException = false)
+        {
+            if (string.IsNullOrEmpty(token))
+                throw Missing(nameof(token), "Token is mandatory", nullException);
+        }
+
+        private static ArgumentException Missing(string paramName, string message, bool nullException)
+        {
+            return nullException ? new ArgumentNullException(paramName, message) : new ArgumentException(message, paramName);
         }
 
         /// <summary>Send <paramref name="body"/> as JSON (serialized once for all attempts) and ensure success.</summary>

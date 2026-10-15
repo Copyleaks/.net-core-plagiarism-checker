@@ -45,8 +45,7 @@ namespace Copyleaks.SDK.V3.API
         public async Task<AIDetectionResult> SubmitNaturalLanguageAsync(string scanId, NaturalLanguageDocument documentModel, string token, CancellationToken cancellationToken = default)
         {
             RequireScanId(scanId);
-            if (string.IsNullOrEmpty(token))
-                throw new ArgumentException("Token is mandatory", nameof(token));
+            RequireToken(token);
             if (documentModel == null)
                 throw new ArgumentNullException(nameof(documentModel));
             if (string.IsNullOrEmpty(documentModel.Text))
@@ -61,8 +60,7 @@ namespace Copyleaks.SDK.V3.API
         /// <summary>Get the credit balance of the AI Text Detection wallet.</summary>
         public async Task<uint> CreditBalanceAsync(string token, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrEmpty(token))
-                throw new ArgumentException("Token is mandatory", nameof(token));
+            RequireToken(token);
 
             string requestUri = $"{this.CopyleaksApiServer}{this.AIDetectionApiVersion}/writer-detector/credits";
             var response = await SendForJsonAsync<AIDetectionCreditsResponse>(

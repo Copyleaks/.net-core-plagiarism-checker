@@ -337,6 +337,51 @@ namespace CopyleaksAPITests
         }
 
         [TestMethod]
+        public async Task Clients_require_a_scan_id_and_a_token()
+        {
+            var handler = new FakeHttpHandler();
+            var client = Fakes.Client(handler);
+            var textModeration = new CopyleaksTextModerationRequestModel("t", true, null,
+                new object[] { new CopyleaksTextModerationLabel(CopyleaksTextModerationConstants.TOXIC_V1) });
+            var video = new CopyleaksAiVideoDetectionRequestModel
+            {
+                Url = new Uri("https://example.com/v.mp4"), Filename = "v.mp4", Model = "ai-video-1-pro",
+                Webhooks = new CopyleaksAsyncWebhooks { Url = new Uri(Webhook) },
+            };
+
+            // Each client keeps the exception type it has always thrown: ArgumentException or ArgumentNullException.
+            async Task Rejects<T>(string paramName, Func<Task> call) where T : ArgumentException
+            {
+                var ex = await Assert.ThrowsExceptionAsync<T>(call);
+                Assert.AreEqual(paramName, ex.ParamName);
+                StringAssert.StartsWith(ex.Message, paramName == "token" ? "Token is mandatory" : "ScanId is mandatory");
+            }
+
+            foreach (string empty in new[] { null, "" })
+            {
+                await Rejects<ArgumentException>("token", () => new CopyleaksScansApi(client).CreditBalanceAsync(empty));
+                await Rejects<ArgumentException>("token", () => new CopyleaksAIDetectionApi(client).CreditBalanceAsync(empty));
+                await Rejects<ArgumentException>("token", () => new CopyleaksAIDetectionApi(client).SubmitNaturalLanguageAsync("s1",
+                    new NaturalLanguageDocument { Text = "t" }, empty));
+                await Rejects<ArgumentException>("token", () => new CopyleaksWritingAssistantApi(client).SubmitTextAsync("s1",
+                    new WritingAssistantDocument { Text = "t" }, empty));
+
+                foreach (var (scanId, token) in new[] { (empty, Fakes.Token), ("s1", empty) })
+                {
+                    string paramName = token == Fakes.Token ? "scanId" : "token";
+                    await Rejects<ArgumentNullException>(paramName, () => new CopyleaksTextModerationApi(client).SubmitTextAsync(scanId, textModeration, token));
+                    await Rejects<ArgumentNullException>(paramName, () => new CopyleaksAiImageDetectionApi(client).SubmitAsync(scanId,
+                        new CopyleaksAiImageDetectionRequestModel("aGk=", "a.png", CopyleaksAiImageDetectionModels.AI_IMAGE_1_ULTRA), token));
+                    await Rejects<ArgumentNullException>(paramName, () => new CopyleaksAiVideoDetectionApi(client).SubmitAsync(scanId, video, token));
+                    await Rejects<ArgumentNullException>(paramName, () => new CopyleaksImagePlagiarismApi(client).SubmitAsync(scanId,
+                        new byte[] { 1 }, new CopyleaksImagePlagiarismRequestModel("a.png"), token));
+                }
+            }
+
+            Assert.AreEqual(0, handler.RequestList.Count);
+        }
+
+        [TestMethod]
         public async Task Supported_file_types_and_ocr_languages_use_the_documented_v3_paths()
         {
             var handler = new FakeHttpHandler()
@@ -368,14 +413,13 @@ namespace CopyleaksAPITests
         }
 
         [TestMethod]
-        public async Task Allowed_cross_languages_also_reads_an_array_of_codes()
+        public async Task Allowed_cross_languages_rejects_an_array_of_codes()
         {
+            // The server sends name-to-code objects; an array has no names to key the dictionary by.
             var (_, client) = Server(HttpStatusCode.OK, "{\"documentLanguages\":[\"da\",\"en\"],\"resultLanguages\":[\"sq\"]}");
 
-            var languages = await new CopyleaksScansApi(client).GetAllowedCrossLanguagesAsync();
-
-            CollectionAssert.AreEquivalent(new[] { "da", "en" }, languages.DocumentLanguageCodes);
-            CollectionAssert.AreEquivalent(new[] { "sq" }, languages.ResultLanguageCodes);
+            await Assert.ThrowsExceptionAsync<Newtonsoft.Json.JsonSerializationException>(
+                () => new CopyleaksScansApi(client).GetAllowedCrossLanguagesAsync());
         }
 
         [TestMethod]
@@ -628,6 +672,38 @@ namespace CopyleaksAPITests
                 gzip: false);
         }
 
+        [TestMethod]
+        public async Task Ai_image_async_requires_url_filename_model_and_webhook()
+        {
+            var handler = new FakeHttpHandler();
+            var api = new CopyleaksAiImageDetectionApi(Fakes.Client(handler));
+            var cases = new (string ParamName, Action<CopyleaksAiImageDetectionAsyncRequestModel> Clear)[]
+            {
+                ("Url", m => m.Url = null),
+                ("FileName", m => m.FileName = null),
+                ("FileName", m => m.FileName = ""),
+                ("Model", m => m.Model = null),
+                ("Model", m => m.Model = ""),
+                ("Webhooks", m => m.Webhooks = null),
+            };
+
+            foreach (var (paramName, clear) in cases)
+            {
+                var model = new CopyleaksAiImageDetectionAsyncRequestModel
+                {
+                    Url = new Uri("https://example.com/a.png"),
+                    FileName = "a.png",
+                    Model = CopyleaksAiImageDetectionModels.AI_IMAGE_1_ULTRA,
+                    Webhooks = new CopyleaksAsyncWebhooks { Url = new Uri(Webhook) },
+                };
+                clear(model);
+                var ex = await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.SubmitUrlAsync("imgasync3", model, Fakes.Token));
+                Assert.AreEqual(paramName, ex.ParamName);
+            }
+
+            Assert.AreEqual(0, handler.RequestList.Count);
+        }
+
         // AI video detection
         [TestMethod]
         public async Task Ai_video_submit()
@@ -702,7 +778,13 @@ namespace CopyleaksAPITests
             Assert.AreEqual(4, parts.Count);
 
             Assert.AreEqual("my-custom-data", result.DeveloperPayload);
+            Assert.AreEqual("ip1", result.ScannedImage.ScanId);
+            Assert.AreEqual(1, result.ScannedImage.ExpectedCredits);
+            Assert.AreEqual(1, result.ScannedImage.ActualCredits);
+            Assert.AreEqual("2026-05-24T10:00:00Z", result.ScannedImage.CreationTime);
             Assert.AreEqual(1920, result.ScannedImage.Width);
+            Assert.AreEqual(1080, result.ScannedImage.Height);
+            Assert.AreEqual("my-photo.jpg", result.ScannedImage.Filename);
             Assert.AreEqual(2, result.Matches.Internet.Count);
             Assert.AreEqual(0, result.Matches.Internet[0].MatchType);
             Assert.AreEqual("https://example.com/blog/my-post", result.Matches.Internet[0].WebPages[0].Url);
