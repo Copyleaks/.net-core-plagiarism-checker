@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using Copyleaks.SDK.V3.API.Models.Requests.Shared;
 using Newtonsoft.Json;
 
@@ -11,6 +12,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.AiImageDetection
     public class CopyleaksAiImageDetectionAsyncRequestModel : CopyleaksAiImageDetectionRequestBase
     {
         /// <summary>Public URL of the image. Required.</summary>
+        [Required]
         [JsonProperty("url")]
         public Uri Url { get; set; }
 
@@ -18,6 +20,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.AiImageDetection
         /// Image file name with extension, e.g. "image1.png". Required.
         /// Supported: .jpg, .jpeg, .png, .webp, .tiff, .bmp, .heic, .heif.
         /// </summary>
+        [Required]
         [JsonProperty("fileName")]
         public string FileName { get; set; }
 
@@ -26,6 +29,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.AiImageDetection
         public string[,] Headers { get; set; }
 
         /// <summary>Where to deliver the result. Required.</summary>
+        [Required]
         [JsonProperty("webhooks")]
         public CopyleaksAsyncWebhooks Webhooks { get; set; }
 

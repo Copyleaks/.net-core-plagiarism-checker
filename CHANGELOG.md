@@ -36,6 +36,7 @@ This is a major release. It makes the HTTP layer reliable (one shared connection
   - `ExportRequest.AIDetection`, `ExportRequest.WritingFeedback`, `ExportRequest.Overview` and `ExportRequest.CompletionWebhookHeaders`. The exported overview file is modeled as the new `OverviewResult`.
   - `NaturalLanguageDocument.Explain` and `NaturalLanguageDocument.Sensitivity` for AI Text Detection.
   - `CopyleaksAiImageDetectionRequestModel.MaskType` (see `CopyleaksAiImageMaskTypes`) and `ObjectDetection`.
+  - `CopyleaksAiImageDetectionRequestBase`, the shared base of the sync and async AI Image Detection requests (`Model`, `Sandbox`, `MaskType`, `ObjectDetection`).
 - **New response and webhook fields.**
   - AI Image Detection: `IsAiDetected`, `DetectedObjects`, `Result.Labels` and `ImageInfo.Metadata.ContentSummary`.
   - Completed webhook: `ReferencesValidation` and `Results.InternalAIData`.
