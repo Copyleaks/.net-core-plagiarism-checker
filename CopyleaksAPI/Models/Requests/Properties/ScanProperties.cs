@@ -16,7 +16,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		[JsonProperty("includeHtml")]
 		public bool IncludeHtml { get; set; } = false;
 
-		/// <summary>Developer payload string.</summary>
+		/// <summary>Returned in the webhooks of the scan; up to 512 characters.</summary>
 		[JsonProperty("developerPayload")]
 		[StringLength(512)]
 		public string DeveloperPayload { get; set; }

@@ -18,7 +18,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		[JsonProperty("titles")]
 		public bool Titles { get; set; } = false;
 
-		/// <summary>For HTML documents, exclude HTML tags and attribute metadata.</summary>
+		/// <summary>For HTML documents, exclude text repeated across the site, such as the header and footer.</summary>
 		[JsonProperty("htmlTemplate")]
 		public bool HtmlTemplate { get; set; } = false;
 

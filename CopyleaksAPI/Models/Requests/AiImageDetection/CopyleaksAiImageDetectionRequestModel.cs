@@ -24,7 +24,7 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.AiImageDetection
             Sandbox = sandbox;
         }
         /// <summary>
-        /// Base64 image: min 512×512px, max 16 megapixels, under 32MB; PNG, JPEG, BMP, WebP or HEIC/HEIF.
+        /// Base64 image: 512×512 to 6000×4500 px (27 megapixels), under 32MB; PNG, JPEG, BMP, WebP, HEIC/HEIF or AVIF.
         /// </summary>
         [JsonProperty("base64", NullValueHandling = NullValueHandling.Ignore)]
         public string Base64 { get; set; }
