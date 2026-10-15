@@ -27,6 +27,7 @@ namespace Copyleaks.SDK.V3.API.Models.Types
 	/// <summary>
 	/// The possible pdf versions to generate
 	/// </summary>
+	[System.Obsolete("PDF report versions 1 and 2 are deprecated. Use ReportCustomization.ReportVersion = \"v3\" instead.")]
 	public enum ePdfReportVersion
 	{
 		V1 = 1,

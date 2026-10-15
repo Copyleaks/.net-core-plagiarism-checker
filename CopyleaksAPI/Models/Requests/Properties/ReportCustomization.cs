@@ -24,6 +24,7 @@
 
 using Copyleaks.SDK.V3.API.Models.Types;
 using Newtonsoft.Json;
+using System;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
@@ -66,20 +67,19 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		public ReportCustomizationColors Colors { get; set; }
 
 		/// <summary>
-		/// PDF version to generate. 
-		/// By default version 1 will be generated as it our current stable version. 
-		/// Version 2 is our latest iteration of our PDF report.
+		/// Deprecated legacy PDF version, unset (not sent) by default; the server default is v3.
 		/// </summary>
-		public ePdfReportVersion Version { get; set; } = ePdfReportVersion.V1;
+		[Obsolete("PDF report versions 1 and 2 are deprecated. Use ReportVersion = \"v3\" instead.")]
+		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+		public ePdfReportVersion? Version { get; set; }
 
 		/// <summary>
 		/// PDF report version to generate (sent as pdf.reportVersion).
-		/// Allowed values are lowercase and case-sensitive: "v1", "v2", "v3" or "latest".
+		/// Allowed values are lowercase and case-sensitive: "v1" and "v2" (both deprecated), "v3" or "latest".
 		/// Any other value, such as "V3", "Latest" or "", is rejected by the server with HTTP 400.
 		/// Only takes effect when Create is true.
 		/// When set, it overrides Version.
-		/// Leave it unset (null) to omit it from the request. The server then uses Version,
-		/// which this SDK always sends (default V1), so leaving both unset yields the v1 report.
+		/// Leave it unset (null) to omit it from the request; if Version is unset too, the server generates the v3 report.
 		/// </summary>
 		[JsonProperty("reportVersion", NullValueHandling = NullValueHandling.Ignore)]
 		public string ReportVersion { get; set; }
