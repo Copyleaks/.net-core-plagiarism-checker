@@ -1,38 +1,11 @@
-/********************************************************************************
- The MIT License(MIT)
- 
- Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
-********************************************************************************/
-
 using Copyleaks.SDK.V3.API.Exceptions;
-using Copyleaks.SDK.V3.API.Extensions;
 using Copyleaks.SDK.V3.API.Helpers;
 using Copyleaks.SDK.V3.API.Models.Requests.WritingAssistant;
 using Copyleaks.SDK.V3.API.Models.Responses.WritingFeedback;
-using Newtonsoft.Json;
 using System;
-using System.IO;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Copyleaks.SDK.V3.API
@@ -44,90 +17,68 @@ namespace Copyleaks.SDK.V3.API
 
         private string WritingAssistantApiVersion { get; set; }
 
-
-        public CopyleaksWritingAssistantApi(HttpClient client) : base(client)
+        /// <summary>Grammar Checker (writing assistant) client that uses the given HttpClient.</summary>
+        /// <param name="client">For example one from IHttpClientFactory. The SDK never disposes it.</param>
+        /// <param name="options">Optional timeout and retry settings.</param>
+        public CopyleaksWritingAssistantApi(HttpClient client, CopyleaksClientOptions options = null) : base(client, options)
         {
             SetUpService();
         }
 
-        public CopyleaksWritingAssistantApi(X509Certificate2 clientCertificate = null) : base(clientCertificate)
+        /// <summary>Uses the SDK's shared HttpClient, with an optional client certificate and options.</summary>
+        public CopyleaksWritingAssistantApi(X509Certificate2 clientCertificate = null, CopyleaksClientOptions options = null) : base(clientCertificate, options)
         {
             SetUpService();
         }
 
         private void SetUpService()
         {
-            this.CopyleaksApiServer = ConfigurationManager.Configuration["ApiEndPoint"];
+            this.CopyleaksApiServer = ResolveApiEndpoint();
             this.WritingAssistantApiVersion = ConfigurationManager.Configuration["writingAssistantApiVersion"];
         }
 
-        /// <summary>
-        /// Use Copyleaks Writing Assistant to generate grammar, spelling and sentence corrections for a given text.
-        /// </summary>
-        /// <param name="scanId">A unique scan Id</param>
-        /// <param name="documentModel">The submission document including the text to scan</param>
-        /// <param name="token">A copyleaks access token</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="CopyleaksHttpException"></exception>
-        public async Task<WritingAssistantResult> SubmitTextAsync(string scanId, WritingAssistantDocument documentModel, string token)
+        /// <summary>Get grammar, spelling and sentence corrections for a text.</summary>
+        /// <exception cref="ArgumentException">A required argument is missing.</exception>
+        /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
+        public async Task<WritingAssistantResult> SubmitTextAsync(string scanId, WritingAssistantDocument documentModel, string token, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrEmpty(token))
-                throw new ArgumentException("Token is mandatory", nameof(token));
-
+            RequireScanId(scanId);
+            RequireToken(token);
+            if (documentModel == null)
+                throw new ArgumentNullException(nameof(documentModel));
             if (string.IsNullOrEmpty(documentModel.Text))
                 throw new ArgumentException("Text is mandatory.", nameof(documentModel.Text));
 
-            var method = new HttpMethod("POST");
-            string requestUri = $"{this.CopyleaksApiServer}{this.WritingAssistantApiVersion}/writing-feedback/{scanId}/check";
-            HttpRequestMessage msg = new HttpRequestMessage(method, requestUri);
-            msg.SetupHeaders(token);
-            var serializedDocument = JsonConvert.SerializeObject(documentModel);
-            msg.Content = new StringContent(serializedDocument, Encoding.UTF8, "application/json");
-
-            using (var stream = new MemoryStream())
-            using (var streamContent = new StreamContent(stream))
-            using (var response = await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false)).ConfigureAwait(false))
-            {
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new CopyleaksHttpException(response);
-                }
-                return await response.ExtractJsonResultsAsync<WritingAssistantResult>().ConfigureAwait(false);
-            }
+            string requestUri = $"{this.CopyleaksApiServer}{this.WritingAssistantApiVersion}/writing-feedback/{PathSegment(scanId)}/check";
+            // Charged per call, so only a rate-limited (429) attempt is retried.
+            return await SendJsonForJsonAsync<WritingAssistantResult>(
+                HttpMethod.Post, requestUri, token, documentModel, gzip: true, eRetryMode.RateLimitOnly, cancellationToken).ConfigureAwait(false);
         }
 
-
-        /// <summary>
-        /// Get a list of correction types supported within the Writing Assistant API. Correction types apply to all supported languages. The supplied language code for this request is used to determine the language of the texts returned.
-        /// </summary>
-        /// <param name="token"> a copyleaks access token</param>
-        /// <param name="languageCode">The language for the returned texts to be in. Language codes are in ISO 639-1 standard. Supported Values: en - English</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="CopyleaksHttpException"></exception>
-        public async Task<CorrectionTypes> GetCorrectionTypesAsync(string token, string languageCode)
+        /// <summary>Get the correction types (the same for all languages). No login needed.</summary>
+        /// <param name="languageCode">ISO 639-1 language of the returned texts. Supported: "en".</param>
+        /// <param name="cancellationToken">Cancels the request.</param>
+        /// <exception cref="ArgumentException">The language code is missing.</exception>
+        /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
+        public Task<CorrectionTypes> GetCorrectionTypesAsync(string languageCode, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrEmpty(token))
-                throw new ArgumentException("Token is mandatory", nameof(token));
+            return GetCorrectionTypesAsync(null, languageCode, cancellationToken);
+        }
 
+        /// <summary>Get the correction types (the same for all languages).</summary>
+        /// <param name="token">Optional login token; null or empty sends no Authorization header.</param>
+        /// <param name="languageCode">ISO 639-1 language of the returned texts. Supported: "en".</param>
+        /// <param name="cancellationToken">Cancels the request.</param>
+        /// <exception cref="ArgumentException">The language code is missing.</exception>
+        /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
+        public async Task<CorrectionTypes> GetCorrectionTypesAsync(string token, string languageCode, CancellationToken cancellationToken = default)
+        {
             if (string.IsNullOrEmpty(languageCode))
                 throw new ArgumentException("Language Code is mandatory", nameof(languageCode));
 
-            string requestUri = $"{this.CopyleaksApiServer}{this.WritingAssistantApiVersion}/writing-feedback/correction-types/{languageCode}";
-            var msg = new HttpRequestMessage(HttpMethod.Get, requestUri);
-            msg.SetupHeaders(token);
-
-            using (var stream = new MemoryStream())
-            using (var streamContent = new StreamContent(stream))
-            using (var response = await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false)).ConfigureAwait(false))
-            {
-                if (!response.IsSuccessStatusCode)
-                {
-                    throw new CopyleaksHttpException(response);
-                }
-                return await response.ExtractJsonResultsAsync<CorrectionTypes>().ConfigureAwait(false);
-            }
+            string requestUri = $"{this.CopyleaksApiServer}{this.WritingAssistantApiVersion}/writing-feedback/correction-types/{PathSegment(languageCode)}";
+            return await SendForJsonAsync<CorrectionTypes>(
+                HttpMethod.Get, requestUri, token, null, eRetryMode.Safe, cancellationToken).ConfigureAwait(false);
         }
     }
 }

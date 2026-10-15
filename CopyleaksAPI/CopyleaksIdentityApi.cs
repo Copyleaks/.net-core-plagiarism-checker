@@ -1,122 +1,57 @@
-﻿/********************************************************************************
- The MIT License(MIT)
- 
- Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
-********************************************************************************/
-
-using Copyleaks.SDK.V3.API.Exceptions;
-using Copyleaks.SDK.V3.API.Extensions;
+﻿using Copyleaks.SDK.V3.API.Exceptions;
 using Copyleaks.SDK.V3.API.Helpers;
-using Copyleaks.SDK.V3.API.Models.HttpCustomSend;
 using Copyleaks.SDK.V3.API.Models.Responses;
-using Newtonsoft.Json;
-using Polly;
-using Polly.Retry;
 using System;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+
 namespace Copyleaks.SDK.V3.API
 {
+    /// <summary>Gets the login token that the other API clients need.</summary>
     public class CopyleaksIdentityApi : CopyleaksBase
     {
-        /// <summary>
-        /// This class alows you the get the API token from Copyleaks API and manage your scans permissions
-        /// </summary>
+        /// <summary>Identity server address.</summary>
         public string CopyleaksIdServer { get; private set; }
 
-        /// <summary>
-        /// Connection to Copyleaks identity API
-        /// </summary>
-        /// <param name="clientCertificate">Optional: client certificate to be checked against in Copyleaks API.
-        /// Configure you client's certificate at https://copyleaks.com/Manage </param>
-        public CopyleaksIdentityApi(X509Certificate2 clientCertificate = null) : base(clientCertificate)
+        /// <summary>Uses the SDK's shared HttpClient.</summary>
+        /// <param name="clientCertificate">Optional client certificate; configure it at https://copyleaks.com/Manage</param>
+        /// <param name="options">Optional timeout and retry settings.</param>
+        public CopyleaksIdentityApi(X509Certificate2 clientCertificate = null, CopyleaksClientOptions options = null) : base(clientCertificate, options)
         {
             SetServerEndpoint();
         }
 
-        /// <summary>
-        /// Connection to Copyleaks identity API
-        /// </summary>
-        /// <param name="client">Override the underlying http client with custom settings</param>
-        public CopyleaksIdentityApi(HttpClient client) : base(client)
+        /// <summary>Uses the given HttpClient.</summary>
+        /// <param name="client">For example one from IHttpClientFactory. The SDK never disposes it.</param>
+        /// <param name="options">Optional timeout and retry settings.</param>
+        public CopyleaksIdentityApi(HttpClient client, CopyleaksClientOptions options = null) : base(client, options)
         {
             SetServerEndpoint();
         }
 
         private void SetServerEndpoint()
         {
-            this.CopyleaksIdServer = ConfigurationManager.Configuration["idEndPoint"];
+            this.CopyleaksIdServer = ResolveIdentityEndpoint();
         }
 
-        /// <summary>
-        /// Login to Copyleaks API
-        /// </summary>
-        /// <param name="email">Your email address</param>
-        /// <param name="key">Copyleaks API key</param>
-        /// <returns>LoginToken.Token that can be used in order to invoke copyleaks api methods</returns>
-        public async Task<LoginResponse> LoginAsync(string email, string key)
+        /// <summary>Log in with your email and API key.</summary>
+        /// <returns>The login token to pass to the other API calls.</returns>
+        /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
+        public async Task<LoginResponse> LoginAsync(string email, string key, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(email))
                 throw new ArgumentException("Email is mandatory.", nameof(email));
             else if (string.IsNullOrEmpty(key))
                 throw new ArgumentException("ApiKey is mandatory.", nameof(key));
 
-            string requestUri = $"{this.CopyleaksIdServer}{this.ApiVersion}/account/login/api";              
-            HttpRequestMessage msg = new HttpRequestMessage(HttpMethod.Post, requestUri);
-            msg.SetupHeaders();
+            string requestUri = $"{this.CopyleaksIdServer}{this.ApiVersion}/account/login/api";
 
-            string json = JsonConvert.SerializeObject(new
-            {
-                email,
-                key
-            });
-
-            msg.Content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            using (var stream = new MemoryStream())
-            {
-                var task = Task.Run(async () =>
-                {
-                    using (var streamContent = new StreamContent(stream))
-                        return await Client.SendAsync(await msg.CloneAsync(stream, streamContent).ConfigureAwait(false));
-                });
-                    
-                using (var response = await RetryPolicy.ExecuteAsync(() => task).ConfigureAwait(false))
-                {
-                    if (!response.IsSuccessStatusCode)
-                    {
-                        throw new CopyleaksHttpException(response);
-                    }
-
-                    return await response.ExtractJsonResultsAsync<LoginResponse>().ConfigureAwait(false);
-                }
-            }
+            // Login has no side effects, so it is safe to retry.
+            return await SendJsonForJsonAsync<LoginResponse>(
+                HttpMethod.Post, requestUri, token: null, body: new { email, key }, gzip: true,
+                eRetryMode.Safe, cancellationToken).ConfigureAwait(false);
         }
     }
 }
-

@@ -13,9 +13,8 @@ using Newtonsoft.Json;
 namespace CopyleaksAPITests
 {
     /// <summary>
-    /// Offline tests for reading the AI alert from the completed webhook.
-    /// The fixtures in Resources/Webhooks are shared by all Copyleaks SDKs, and the
-    /// expected values below are the ones listed in the shared expected.json.
+    /// Offline tests of reading the AI alert from the completed webhook. The Resources/Webhooks fixtures and the
+    /// expected values are shared by all Copyleaks SDKs (their shared expected.json).
     /// </summary>
     [TestClass]
     public class AIAlertWebhookTests

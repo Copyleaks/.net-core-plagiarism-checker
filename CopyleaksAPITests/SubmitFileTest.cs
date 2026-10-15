@@ -4,7 +4,6 @@ using Copyleaks.SDK.V3.API.Models.Requests.Properties;
 using Copyleaks.SDK.V3.API.Models.Responses;
 using Copyleaks.SDK.V3.API.Models.Types;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Polly;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +14,9 @@ using System.Threading.Tasks;
 
 namespace CopyleaksAPITests
 {
+    /// <summary>Live API tests: set real credentials below, then run dotnet test --filter TestCategory=Live.</summary>
     [TestClass]
+    [TestCategory("Live")]
     public class SubmitFileTest
     {
 		public const string USER_EMAIL = "<EMAIL>";
@@ -80,18 +81,20 @@ namespace CopyleaksAPITests
 
             var scanId = await SubmitFileScanAsync(authToken).ConfigureAwait(false);
 
-            var progress = await Policy.HandleResult<uint>((result) => result != 100)
-                .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(3))
-                .ExecuteAsync(() => APIClient.ProgressAsync(scanId, authToken)).ConfigureAwait(false);
+            uint progress = await APIClient.ProgressAsync(scanId, authToken).ConfigureAwait(false);
+            for (int attempt = 0; attempt < 6 && progress != 100; attempt++)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(3)).ConfigureAwait(false);
+                progress = await APIClient.ProgressAsync(scanId, authToken).ConfigureAwait(false);
+            }
 
             Assert.IsTrue(progress == 100, "Scan Progress didn't hit the 100%");
 
-            //downloads
             var pdfReport = await APIClient.DownloadPdfReportAsync(scanId, authToken).ConfigureAwait(false);
             var sources = await APIClient.DownloadSourceReportAsync(scanId, authToken).ConfigureAwait(false);
             var results = await APIClient.ResultAsync(scanId, authToken).ConfigureAwait(false);
 
-            //sandbox scan always have at least one internet result.
+            // A sandbox scan always has at least one internet result.
             var downloadedResult = await APIClient.DownloadResultAsync(scanId, results.Results.Internet[0].Id, authToken).ConfigureAwait(false);
 
             await APIClient.DeleteAsync(new DeleteRequest
@@ -103,11 +106,9 @@ namespace CopyleaksAPITests
 
         private async Task<string> SubmitFileScanAsync(string authToken)
         {
-            // A unique scan ID for the scan
-            // In case this scan ID already exists for this user Copyleaks API will return HTTP 409 Conflict result
+            // Must be unique: a scan id that already exists for this user gets HTTP 409 Conflict.
             string scanId = Guid.NewGuid().ToString();
             string scannedText = "Hellow world";
-            // Submit a file for scan in https://api.copyleaks.com
             await APIClient.SubmitFileAsync(scanId, new FileDocument
             {
                 Base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(scannedText)),
@@ -123,19 +124,12 @@ namespace CopyleaksAPITests
         {
             ClientScanProperties clientScanProperties = new ClientScanProperties();
 
-			// The action to perform
-			// Possible values:
-			// 1. checkCredits - return the number of credits that will be consumed by the scan.
-			//                   The Result of the request will be returned to the 'Completion' callback
-			// 2. Scan - Scan the submitted text
-			//           The Result of the request will be returned to the 'Completion' callback
-			// 3. Index - Upload the submitted text to Copyleaks internal database to be compared against feture scans
-			//            The Result of the request will be returned to the 'Completion' callback
+			// Scan, checkCredits (only count the credits it would use) or Index (only store it for future scans).
+			// Each one reports to the 'Completion' callback.
 			clientScanProperties.Action = eSubmitAction.Scan;
 			clientScanProperties.Webhooks = new Webhooks
             {
-                // Copyleaks API will POST the scan results to the 'completed' callback
-                // See 'CompletedProcess' method for more details
+                // Copyleaks API POSTs the scan results to the status webhook.
                 Status = new Uri($"{WebhooksHost}/{scanId}/{{status}}")
             };
 

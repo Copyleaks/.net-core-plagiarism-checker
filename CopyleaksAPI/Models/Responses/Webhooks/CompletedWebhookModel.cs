@@ -1,28 +1,5 @@
-﻿/********************************************************************************
- The MIT License(MIT)
- 
- Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
-********************************************************************************/
-
-using Copyleaks.SDK.V3.API.Models.Constants;
+﻿using Copyleaks.SDK.V3.API.Models.Constants;
+using Copyleaks.SDK.V3.API.Models.Responses.CitationChecker;
 using Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.BaseModels;
 using Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.CompletedModels;
 using Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.NotificationsModels;
@@ -43,10 +20,13 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks
         public ScannedDocument ScannedDocument { get; set; }
 
         /// <summary>
-        /// Get the first <see cref="CopyleaksAlertCodes.SUSPECTED_AI_TEXT"/> alert of the scan.
-        /// Returns null when the completed webhook contains no suspected-ai-text alert.
+        /// Citation Checker summary, present when the scan was submitted with References.Validate = true.
+        /// Per-reference results are in the crawled version export.
         /// </summary>
-        /// <returns>The AI alert, or null</returns>
+        [JsonProperty("referencesValidation")]
+        public ReferencesValidation ReferencesValidation { get; set; }
+
+        /// <summary>The first <see cref="CopyleaksAlertCodes.SUSPECTED_AI_TEXT"/> alert, or null.</summary>
         public Alerts GetAIDetectionAlert()
         {
             return Notifications?.Alerts?.FirstOrDefault(alert =>
@@ -54,13 +34,10 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Webhooks
         }
 
         /// <summary>
-        /// Get the AI detection result decoded from the <see cref="CopyleaksAlertCodes.SUSPECTED_AI_TEXT"/> alert.
         /// Same as GetAIDetectionAlert()?.GetAIDetectionResult().
-        /// Returns null when there is no AI alert (see <see cref="GetAIDetectionAlert"/>), the alert carries no data,
-        /// or the data is valid JSON that is not a JSON object.
+        /// Null when there is no AI alert, the alert has no data, or the data is valid JSON that is not an object.
         /// </summary>
-        /// <returns>The AI detection result, or null</returns>
-        /// <exception cref="JsonException">The alert's additionalData is not valid JSON (JsonReaderException or JsonSerializationException)</exception>
+        /// <exception cref="JsonException">The alert's additionalData is not valid JSON.</exception>
         public AIDetectionResult GetAIDetectionResult()
         {
             return GetAIDetectionAlert()?.GetAIDetectionResult();

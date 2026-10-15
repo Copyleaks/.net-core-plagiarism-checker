@@ -208,23 +208,3 @@ __pycache__/
 
 # VS Code
 .vscode/
-
-#####
-# End of core ignore list, below put you custom 'per project' settings (patterns or path)
-#####
-/UserInterface/Website2_0/Uploaded
-UserInterface/Website2_0/find-full-text-results/
-
-UI/Website/wwwroot/css/*
-UI/Website/wwwroot/js/*
-UI/Website/css/compiled/*
-
-UI/API/wwwroot/css/*
-UI/API/wwwroot/js/*
-UI/API/css/compiled/*
-
-UI/Services/BatchSync/out
-UI/Website/ObsoleteReportData/
-UI/Website/find-full-text-results-directory/
-UI/Services/QueriesGenerator/QueryPredictor/.pytest_cache/v/cache/nodeids
-uploadNuget.txt
