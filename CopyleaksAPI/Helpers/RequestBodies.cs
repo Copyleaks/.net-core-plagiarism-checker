@@ -15,9 +15,8 @@ using Newtonsoft.Json.Linq;
 namespace Copyleaks.SDK.V3.API.Helpers
 {
     /// <summary>
-    /// A request body that is serialized once, straight into pooled buffers, and can then be sent
-    /// as many times as the retry policy needs. There is no intermediate JSON string and no copy of the
-    /// whole body in one large array, so large submits use about one compressed copy of the payload.
+    /// A request body serialized once into pooled buffers and sent as often as retries need. No intermediate JSON
+    /// string or single large array, so a large submit uses about one compressed copy of the payload.
     /// </summary>
     internal sealed class BufferedBody : IDisposable
     {
@@ -37,9 +36,7 @@ namespace Copyleaks.SDK.V3.API.Helpers
 
         public long Length { get; private set; }
 
-        /// <summary>
-        /// Serialize <paramref name="model"/> as JSON with the default Newtonsoft settings.
-        /// </summary>
+        /// <summary>Serialize <paramref name="model"/> as JSON with the default Newtonsoft settings.</summary>
         public static BufferedBody Json(object model, bool gzip)
         {
             var body = new BufferedBody(gzip);
@@ -62,9 +59,8 @@ namespace Copyleaks.SDK.V3.API.Helpers
         }
 
         /// <summary>
-        /// Write a JSON object whose "base64" property is the base64 encoding of <paramref name="source"/>,
-        /// followed by the other properties of <paramref name="rest"/>. The file is read asynchronously and encoded
-        /// while it is read, so the base64 string is never held in memory and streams that only support async reads work.
+        /// Write a JSON object: "base64" (of <paramref name="source"/>), then the properties of <paramref name="rest"/>.
+        /// The source is read asynchronously and encoded as it is read: no base64 string in memory, async-only streams work.
         /// </summary>
         public static async Task<BufferedBody> JsonWithStreamedBase64Async(Stream source, JObject rest, bool gzip, CancellationToken cancellationToken)
         {
@@ -92,10 +88,7 @@ namespace Copyleaks.SDK.V3.API.Helpers
             }
         }
 
-        /// <summary>
-        /// Create a new HttpContent over the buffered bytes. The content does not own the buffers,
-        /// so it can be created once per attempt.
-        /// </summary>
+        /// <summary>A new HttpContent over the buffered bytes; it does not own them, so create one per attempt.</summary>
         public HttpContent CreateContent()
         {
             if (_disposed)
@@ -284,8 +277,8 @@ namespace Copyleaks.SDK.V3.API.Helpers
     }
 
     /// <summary>
-    /// Streams a caller's Stream as request content without disposing it, starting from the position it had
-    /// when the call was made, so a seekable stream can be sent again on a retry.
+    /// Sends a caller's Stream as request content without disposing it, from its position at call time,
+    /// so a seekable stream can be sent again on a retry.
     /// </summary>
     internal sealed class SourceStreamContent : HttpContent
     {

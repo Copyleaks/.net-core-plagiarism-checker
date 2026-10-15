@@ -1,27 +1,3 @@
-/********************************************************************************
- The MIT License(MIT)
- 
- Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
-********************************************************************************/
-
 using Copyleaks.SDK.V3.API.Exceptions;
 using Copyleaks.SDK.V3.API.Helpers;
 using Copyleaks.SDK.V3.API.Models.Requests.WritingAssistant;
@@ -41,21 +17,15 @@ namespace Copyleaks.SDK.V3.API
 
         private string WritingAssistantApiVersion { get; set; }
 
-        /// <summary>
-        /// Conection to Copyleaks Grammar Checker (writing assistant) API
-        /// </summary>
-        /// <param name="client">The HttpClient to use, for example one created by IHttpClientFactory. The SDK never disposes it.</param>
-        /// <param name="options">Optional timeout and retry settings</param>
+        /// <summary>Grammar Checker (writing assistant) client that uses the given HttpClient.</summary>
+        /// <param name="client">For example one from IHttpClientFactory. The SDK never disposes it.</param>
+        /// <param name="options">Optional timeout and retry settings.</param>
         public CopyleaksWritingAssistantApi(HttpClient client, CopyleaksClientOptions options = null) : base(client, options)
         {
             SetUpService();
         }
 
-        /// <summary>
-        /// Conection to Copyleaks Grammar Checker (writing assistant) API, using the shared HttpClient of the SDK.
-        /// </summary>
-        /// <param name="clientCertificate">Optional Client certificate to be checked against.</param>
-        /// <param name="options">Optional timeout and retry settings</param>
+        /// <summary>Uses the SDK's shared HttpClient, with an optional client certificate and options.</summary>
         public CopyleaksWritingAssistantApi(X509Certificate2 clientCertificate = null, CopyleaksClientOptions options = null) : base(clientCertificate, options)
         {
             SetUpService();
@@ -67,16 +37,9 @@ namespace Copyleaks.SDK.V3.API
             this.WritingAssistantApiVersion = ConfigurationManager.Configuration["writingAssistantApiVersion"];
         }
 
-        /// <summary>
-        /// Use Copyleaks Writing Assistant to generate grammar, spelling and sentence corrections for a given text.
-        /// </summary>
-        /// <param name="scanId">A unique scan Id</param>
-        /// <param name="documentModel">The submission document including the text to scan</param>
-        /// <param name="token">A copyleaks access token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="CopyleaksHttpException"></exception>
+        /// <summary>Get grammar, spelling and sentence corrections for a text.</summary>
+        /// <exception cref="ArgumentException">A required argument is missing.</exception>
+        /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
         public async Task<WritingAssistantResult> SubmitTextAsync(string scanId, WritingAssistantDocument documentModel, string token, CancellationToken cancellationToken = default)
         {
             RequireScanId(scanId);
@@ -93,28 +56,22 @@ namespace Copyleaks.SDK.V3.API
                 HttpMethod.Post, requestUri, token, documentModel, gzip: true, eRetryMode.RateLimitOnly, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Get a list of correction types supported within the Writing Assistant API. Correction types apply to all supported languages. The supplied language code for this request is used to determine the language of the texts returned.
-        /// This endpoint is public, so no login is needed.
-        /// </summary>
-        /// <param name="languageCode">The language for the returned texts to be in. Language codes are in ISO 639-1 standard. Supported Values: en - English</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="CopyleaksHttpException"></exception>
+        /// <summary>Get the correction types (the same for all languages). No login needed.</summary>
+        /// <param name="languageCode">ISO 639-1 language of the returned texts. Supported: "en".</param>
+        /// <param name="cancellationToken">Cancels the request.</param>
+        /// <exception cref="ArgumentException">The language code is missing.</exception>
+        /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
         public Task<CorrectionTypes> GetCorrectionTypesAsync(string languageCode, CancellationToken cancellationToken = default)
         {
             return GetCorrectionTypesAsync(null, languageCode, cancellationToken);
         }
 
-        /// <summary>
-        /// Get a list of correction types supported within the Writing Assistant API. Correction types apply to all supported languages. The supplied language code for this request is used to determine the language of the texts returned.
-        /// </summary>
-        /// <param name="token">A copyleaks access token. Optional: the endpoint is public, so null or empty sends no Authorization header.</param>
-        /// <param name="languageCode">The language for the returned texts to be in. Language codes are in ISO 639-1 standard. Supported Values: en - English</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
-        /// <exception cref="CopyleaksHttpException"></exception>
+        /// <summary>Get the correction types (the same for all languages).</summary>
+        /// <param name="token">Optional login token; null or empty sends no Authorization header.</param>
+        /// <param name="languageCode">ISO 639-1 language of the returned texts. Supported: "en".</param>
+        /// <param name="cancellationToken">Cancels the request.</param>
+        /// <exception cref="ArgumentException">The language code is missing.</exception>
+        /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
         public async Task<CorrectionTypes> GetCorrectionTypesAsync(string token, string languageCode, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(languageCode))

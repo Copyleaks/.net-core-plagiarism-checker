@@ -7,21 +7,15 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.Result
 {
 	public class Enabled
 	{
-		/// <summary>
-		/// Determines whether the PlagiarismDetection is enabled or disabled
-		/// </summary>
+		/// <summary>Whether plagiarism detection is enabled.</summary>
 		[JsonProperty("plagiarismDetection")]
 		public bool PlagiarismDetection { get; set; }
 
-		/// <summary>
-		/// Determines whether the AiDetection is enabled or disabled
-		/// </summary>
+		/// <summary>Whether AI detection is enabled.</summary>
 		[JsonProperty("aiDetection")]
 		public bool AiDetection { get; set; }
 
-        /// <summary>
-        /// Determines whether the aiSourceMatch is enabled or disabled
-        /// </summary>
+        /// <summary>Whether AI source match is enabled.</summary>
         [JsonProperty("aiSourceMatch")]
         public bool AISourceMatch { get; set; } = false;
     }

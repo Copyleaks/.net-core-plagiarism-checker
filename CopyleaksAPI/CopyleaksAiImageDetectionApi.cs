@@ -1,27 +1,4 @@
-﻿/********************************************************************************
- The MIT License(MIT)
- 
- Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
-********************************************************************************/
-using System;
+﻿using System;
 using System.IO;
 using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
@@ -42,21 +19,15 @@ namespace Copyleaks.SDK.V3.API
 
         private string ImageDetectionApiVersion { get; set; }
 
-        /// <summary>
-        /// Conection to Copyleaks AI Image Detection API
-        /// </summary>
-        /// <param name="client">The HttpClient to use, for example one created by IHttpClientFactory. The SDK never disposes it.</param>
-        /// <param name="options">Optional timeout and retry settings</param>
+        /// <summary>Uses the given HttpClient.</summary>
+        /// <param name="client">For example one from IHttpClientFactory. The SDK never disposes it.</param>
+        /// <param name="options">Optional timeout and retry settings.</param>
         public CopyleaksAiImageDetectionApi(HttpClient client, CopyleaksClientOptions options = null) : base(client, options)
         {
             SetUpService();
         }
 
-        /// <summary>
-        /// Conection to Copyleaks AI Image Detection API, using the shared HttpClient of the SDK.
-        /// </summary>
-        /// <param name="clientCertificate">Optional Client certificate to be checked against.</param>
-        /// <param name="options">Optional timeout and retry settings</param>
+        /// <summary>Uses the SDK's shared HttpClient, with an optional client certificate and options.</summary>
         public CopyleaksAiImageDetectionApi(X509Certificate2 clientCertificate = null, CopyleaksClientOptions options = null) : base(clientCertificate, options)
         {
             SetUpService();
@@ -81,15 +52,10 @@ namespace Copyleaks.SDK.V3.API
             $"{this.CopyleaksApiServer}{this.ImageDetectionApiVersion}/ai-image-detector/{PathSegment(scanId)}/check";
 
         /// <summary>
-        /// Detect AI-generated content in an image sent as base64 JSON (<see cref="CopyleaksAiImageDetectionRequestModel.Base64"/>).
-        /// For large images prefer <see cref="SubmitFileAsync(string, Stream, CopyleaksAiImageDetectionRequestModel, string, CancellationToken)"/>,
-        /// which uploads the file without base64.
+        /// Detect AI-generated content in an image sent as base64 (<see cref="CopyleaksAiImageDetectionRequestModel.Base64"/>).
+        /// For large images prefer <see cref="SubmitFileAsync(string, Stream, CopyleaksAiImageDetectionRequestModel, string, CancellationToken)"/>.
         /// </summary>
-        /// <param name="scanId">A unique scan Id</param>
-        /// <param name="requestModel">The image (base64), filename, model and options</param>
-        /// <param name="token">A copyleaks access token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <exception cref="CopyleaksHttpException"></exception>
+        /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
         public async Task<CopyleaksAiImageDetectionResponseModel> SubmitAsync(string scanId, CopyleaksAiImageDetectionRequestModel requestModel, string token, CancellationToken cancellationToken = default)
         {
             Validate(scanId, token);
@@ -102,16 +68,11 @@ namespace Copyleaks.SDK.V3.API
         }
 
         /// <summary>
-        /// Detect AI-generated content in an image uploaded as a file (multipart/form-data).
-        /// This avoids the base64 overhead. <see cref="CopyleaksAiImageDetectionRequestModel.Base64"/> must be null.
-        /// The stream is read from its current position and is not disposed.
+        /// Detect AI-generated content in an image uploaded as a file, without base64 overhead.
+        /// <see cref="CopyleaksAiImageDetectionRequestModel.Base64"/> must be null. The stream is read from its current
+        /// position and is not disposed.
         /// </summary>
-        /// <param name="scanId">A unique scan Id</param>
-        /// <param name="image">The image content</param>
-        /// <param name="requestModel">The filename, model and options</param>
-        /// <param name="token">A copyleaks access token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <exception cref="CopyleaksHttpException"></exception>
+        /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
         public async Task<CopyleaksAiImageDetectionResponseModel> SubmitFileAsync(string scanId, Stream image, CopyleaksAiImageDetectionRequestModel requestModel, string token, CancellationToken cancellationToken = default)
         {
             Validate(scanId, token);
@@ -127,15 +88,10 @@ namespace Copyleaks.SDK.V3.API
         }
 
         /// <summary>
-        /// Detect AI-generated content in an image uploaded as a file (multipart/form-data).
+        /// Detect AI-generated content in an image uploaded as a file.
         /// <see cref="CopyleaksAiImageDetectionRequestModel.Base64"/> must be null.
         /// </summary>
-        /// <param name="scanId">A unique scan Id</param>
-        /// <param name="image">The image bytes</param>
-        /// <param name="requestModel">The filename, model and options</param>
-        /// <param name="token">A copyleaks access token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <exception cref="CopyleaksHttpException"></exception>
+        /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
         public async Task<CopyleaksAiImageDetectionResponseModel> SubmitFileAsync(string scanId, byte[] image, CopyleaksAiImageDetectionRequestModel requestModel, string token, CancellationToken cancellationToken = default)
         {
             Validate(scanId, token);
@@ -150,15 +106,10 @@ namespace Copyleaks.SDK.V3.API
         }
 
         /// <summary>
-        /// Submit an image URL for asynchronous AI image detection. The request returns as soon as it is accepted
-        /// (201 Created), and the result is posted to <see cref="CopyleaksAiImageDetectionAsyncRequestModel.Webhooks"/>
-        /// with the shape of <see cref="CopyleaksAiImageDetectionResponseModel"/>.
+        /// Submit an image URL for asynchronous AI image detection. Returns once accepted (201); the result, shaped like
+        /// <see cref="CopyleaksAiImageDetectionResponseModel"/>, is posted to <see cref="CopyleaksAiImageDetectionAsyncRequestModel.Webhooks"/>.
         /// </summary>
-        /// <param name="scanId">A unique scan Id</param>
-        /// <param name="requestModel">The image URL, filename, model, webhook and options</param>
-        /// <param name="token">A copyleaks access token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <exception cref="CopyleaksHttpException"></exception>
+        /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
         public async Task SubmitUrlAsync(string scanId, CopyleaksAiImageDetectionAsyncRequestModel requestModel, string token, CancellationToken cancellationToken = default)
         {
             Validate(scanId, token);

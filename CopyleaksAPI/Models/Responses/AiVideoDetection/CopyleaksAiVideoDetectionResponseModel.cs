@@ -5,9 +5,8 @@ using Newtonsoft.Json;
 namespace Copyleaks.SDK.V3.API.Models.Responses.AiVideoDetection
 {
     /// <summary>
-    /// The AI video detection result that Copyleaks posts to your webhook.
-    /// Positions and lengths are in milliseconds.
-    /// Check <see cref="Error"/> first: when the detection failed, only Error and DeveloperPayload are set.
+    /// AI video detection result posted to your webhook; positions and lengths are in milliseconds.
+    /// Check <see cref="Error"/> first.
     /// </summary>
     public class CopyleaksAiVideoDetectionResponseModel
     {
@@ -23,9 +22,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AiVideoDetection
         [JsonProperty("summary")]
         public CopyleaksAiVideoSummary Summary { get; set; }
 
-        /// <summary>
-        /// Whether the video was determined to contain AI-generated content.
-        /// </summary>
+        /// <summary>Whether the video was determined to contain AI-generated content.</summary>
         [JsonProperty("isAiDetected")]
         public bool? IsAiDetected { get; set; }
 
@@ -35,15 +32,11 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AiVideoDetection
         [JsonProperty("scannedVideo")]
         public CopyleaksAiVideoScannedVideo ScannedVideo { get; set; }
 
-        /// <summary>
-        /// Set when the detection failed; the result fields are then empty. Check Error first.
-        /// </summary>
+        /// <summary>Set when the detection failed; then only Error and DeveloperPayload are set.</summary>
         [JsonProperty("error")]
         public Error Error { get; set; }
 
-        /// <summary>
-        /// The developer payload from the submit request, or null.
-        /// </summary>
+        /// <summary>The developer payload from the submit request, or null.</summary>
         [JsonProperty("developerPayload")]
         public string DeveloperPayload { get; set; }
     }
@@ -56,9 +49,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AiVideoDetection
         [JsonProperty("lengths")]
         public List<long> Lengths { get; set; }
 
-        /// <summary>
-        /// Ranges that were not scored and are not part of the AI ratios.
-        /// </summary>
+        /// <summary>Ranges that were not scored and are not part of the AI ratios.</summary>
         [JsonProperty("exclude")]
         public CopyleaksAiVideoRanges Exclude { get; set; }
     }
@@ -86,9 +77,7 @@ namespace Copyleaks.SDK.V3.API.Models.Responses.AiVideoDetection
 
     public class CopyleaksAiVideoInfo
     {
-        /// <summary>
-        /// The duration of the video in seconds.
-        /// </summary>
+        /// <summary>The duration of the video in seconds.</summary>
         [JsonProperty("duration")]
         public double Duration { get; set; }
 

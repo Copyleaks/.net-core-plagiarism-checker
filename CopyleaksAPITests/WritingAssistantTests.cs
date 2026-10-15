@@ -8,9 +8,7 @@ using Copyleaks.SDK.V3.API.Models.Requests.WritingAssistant;
 
 namespace CopyleaksAPITests
 {
-    /// <summary>
-    /// Live tests against the real Copyleaks API. Set real credentials below and run: dotnet test --filter TestCategory=Live
-    /// </summary>
+    /// <summary>Live API tests: set real credentials below, then run dotnet test --filter TestCategory=Live.</summary>
     [TestClass]
     [TestCategory("Live")]
     public class WritingAssistantTests

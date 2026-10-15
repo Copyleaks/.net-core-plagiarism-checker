@@ -12,30 +12,22 @@ using Copyleaks.SDK.V3.API.Models.Responses.ImagePlagiarism;
 
 namespace Copyleaks.SDK.V3.API
 {
-    /// <summary>
-    /// Copyleaks Image Plagiarism Detection: search the web for copies of an image, in one synchronous call.
-    /// </summary>
+    /// <summary>Image Plagiarism Detection: search the web for copies of an image, in one synchronous call.</summary>
     public class CopyleaksImagePlagiarismApi : CopyleaksBase
     {
         public string CopyleaksApiServer { get; private set; }
 
         private string ImagePlagiarismApiVersion { get; set; }
 
-        /// <summary>
-        /// Conection to Copyleaks Image Plagiarism Detection API
-        /// </summary>
-        /// <param name="client">The HttpClient to use, for example one created by IHttpClientFactory. The SDK never disposes it.</param>
-        /// <param name="options">Optional timeout and retry settings</param>
+        /// <summary>Uses the given HttpClient.</summary>
+        /// <param name="client">For example one from IHttpClientFactory. The SDK never disposes it.</param>
+        /// <param name="options">Optional timeout and retry settings.</param>
         public CopyleaksImagePlagiarismApi(HttpClient client, CopyleaksClientOptions options = null) : base(client, options)
         {
             SetUpService();
         }
 
-        /// <summary>
-        /// Conection to Copyleaks Image Plagiarism Detection API, using the shared HttpClient of the SDK.
-        /// </summary>
-        /// <param name="clientCertificate">Optional Client certificate to be checked against.</param>
-        /// <param name="options">Optional timeout and retry settings</param>
+        /// <summary>Uses the SDK's shared HttpClient, with an optional client certificate and options.</summary>
         public CopyleaksImagePlagiarismApi(X509Certificate2 clientCertificate = null, CopyleaksClientOptions options = null) : base(clientCertificate, options)
         {
             SetUpService();
@@ -48,16 +40,10 @@ namespace Copyleaks.SDK.V3.API
         }
 
         /// <summary>
-        /// Search the web for copies of an image. The image is uploaded as multipart/form-data.
-        /// It must be smaller than 20MB and at most 75 megapixels, in JPG, JPEG, PNG, GIF, BMP, WebP or ICO format.
-        /// The stream is read from its current position and is not disposed.
+        /// Search the web for copies of an image: under 20 MB, at most 75 megapixels, JPG, JPEG, PNG, GIF, BMP, WebP or ICO.
+        /// <paramref name="scanId"/> is 3 to 36 characters. The stream is read from its current position and is not disposed.
         /// </summary>
-        /// <param name="scanId">A unique scan Id, 3 to 36 characters</param>
-        /// <param name="image">The image content</param>
-        /// <param name="requestModel">The filename and options</param>
-        /// <param name="token">A copyleaks access token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <exception cref="CopyleaksHttpException"></exception>
+        /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
         public async Task<CopyleaksImagePlagiarismResponseModel> SubmitAsync(string scanId, Stream image, CopyleaksImagePlagiarismRequestModel requestModel, string token, CancellationToken cancellationToken = default)
         {
             Validate(scanId, requestModel, token);
@@ -72,15 +58,8 @@ namespace Copyleaks.SDK.V3.API
                 image.CanSeek ? eRetryMode.RateLimitOnly : eRetryMode.None, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Search the web for copies of an image. The image is uploaded as multipart/form-data.
-        /// </summary>
-        /// <param name="scanId">A unique scan Id, 3 to 36 characters</param>
-        /// <param name="image">The image bytes</param>
-        /// <param name="requestModel">The filename and options</param>
-        /// <param name="token">A copyleaks access token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <exception cref="CopyleaksHttpException"></exception>
+        /// <summary>Search the web for copies of an image. <paramref name="scanId"/> is 3 to 36 characters.</summary>
+        /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
         public async Task<CopyleaksImagePlagiarismResponseModel> SubmitAsync(string scanId, byte[] image, CopyleaksImagePlagiarismRequestModel requestModel, string token, CancellationToken cancellationToken = default)
         {
             Validate(scanId, requestModel, token);

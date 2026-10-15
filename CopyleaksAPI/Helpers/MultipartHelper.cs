@@ -8,18 +8,14 @@ namespace Copyleaks.SDK.V3.API.Helpers
 {
     internal static class MultipartHelper
     {
-        /// <summary>
-        /// Add a plain form field. Like an HTML form, the part has no Content-Type header.
-        /// </summary>
+        /// <summary>Add a plain form field. Like an HTML form, the part has no Content-Type header.</summary>
         public static void AddField(MultipartFormDataContent form, string name, string value)
         {
             var content = new ByteArrayContent(Encoding.UTF8.GetBytes(value ?? string.Empty));
             form.Add(content, name);
         }
 
-        /// <summary>
-        /// Add a file part with a Content-Type that matches the file extension.
-        /// </summary>
+        /// <summary>Add a file part with a Content-Type that matches the file extension.</summary>
         public static void AddFile(MultipartFormDataContent form, string name, HttpContent content, string filename)
         {
             content.Headers.ContentType = new MediaTypeHeaderValue(GetImageMediaType(filename));

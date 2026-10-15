@@ -16,16 +16,13 @@ using Newtonsoft.Json.Linq;
 
 namespace CopyleaksAPITests
 {
-    /// <summary>
-    /// Offline tests of the request and response models against the API reference.
-    /// </summary>
+    /// <summary>Offline tests of the request and response models against the API reference.</summary>
     [TestClass]
     public class ModelTests
     {
         private static JObject Serialize(object value) => JObject.Parse(JsonConvert.SerializeObject(value));
 
-        // ---------------- Scan properties ----------------
-
+        // Scan properties
         [TestMethod]
         public void Default_scan_properties_leave_server_defaults_alone()
         {
@@ -116,8 +113,7 @@ namespace CopyleaksAPITests
             Assert.AreEqual(1.0, score.WordChoiceScoreWeight);
         }
 
-        // ---------------- Webhooks ----------------
-
+        // Webhooks
         [TestMethod]
         public void New_result_webhook_keeps_developer_payload_repository_metadata_and_internal_ai_data()
         {
@@ -214,8 +210,7 @@ namespace CopyleaksAPITests
             Assert.AreEqual(200u, legacy.Tasks.Last().HttpStatusCode);
         }
 
-        // ---------------- Responses and export files ----------------
-
+        // Responses and export files
         [TestMethod]
         public void Ai_image_response_has_detection_flag_objects_labels_and_content_summary()
         {

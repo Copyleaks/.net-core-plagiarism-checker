@@ -1,86 +1,43 @@
-﻿/********************************************************************************
- The MIT License(MIT)
- 
- Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
-********************************************************************************/
-
-using Copyleaks.SDK.V3.API.Models.Types;
+﻿using Copyleaks.SDK.V3.API.Models.Types;
 using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
-	/// <summary>
-	/// The scan request properties
-	/// </summary>
+	/// <summary>Base scan request properties.</summary>
 	public abstract class ScanProperties
 	{
-		/// <summary>
-		/// Define which type of task it is.
-		/// </summary>
+		/// <summary>Task type.</summary>
 		[JsonProperty("action")]
 		public eSubmitAction Action { get; set; } = eSubmitAction.Scan;
 
-		/// <summary>
-		/// Define in which format to return the results. 
-		/// </summary>
+		/// <summary>Format to return the results in.</summary>
 		[JsonProperty("includeHtml")]
 		public bool IncludeHtml { get; set; } = false;
 
-		/// <summary>
-		/// Developer payload string.
-		/// </summary>
+		/// <summary>Developer payload string.</summary>
 		[JsonProperty("developerPayload")]
 		[StringLength(512)]
 		public string DeveloperPayload { get; set; }
 
-		/// <summary>
-		/// Scan priority. Leave it unset (null) to omit it from the request, so the server default applies.
-		/// </summary>
+		/// <summary>Scan priority. Null = server default.</summary>
 		[JsonProperty("priority", NullValueHandling = NullValueHandling.Ignore)]
 		public eScanPriority? Priority { get; set; } = null;
 
-		/// <summary>
-		/// Enable sandbox scan.
-		/// </summary>
+		/// <summary>Enable sandbox scan.</summary>
 		[JsonProperty("sandbox")]
 		public bool Sandbox { get; set; } = false;
 
-		/// <summary>
-		/// Getting the client notify changes on server.
-		/// </summary>
+		/// <summary>Callbacks that notify you of scan changes.</summary>
 		[JsonProperty("webhooks")]
 		public Webhooks Webhooks { get; set; } = new Webhooks();
 
-		/// <summary>
-		/// How much time, in hours, to store the scan on the database.
-		/// Range: 1 to 2880. The default is 2880 (120 days), the API maximum.
-		/// </summary>
+		/// <summary>Hours to store the scan, 1 to 2880. Default 2880 (120 days, the API maximum).</summary>
 		[JsonProperty("expiration")]
 		public uint Expiration { get; set; } = 2880;
 
-		/// <summary>
-		/// Choose the algorithm goal
-		/// </summary>
+		/// <summary>Algorithm goal.</summary>
 		[JsonProperty("scanMethodAlgorithm")]
 		[Range(0, 1)]
 		public eScanMethodAlgorithm ScanMethodAlgorithm { get; set; } = eScanMethodAlgorithm.MaximumCoverage;
@@ -91,17 +48,12 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		[JsonProperty("author")]
 		public AuthorEntity Author { get; set; } = new AuthorEntity();
 
-		/// <summary>
-		/// Control the level of plagiarism sensitivity that will be identified according to the speed of the scan. If you prefer a faster scan with the results that contains the highest amount of plagiarism choose 1, and if a slower, more comprehensive scan, that will also detect the smallest instances choose 5.  
-		/// Range between 1 (faster ) to 5 (slower but more comprehensive)
-		/// </summary>
+		/// <summary>Plagiarism sensitivity, 1 (faster) to 5 (slower, also detects the smallest instances).</summary>
 		[JsonProperty("sensitivityLevel")]
 		[Range(1, 5)]
 		public int SensitivityLevel { get; set; } = 3;
 
-		/// <summary>
-		/// Enable cheatDetection scan.
-		/// </summary>
+		/// <summary>Enable cheat detection.</summary>
 		[JsonProperty("cheatDetection")]
 		public bool CheatDetection { get; set; } = false;
 
@@ -112,82 +64,53 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 		[JsonProperty("aiGeneratedText")]
 		public AIGeneratedText AIGeneratedText { get; set; } = new AIGeneratedText(); 
 
-		/// <summary>
-		/// Add custom properties that will be attached to your document in a Copyleaks repository.
-		/// </summary>
+		/// <summary>Custom properties attached to your document in a Copyleaks repository.</summary>
 		[JsonProperty("customMetadata")]
 		public CustomMetadata[] CustomMetadata { get; set; } = Array.Empty<CustomMetadata>();
 
 		/// <summary>
-		/// The language the PDF report is generated in (sent as properties.displayLanguage).
-		/// Allowed values are lowercase and case-sensitive: "en", "es", "pt", "fr", "de" or "it".
-		/// Any other non-empty value, such as "EN" or "en-US", is rejected by the server with HTTP 400.
-		/// Only takes effect when the PDF report is created (ReportSection.Create is true).
-		/// Leave it unset (null) to omit it from the request and get the server default ("en").
-		/// Do not set an empty string: it is sent as-is and replaces the default.
+		/// PDF report language: "en", "es", "pt", "fr", "de" or "it" (lowercase; anything else gets HTTP 400).
+		/// Used only when the PDF report is created. Null = server default ("en"); do not send an empty string.
 		/// </summary>
 		[JsonProperty("displayLanguage", NullValueHandling = NullValueHandling.Ignore)]
 		public string DisplayLanguage { get; set; }
 
-		/// <summary>
-		/// AI Source Match: identify online sources suspected of containing AI generated text.
-		/// Currently only applies to documents detected as English.
-		/// Leave it unset (null) to omit it from the request and get the server default (disabled).
-		/// </summary>
+		/// <summary>AI Source Match settings. Null = server default (disabled).</summary>
 		[JsonProperty("aiSourceMatch", NullValueHandling = NullValueHandling.Ignore)]
 		public AISourceMatch AISourceMatch { get; set; }
 
-		/// <summary>
-		/// Internal AI Source Match: identify sources in the Copyleaks internal AI database that contain AI-generated text
-		/// (sent as properties.internalAiSourceMatch).
-		/// Leave it unset (null) to omit it from the request and get the server default (disabled).
-		/// </summary>
+		/// <summary>Internal AI Source Match settings. Null = server default (disabled).</summary>
 		[JsonProperty("internalAiSourceMatch", NullValueHandling = NullValueHandling.Ignore)]
 		public InternalAISourceMatch InternalAISourceMatch { get; set; }
 
-		/// <summary>
-		/// Citation Checker: detect, parse and validate every reference in the submitted text (sent as properties.references).
-		/// Leave it unset (null) to omit it from the request and get the server default (disabled).
-		/// </summary>
+		/// <summary>Citation Checker settings. Null = server default (disabled).</summary>
 		[JsonProperty("references", NullValueHandling = NullValueHandling.Ignore)]
 		public ReferencesSettings References { get; set; }
 
-		/// <summary>
-		/// Grammar Checker inside the scan (sent as properties.writingFeedback).
-		/// Leave it unset (null) to omit it from the request and get the server default (disabled).
-		/// </summary>
+		/// <summary>Grammar Checker settings. Null = server default (disabled).</summary>
 		[JsonProperty("writingFeedback", NullValueHandling = NullValueHandling.Ignore)]
 		public WritingFeedbackSettings WritingFeedback { get; set; }
 
-		/// <summary>
-		/// Gen-AI Overview of the scan (sent as properties.overview).
-		/// Leave it unset (null) to omit it from the request and get the server default (disabled).
-		/// </summary>
+		/// <summary>Gen-AI Overview settings. Null = server default (disabled).</summary>
 		[JsonProperty("overview", NullValueHandling = NullValueHandling.Ignore)]
 		public OverviewSettings Overview { get; set; }
 
 		/// <summary>
-		/// The IANA time zone name (case-sensitive), for example "America/New_York", used for the scan time shown on the PDF report.
-		/// Leave it unset (null) to omit it from the request. The server then uses the time zone of the user's country, or UTC.
+		/// IANA time zone (case-sensitive), e.g. "America/New_York", for the scan time on the PDF report.
+		/// Null = the user's country time zone, or UTC.
 		/// </summary>
 		[JsonProperty("scanTimeZone", NullValueHandling = NullValueHandling.Ignore)]
 		public string ScanTimeZone { get; set; }
 
-		/// <summary>
-		/// The course of the submitted content, for analytics (sent as properties.course).
-		/// </summary>
+		/// <summary>Course of the submitted content, for analytics.</summary>
 		[JsonProperty("course", NullValueHandling = NullValueHandling.Ignore)]
 		public CourseEntity Course { get; set; }
 
-		/// <summary>
-		/// The assignment of the submitted content, for analytics (sent as properties.assignment).
-		/// </summary>
+		/// <summary>Assignment of the submitted content, for analytics.</summary>
 		[JsonProperty("assignment", NullValueHandling = NullValueHandling.Ignore)]
 		public AssignmentEntity Assignment { get; set; }
 
-		/// <summary>
-		/// The institution of the submitted content, for analytics (sent as properties.institution).
-		/// </summary>
+		/// <summary>Institution of the submitted content, for analytics.</summary>
 		[JsonProperty("institution", NullValueHandling = NullValueHandling.Ignore)]
 		public InstitutionEntity Institution { get; set; }
 	}

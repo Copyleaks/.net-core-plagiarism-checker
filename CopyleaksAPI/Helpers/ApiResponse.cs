@@ -26,19 +26,13 @@ namespace Copyleaks.SDK.V3.API.Helpers
 
         public int Attempt { get; }
 
-        /// <summary>
-        /// Cancels reading the body: the caller's token, and for a streamed response also the attempt timeout.
-        /// </summary>
+        /// <summary>Cancels reading the body: the caller's token, plus the attempt timeout when streamed.</summary>
         public CancellationToken Token { get; }
 
-        /// <summary>
-        /// Throw a <see cref="Exceptions.CopyleaksHttpException"/> when the response is not a success.
-        /// </summary>
+        /// <summary>Throw <see cref="Exceptions.CopyleaksHttpException"/> when the response is not a success.</summary>
         public Task EnsureSuccessAsync() => Message.EnsureCopyleaksSuccessAsync(Attempt, Token);
 
-        /// <summary>
-        /// Throw when the response is not a success, otherwise deserialize the JSON body.
-        /// </summary>
+        /// <summary>Throw when the response is not a success, otherwise deserialize the JSON body.</summary>
         public Task<T> ReadJsonAsync<T>() => Message.ExtractJsonResultsAsync<T>(Attempt, Token);
 
         public void Dispose()

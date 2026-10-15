@@ -1,28 +1,4 @@
-﻿/********************************************************************************
- The MIT License(MIT)
- 
- Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
-********************************************************************************/
-
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using System.Net.Http;
@@ -42,8 +18,8 @@ using Newtonsoft.Json.Linq;
 namespace Copyleaks.SDK.V3.API
 {
     /// <summary>
-    /// This class allows you to connect to Copyleaks API, 
-    /// scan for plagiarism and get your scan results. 
+    /// Plagiarism scans: submit, start, progress, results, reports, export and delete.
+    /// A <c>token</c> argument is the login token from <c>CopyleaksIdentityApi.LoginAsync</c>.
     /// </summary>
     public class CopyleaksScansApi : CopyleaksBase
     {
@@ -51,21 +27,15 @@ namespace Copyleaks.SDK.V3.API
 
         public string CopyleaksApiServer { get; private set; }
 
-        /// <summary>
-        /// Conection to Copyleaks scan API
-        /// </summary>
-        /// <param name="client">The HttpClient to use, for example one created by IHttpClientFactory. The SDK never disposes it.</param>
-        /// <param name="options">Optional timeout and retry settings</param>
+        /// <summary>Uses the given HttpClient.</summary>
+        /// <param name="client">For example one from IHttpClientFactory. The SDK never disposes it.</param>
+        /// <param name="options">Optional timeout and retry settings.</param>
         public CopyleaksScansApi(HttpClient client, CopyleaksClientOptions options = null) : base(client, options)
         {
             SetUpService();
         }
 
-        /// <summary>
-        /// Conection to Copyleaks scan API, using the shared HttpClient of the SDK.
-        /// </summary>
-        /// <param name="clientCertificate">Optional Client certificate to be checked against.</param>
-        /// <param name="options">Optional timeout and retry settings</param>
+        /// <summary>Uses the SDK's shared HttpClient, with an optional client certificate and options.</summary>
         public CopyleaksScansApi(X509Certificate2 clientCertificate = null, CopyleaksClientOptions options = null) : base(clientCertificate, options)
         {
             SetUpService();
@@ -82,12 +52,7 @@ namespace Copyleaks.SDK.V3.API
                 throw new ArgumentException("Token is mandatory", nameof(token));
         }
 
-        /// <summary>
-        /// Get your current credit balance
-        /// </summary>
-        /// <param name="token">Login Token, aquire a login token by invoking by using `CopyleaksIdentityApi.LoginAsync`</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <returns>Current credit balance</returns>
+        /// <summary>Get the current credit balance.</summary>
         public async Task<uint> CreditBalanceAsync(string token, CancellationToken cancellationToken = default)
         {
             RequireToken(token);
@@ -108,14 +73,7 @@ namespace Copyleaks.SDK.V3.API
                 HttpMethod.Put, requestUri, token, model, gzip: true, eRetryMode.Safe, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Submitting URL to plagiarism scan
-        /// </summary>
-        /// <param name="scanId">A unique scan Id</param>
-        /// <param name="documentModel">The url and scan properties</param>
-        /// <param name="token">Login Token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <returns>A task that represents the asynchronous submit operation.</returns>
+        /// <summary>Submit a URL for a plagiarism scan.</summary>
         public async Task SubmitUrlAsync(string scanId, UrlDocument documentModel, string token, CancellationToken cancellationToken = default)
         {
             RequireScanId(scanId);
@@ -129,14 +87,7 @@ namespace Copyleaks.SDK.V3.API
             await SubmitAsync(documentModel, requestUri, token, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Submitting local file or free text to plagiarism scan
-        /// </summary>
-        /// <param name="scanId">A unique scan Id</param>
-        /// <param name="documentModel">The file or free text encoded in base64 and scan properties</param>
-        /// <param name="token">Login Token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <returns>A task that represents the asynchronous submit operation.</returns>
+        /// <summary>Submit a file or free text, base64-encoded, for a plagiarism scan.</summary>
         public async Task SubmitFileAsync(string scanId, FileDocument documentModel, string token, CancellationToken cancellationToken = default)
         {
             RequireScanId(scanId);
@@ -152,16 +103,10 @@ namespace Copyleaks.SDK.V3.API
         }
 
         /// <summary>
-        /// Submit a file to plagiarism scan straight from a stream. The file is base64-encoded while it is read,
-        /// so the SDK never holds a base64 string of the file in memory. Use this for large files.
-        /// The stream is read asynchronously to its end (so a request body stream works too) and is not disposed.
+        /// Submit a file from a stream for a plagiarism scan; use it for large files, as no base64 copy is held in memory.
+        /// <paramref name="filename"/> includes the extension, for example "file.pdf". The stream is read asynchronously
+        /// to its end (a request body stream works) and is not disposed.
         /// </summary>
-        /// <param name="scanId">A unique scan Id</param>
-        /// <param name="file">The file content</param>
-        /// <param name="filename">The original filename including its extension, for example "file.pdf"</param>
-        /// <param name="properties">The scan properties</param>
-        /// <param name="token">Login Token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
         public async Task SubmitFileAsync(string scanId, Stream file, string filename, ScanProperties properties, string token, CancellationToken cancellationToken = default)
         {
             RequireScanId(scanId);
@@ -175,14 +120,7 @@ namespace Copyleaks.SDK.V3.API
             await SubmitStreamAsync(file, rest, requestUri, token, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Submitting an image containing textual content to plagiarism scan
-        /// </summary>
-        /// <param name="scanId">A unique scan Id</param>
-        /// <param name="documentModel">The image file encoded in base64 and scan properties</param>
-        /// <param name="token">Login Token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <returns>A task that represents the asynchronous submit operation.</returns>
+        /// <summary>Submit an image with text, base64-encoded, for a plagiarism scan (OCR).</summary>
         public async Task SubmitImageOCRAsync(string scanId, FileOcrDocument documentModel, string token, CancellationToken cancellationToken = default)
         {
             RequireScanId(scanId);
@@ -198,16 +136,10 @@ namespace Copyleaks.SDK.V3.API
         }
 
         /// <summary>
-        /// Submit an image with text to a plagiarism scan (OCR) straight from a stream. The image is base64-encoded while it is read.
+        /// Submit an image with text from a stream for a plagiarism scan (OCR), base64-encoded while it is read.
+        /// <paramref name="filename"/> includes the extension; <paramref name="language"/> is the language code of the text.
         /// The stream is read asynchronously to its end and is not disposed.
         /// </summary>
-        /// <param name="scanId">A unique scan Id</param>
-        /// <param name="image">The image content</param>
-        /// <param name="filename">The image filename including its extension</param>
-        /// <param name="language">The language code of the text in the image</param>
-        /// <param name="properties">The scan properties</param>
-        /// <param name="token">Login Token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
         public async Task SubmitImageOCRAsync(string scanId, Stream image, string filename, string language, ScanProperties properties, string token, CancellationToken cancellationToken = default)
         {
             RequireScanId(scanId);
@@ -234,14 +166,7 @@ namespace Copyleaks.SDK.V3.API
             }
         }
 
-        /// <summary>
-        /// Get the perecent progress of the scan
-        /// </summary>
-        /// <param name="scanId">The scan Id</param>
-        /// <param name="token">Login Token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <returns>A task that represents the asynchronous operation.
-        /// The task result contains the perecent progress of the scan </returns>
+        /// <summary>Get the scan progress, in percent.</summary>
         public async Task<uint> ProgressAsync(string scanId, string token, CancellationToken cancellationToken = default)
         {
             RequireToken(token);
@@ -253,14 +178,10 @@ namespace Copyleaks.SDK.V3.API
             return progress.Percents;
         }
 
-        /// <summary>
-        /// Deletes the process once it has finished running 
-        /// The delete process might take few minutes to complete
-        /// </summary>
-        /// <param name="model">The scans to delete, and an optional completion webhook</param>
-        /// <param name="token">Login Token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <returns>A task that represents the asynchronous operation.</returns>
+        /// <summary>Delete finished scans. Deletion can take a few minutes.</summary>
+        /// <param name="model">The scans to delete, and an optional completion webhook.</param>
+        /// <param name="token">Login token.</param>
+        /// <param name="cancellationToken">Cancels the request.</param>
         public async Task DeleteAsync(DeleteRequest model, string token, CancellationToken cancellationToken = default)
         {
             RequireToken(token);
@@ -272,14 +193,8 @@ namespace Copyleaks.SDK.V3.API
                 Patch, requestUri, token, model, gzip: true, eRetryMode.Safe, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Start processes which are in 'price checked' status
-        /// </summary>
-        /// <param name="model">A model with the list of scan id's to start and error handeling defenition in case one or more scans have a starting error</param>
-        /// <param name="token">Login Token, aquire a login token by invoking by using `CopyleaksIdentityApi.LoginAsync`</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <returns>A task that represents the asynchronous operation.
-        /// The task result contains a list of successfully started scans and a list of scans that have failed starting</returns>
+        /// <summary>Start scans in 'price checked' status.</summary>
+        /// <returns>The scans that started and the scans that failed to start.</returns>
         public async Task<StartResponse> StartAsync(StartRequest model, string token, CancellationToken cancellationToken = default)
         {
             RequireToken(token);
@@ -293,15 +208,8 @@ namespace Copyleaks.SDK.V3.API
                 Patch, requestUri, token, model, gzip: true, eRetryMode.Safe, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Starts a batch scan for a list of 'proceChecked' scans 
-        /// </summary>
-        /// <param name="model">A model with the list of scan id's to start and error handeling defenition in case one or more scans have a starting error.
-        /// The Model also contains an include list of completed scans that will be compared against</param>
-        /// <param name="token">Login Token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <returns>A task that represents the asynchronous operation.
-        /// The task result contains a list of successfully started scans and a list of scans that have failed starting </returns>
+        /// <summary>Start 'price checked' scans as a batch, also compared against its included completed scans.</summary>
+        /// <returns>The scans that started and the scans that failed to start.</returns>
         public async Task<StartResponse> StartBatchAsync(StartBatchRequest model, string token, CancellationToken cancellationToken = default)
         {
             RequireToken(token);
@@ -315,14 +223,7 @@ namespace Copyleaks.SDK.V3.API
                 Patch, requestUri, token, model, gzip: true, eRetryMode.Safe, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Get the scan results from Copyleaks servers.
-        /// </summary>
-        /// <param name="scanId">A completed scan Id</param>
-        /// <param name="token">Login Token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <returns>A task that represents the asynchronous operation.
-        /// The task result contains a model of the scan result</returns>
+        /// <summary>Get the results of a completed scan.</summary>
         public async Task<Result> ResultAsync(string scanId, string token, CancellationToken cancellationToken = default)
         {
             RequireToken(token);
@@ -333,15 +234,11 @@ namespace Copyleaks.SDK.V3.API
                 HttpMethod.Get, requestUri, token, null, eRetryMode.Safe, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Get a suspected result comparison report
-        /// </summary>
-        /// <param name="scanId">The scan id</param>
-        /// <param name="resultId">The result id (can be taken from ResultAsync method)</param>
-        /// <param name="token">Login Token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <returns>A task that represents the asynchronous operation.
-        /// The task result contains a model of the result comparison report</returns>
+        /// <summary>Get the comparison report of one suspected result.</summary>
+        /// <param name="scanId">Scan id.</param>
+        /// <param name="resultId">Result id, for example from <see cref="ResultAsync"/>.</param>
+        /// <param name="token">Login token.</param>
+        /// <param name="cancellationToken">Cancels the request.</param>
         public async Task<DownloadResultResponse> DownloadResultAsync(string scanId, string resultId, string token, CancellationToken cancellationToken = default)
         {
             RequireToken(token);
@@ -353,16 +250,10 @@ namespace Copyleaks.SDK.V3.API
         }
 
         /// <summary>
-        /// Get user usage as a stream.
-        /// The CSV is copied into <paramref name="stream"/> as it arrives, and <see cref="CopyleaksClientOptions.Timeout"/> covers the whole download.
+        /// Write the usage history CSV for a date range into <paramref name="stream"/> as it arrives.
+        /// <see cref="CopyleaksClientOptions.Timeout"/> covers the whole download.
         /// </summary>
-        /// <param name="startDate">The start date of wanted usage history.</param>
-        /// <param name="endDate">The end date of wanted usage history.</param>
-        /// <param name="stream">The CSV is written to this stream</param>
-        /// <param name="token">Login Token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <exception cref="CopyleaksHttpException">In case of reject from the server.</exception>
-        /// <returns>Returns user usage data as a stream.</returns>
+        /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
         public async Task GetUserUsageAsync(DateTime startDate, DateTime endDate, Stream stream, string token, CancellationToken cancellationToken = default)
         {
             if (stream == null)
@@ -379,14 +270,7 @@ namespace Copyleaks.SDK.V3.API
                 (body, length, ct) => body.CopyToAsync(stream, 81920, ct), cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Get the your source content comparison report 
-        /// </summary>
-        /// <param name="scanId">The scan id</param>
-        /// <param name="token">Login Token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <returns>A task that represents the asynchronous operation.
-        /// The task result contains a model of your source content comparison report</returns>
+        /// <summary>Get the comparison report of your submitted content.</summary>
         public async Task<DownloadSourceResponse> DownloadSourceReportAsync(string scanId, string token, CancellationToken cancellationToken = default)
         {
             RequireToken(token);
@@ -397,15 +281,8 @@ namespace Copyleaks.SDK.V3.API
                 HttpMethod.Get, requestUri, token, null, eRetryMode.Safe, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Get the pdf report for your scan request.
-        /// <see cref="CopyleaksClientOptions.Timeout"/> covers the whole download.
-        /// </summary>
-        /// <param name="scanId">The scan id</param>
-        /// <param name="token">Login Token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <returns>A task that represents the asynchronous operation.
-        /// The task result contains a stream of the pdf report, positioned at its start</returns>
+        /// <summary>Download the PDF report. <see cref="CopyleaksClientOptions.Timeout"/> covers the whole download.</summary>
+        /// <returns>The PDF, as a stream positioned at its start.</returns>
         public async Task<Stream> DownloadPdfReportAsync(string scanId, string token, CancellationToken cancellationToken = default)
         {
             RequireToken(token);
@@ -423,16 +300,8 @@ namespace Copyleaks.SDK.V3.API
             return new MemoryStream(pdf.GetBuffer(), 0, (int)pdf.Length, writable: false);
         }
 
-        /// <summary>
-        /// Exporting multiple Copyleaks data items in single call.
-        /// </summary>
-        /// <param name="scanId">Scan identified to be exporter</param>
-        /// <param name="exportId">Export identifier for tracking</param>
-        /// <param name="request">The export targets (results, crawled version, PDF report, AI detection, Grammar Checker and overview)</param>
-        /// <param name="token">Login Token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <exception cref="CopyleaksHttpException">In case of reject from the server.</exception>
-        /// <returns></returns>
+        /// <summary>Export several items of a scan in one call; <paramref name="exportId"/> is your tracking id.</summary>
+        /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
         public async Task ExportAsync(string scanId, string exportId, ExportRequest request, string token, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(scanId))
@@ -450,12 +319,9 @@ namespace Copyleaks.SDK.V3.API
         }
 
         /// <summary>
-        /// Send the webhook of a finished scan again. Valid for scans that completed, failed, were indexed or were price-checked.
-        /// The webhook is sent to the status webhook of the scan shortly after the request is accepted.
+        /// Resend the webhook of a finished scan (completed, failed, indexed or price-checked) to its status webhook,
+        /// shortly after the request is accepted.
         /// </summary>
-        /// <param name="scanId">The scan id</param>
-        /// <param name="token">Login Token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
         /// <exception cref="CopyleaksHttpException">The scan is still running (400) or does not exist (404).</exception>
         public async Task ResendWebhookAsync(string scanId, string token, CancellationToken cancellationToken = default)
         {
@@ -467,11 +333,7 @@ namespace Copyleaks.SDK.V3.API
                 HttpMethod.Post, requestUri, token, null, eRetryMode.RateLimitOnly, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Get a list of the supported file types.
-        /// </summary>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <returns>List of textal file types supported and list of file types supported using OCR </returns>
+        /// <summary>Get the supported file types, for text and for OCR.</summary>
         public async Task<SupportedTypesResult> GetSupportedFileTypesAsync(CancellationToken cancellationToken = default)
         {
             string requestUri = $"{this.CopyleaksApiServer}v3/miscellaneous/supported-plagiarism-file-types";
@@ -479,11 +341,7 @@ namespace Copyleaks.SDK.V3.API
                 HttpMethod.Get, requestUri, null, null, eRetryMode.Safe, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Get OCR Supported Langauges
-        /// </summary>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <returns>List of OCR Supported Langauges</returns>
+        /// <summary>Get the languages supported by OCR.</summary>
         public async Task<string[]> GetOcrLanguageListAsync(CancellationToken cancellationToken = default)
         {
             string requestUri = $"{this.CopyleaksApiServer}v3/miscellaneous/ocr-languages-list";
@@ -491,11 +349,7 @@ namespace Copyleaks.SDK.V3.API
                 HttpMethod.Get, requestUri, null, null, eRetryMode.Safe, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Get the languages supported by cross-language plagiarism detection. No login is needed.
-        /// Use the result language codes in <c>CrossLanguages.Languages</c>.
-        /// </summary>
-        /// <param name="cancellationToken">Cancels the request</param>
+        /// <summary>Get the languages for <c>CrossLanguages.Languages</c>. No login needed.</summary>
         public async Task<AllowedCrossLanguagesResult> GetAllowedCrossLanguagesAsync(CancellationToken cancellationToken = default)
         {
             string requestUri = $"{this.CopyleaksApiServer}v3/miscellaneous/allowed-cross-languages";
@@ -504,12 +358,12 @@ namespace Copyleaks.SDK.V3.API
         }
 
         /// <summary>
-        /// Get Private Cloud Hub repository information: name, status, credits and masking policy.
+        /// Get Private Cloud Hub repository info: name, status, credits and masking policy.
         /// Requires the "Admin" or "Super Admin" role in the repository.
         /// </summary>
-        /// <param name="repositoryId">The repository id, as shown in the Copyleaks Admin Dashboard</param>
-        /// <param name="token">Login Token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
+        /// <param name="repositoryId">Repository id, as shown in the Copyleaks Admin Dashboard.</param>
+        /// <param name="token">Login token.</param>
+        /// <param name="cancellationToken">Cancels the request.</param>
         public async Task<RepositoryInfoResponse> GetRepositoryInfoAsync(string repositoryId, string token, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(repositoryId))
@@ -521,10 +375,7 @@ namespace Copyleaks.SDK.V3.API
                 HttpMethod.Get, requestUri, token, null, eRetryMode.Safe, cancellationToken).ConfigureAwait(false);
         }
 
-        /// <summary>
-        /// Get the Copyleaks API release notes. No login is needed.
-        /// </summary>
-        /// <param name="cancellationToken">Cancels the request</param>
+        /// <summary>Get the Copyleaks API release notes. No login needed.</summary>
         public async Task<ReleaseNotesResponse> GetReleaseNotesAsync(CancellationToken cancellationToken = default)
         {
             string requestUri = $"{this.CopyleaksApiServer}v3/release-logs.json";

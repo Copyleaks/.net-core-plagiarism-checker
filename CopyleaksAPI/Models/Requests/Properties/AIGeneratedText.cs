@@ -1,52 +1,21 @@
-/********************************************************************************
- The MIT License(MIT)
- 
- Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
-********************************************************************************/
-
 using Newtonsoft.Json;
 
 namespace Copyleaks.SDK.V3.API.Models.Requests.Properties
 {
     public class AIGeneratedText
     {
-        /// <summary>
-        /// Detects whether the text was written by an AI.
-        /// </summary>
+        /// <summary>Detect whether the text was written by an AI.</summary>
         [JsonProperty("detect")]
         public bool Detect { get; set; } = false;
 
         /// <summary>
-        /// Controls the behavior of the AI detection, from 1 to 3:
-        /// 1 detects text copied from an LLM without edits, 2 also detects LLM text with minor changes,
-        /// and 3 also detects LLM text that was heavily modified.
-        /// Leave it unset (null) to omit it from the request and get the server default (2).
+        /// AI detection sensitivity, 1 to 3: 1 = unedited LLM text, 2 = also minor edits, 3 = also heavy edits.
+        /// Null = server default (2).
         /// </summary>
         [JsonProperty("sensitivity", NullValueHandling = NullValueHandling.Ignore)]
         public int? Sensitivity { get; set; }
 
-        /// <summary>
-        /// AI Logic: explain the AI detection result (sent as aiGeneratedText.explain).
-        /// Leave it unset (null) to omit it from the request and get the server default (disabled).
-        /// </summary>
+        /// <summary>AI Logic: explain the AI detection result. Null = server default (disabled).</summary>
         [JsonProperty("explain", NullValueHandling = NullValueHandling.Ignore)]
         public AIExplainSettings Explain { get; set; }
     }

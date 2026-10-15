@@ -24,9 +24,7 @@ using Newtonsoft.Json.Linq;
 
 namespace CopyleaksAPITests
 {
-    /// <summary>
-    /// Offline tests of every endpoint: the exact method, URL, headers and body the SDK sends.
-    /// </summary>
+    /// <summary>Offline tests of every endpoint: the exact method, URL, headers and body the SDK sends.</summary>
     [TestClass]
     public class EndpointTests
     {
@@ -59,8 +57,7 @@ namespace CopyleaksAPITests
             Assert.IsTrue(JToken.DeepEquals(expected, request.Json), $"Body was {request.BodyText}");
         }
 
-        // ---------------- Identity ----------------
-
+        // Identity
         [TestMethod]
         public async Task Login()
         {
@@ -74,8 +71,7 @@ namespace CopyleaksAPITests
             AssertJsonBody(request, "{\"email\":\"me@example.com\",\"key\":\"key-1\"}", gzip: true);
         }
 
-        // ---------------- Scans ----------------
-
+        // Scans
         [TestMethod]
         public async Task Credit_balance()
         {
@@ -415,8 +411,7 @@ namespace CopyleaksAPITests
             Assert.AreEqual("<b>New</b>", notes.Updates[0].HtmlDescription);
         }
 
-        // ---------------- AI text detection ----------------
-
+        // AI text detection
         [TestMethod]
         public async Task Ai_text_detection_with_explain_and_sensitivity()
         {
@@ -457,8 +452,7 @@ namespace CopyleaksAPITests
             CollectionAssert.AreEqual(new[] { "pdf", "docx", "LaTeX" }, types.SupportedAiFileTypes);
         }
 
-        // ---------------- Grammar Checker ----------------
-
+        // Grammar Checker
         [TestMethod]
         public async Task Grammar_checker_sends_default_weights_of_one()
         {
@@ -488,8 +482,7 @@ namespace CopyleaksAPITests
             AssertRequest(handler.RequestList[1], HttpMethod.Get, $"{Api}/v1/writing-feedback/correction-types/en", authorized: true);
         }
 
-        // ---------------- Text Moderation ----------------
-
+        // Text Moderation
         [TestMethod]
         public async Task Text_moderation()
         {
@@ -516,8 +509,7 @@ namespace CopyleaksAPITests
             Assert.ThrowsException<ArgumentException>(() => new CopyleaksTextModerationRequestModel("t", true, null, null));
         }
 
-        // ---------------- AI image detection ----------------
-
+        // AI image detection
         [TestMethod]
         public async Task Ai_image_json_with_mask_type_and_object_detection()
         {
@@ -636,8 +628,7 @@ namespace CopyleaksAPITests
                 gzip: false);
         }
 
-        // ---------------- AI video detection ----------------
-
+        // AI video detection
         [TestMethod]
         public async Task Ai_video_submit()
         {
@@ -677,8 +668,7 @@ namespace CopyleaksAPITests
             await Assert.ThrowsExceptionAsync<ArgumentException>(() => api.SubmitAsync("video2", model, Fakes.Token));
         }
 
-        // ---------------- Image Plagiarism Detection ----------------
-
+        // Image Plagiarism Detection
         [TestMethod]
         public async Task Image_plagiarism_multipart_upload()
         {

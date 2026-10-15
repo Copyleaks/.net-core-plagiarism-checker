@@ -1,28 +1,4 @@
-﻿/********************************************************************************
- The MIT License(MIT)
- 
- Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
-********************************************************************************/
-
-using Copyleaks.SDK.V3.API.Helpers;
+﻿using Copyleaks.SDK.V3.API.Helpers;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -32,54 +8,37 @@ using Newtonsoft.Json.Linq;
 
 namespace Copyleaks.SDK.V3.API.Exceptions
 {
-    /// <summary>
-    /// This class is returned in case an error response was received from Copyleaks API
-    /// </summary>
+    /// <summary>Thrown when Copyleaks API returns an error response.</summary>
     public class CopyleaksHttpException : ApplicationException
     {
-        /// <summary>
-        /// The Http status code
-        /// </summary>
+        /// <summary>HTTP status code.</summary>
         public HttpStatusCode HttpErrorCode { get; private set; }
 
-        /// <summary>
-        /// The raw response body. It is also the exception message.
-        /// </summary>
+        /// <summary>Raw response body; also the exception message.</summary>
         public string ResponseBody { get; private set; }
 
-        /// <summary>
-        /// The error type from the error response (error.type), for example "invalid_request_error". Null when the server did not send one.
-        /// </summary>
+        /// <summary>error.type of the error response, for example "invalid_request_error"; null when not sent.</summary>
         public string ErrorType { get; private set; }
 
-        /// <summary>
-        /// The machine-readable error identifier from the error response (error.id), for example "insufficient_credits". Null when the server did not send one.
-        /// </summary>
+        /// <summary>error.id, a machine-readable identifier such as "insufficient_credits"; null when not sent.</summary>
         public string ErrorId { get; private set; }
 
-        /// <summary>
-        /// The numeric error code from the error response (error.code). Null when the server did not send one.
-        /// </summary>
+        /// <summary>Numeric error.code; null when not sent.</summary>
         public int? ErrorCode { get; private set; }
 
-        /// <summary>
-        /// How long the server asked to wait before trying again (the Retry-After header), when it sent one.
-        /// </summary>
+        /// <summary>How long the server asked to wait before trying again (Retry-After header), when sent.</summary>
         public TimeSpan? RetryAfter { get; private set; }
 
         /// <summary>
-        /// The 1-based attempt that got this error response. It is greater than 1 when the SDK retried the call.
-        /// If you use a new scan id for every submit, a submit that fails with 409 Conflict and an Attempt greater than 1
-        /// means an earlier attempt of the same call was accepted but its response was lost, for example to a timeout:
-        /// treat the call as successful.
+        /// The 1-based attempt that got this error; greater than 1 when the SDK retried. With a new scan id for every
+        /// submit, a 409 Conflict with Attempt greater than 1 means an earlier attempt was accepted but its response
+        /// was lost (for example to a timeout): treat the call as successful.
         /// </summary>
         public int Attempt { get; private set; } = 1;
 
         /// <summary>
-        /// A new error response from Copyleaks API. This constructor blocks while it reads the response body;
-        /// use <see cref="CreateAsync(HttpResponseMessage, CancellationToken)"/> instead.
+        /// Blocks while reading the response body; use <see cref="CreateAsync(HttpResponseMessage, CancellationToken)"/>.
         /// </summary>
-        /// <param name="response">The error response from Copyleaks API</param>
         [Obsolete("Use CreateAsync")]
         public CopyleaksHttpException(HttpResponseMessage response) :
             this(response, ReadBody(response), attempt: 1)
@@ -96,20 +55,13 @@ namespace Copyleaks.SDK.V3.API.Exceptions
             ParseErrorEnvelope(body);
         }
 
-        /// <summary>
-        /// Create the exception for an error response from Copyleaks API. The response body is read without blocking.
-        /// </summary>
-        /// <param name="response">The error response from Copyleaks API</param>
-        /// <param name="cancellationToken">Cancels reading the response body</param>
-        /// <returns>The exception, with the response body and the parsed error fields</returns>
+        /// <summary>Create the exception for an error response, reading the body without blocking.</summary>
         public static Task<CopyleaksHttpException> CreateAsync(HttpResponseMessage response, CancellationToken cancellationToken = default)
         {
             return CreateAsync(response, attempt: 1, cancellationToken);
         }
 
-        /// <summary>
-        /// Read the response body without blocking and create the exception for the given 1-based attempt.
-        /// </summary>
+        /// <summary>Same, for the given 1-based attempt.</summary>
         internal static async Task<CopyleaksHttpException> CreateAsync(HttpResponseMessage response, int attempt, CancellationToken cancellationToken)
         {
             if (response == null)

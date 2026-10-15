@@ -8,9 +8,8 @@ using System.Threading;
 namespace Copyleaks.SDK.V3.API.Helpers
 {
     /// <summary>
-    /// The HttpClient instances the SDK uses when the caller does not pass one in.
-    /// They are created once per process (one per client certificate) and are never disposed,
-    /// so every API object shares the same connection pool.
+    /// The HttpClients used when the caller passes none: one per client certificate, created once per process and
+    /// never disposed, so every API object shares the same connection pool.
     /// </summary>
     internal static class SharedHttpClients
     {
@@ -19,9 +18,7 @@ namespace Copyleaks.SDK.V3.API.Helpers
         private static readonly ConcurrentDictionary<string, Lazy<HttpClient>> WithCertificate =
             new ConcurrentDictionary<string, Lazy<HttpClient>>(StringComparer.OrdinalIgnoreCase);
 
-        /// <summary>
-        /// Get the shared client, or the shared client for a client certificate.
-        /// </summary>
+        /// <summary>Get the shared client, or the shared client for a client certificate.</summary>
         public static HttpClient Get(X509Certificate2 clientCertificate)
         {
             if (clientCertificate == null)

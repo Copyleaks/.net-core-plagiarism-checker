@@ -639,9 +639,7 @@ namespace CopyleaksAPITests
             Assert.Fail("Expected the call to be cancelled.");
         }
 
-        /// <summary>
-        /// A stream that can only be read forward, like a network stream.
-        /// </summary>
+        /// <summary>A stream that can only be read forward, like a network stream.</summary>
         private sealed class NonSeekableStream : Stream
         {
             private readonly MemoryStream _inner;
@@ -705,9 +703,7 @@ namespace CopyleaksAPITests
             public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
         }
 
-        /// <summary>
-        /// A response body whose headers arrived but whose bytes never do.
-        /// </summary>
+        /// <summary>A response body whose headers arrived but whose bytes never do.</summary>
         private sealed class StalledContent : HttpContent
         {
             protected override Task<Stream> CreateContentReadStreamAsync() => Task.FromResult<Stream>(new AsyncOnlyStream(Array.Empty<byte>(), stall: true));

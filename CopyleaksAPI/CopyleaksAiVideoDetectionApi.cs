@@ -10,30 +10,22 @@ using Copyleaks.SDK.V3.API.Models.Requests.AiVideoDetection;
 
 namespace Copyleaks.SDK.V3.API
 {
-    /// <summary>
-    /// Copyleaks AI Video Detection: submit a video URL, and the result is delivered to your webhook.
-    /// </summary>
+    /// <summary>AI Video Detection: submit a video URL; the result is delivered to your webhook.</summary>
     public class CopyleaksAiVideoDetectionApi : CopyleaksBase
     {
         public string CopyleaksApiServer { get; private set; }
 
         private string VideoDetectionApiVersion { get; set; }
 
-        /// <summary>
-        /// Conection to Copyleaks AI Video Detection API
-        /// </summary>
-        /// <param name="client">The HttpClient to use, for example one created by IHttpClientFactory. The SDK never disposes it.</param>
-        /// <param name="options">Optional timeout and retry settings</param>
+        /// <summary>Uses the given HttpClient.</summary>
+        /// <param name="client">For example one from IHttpClientFactory. The SDK never disposes it.</param>
+        /// <param name="options">Optional timeout and retry settings.</param>
         public CopyleaksAiVideoDetectionApi(HttpClient client, CopyleaksClientOptions options = null) : base(client, options)
         {
             SetUpService();
         }
 
-        /// <summary>
-        /// Conection to Copyleaks AI Video Detection API, using the shared HttpClient of the SDK.
-        /// </summary>
-        /// <param name="clientCertificate">Optional Client certificate to be checked against.</param>
-        /// <param name="options">Optional timeout and retry settings</param>
+        /// <summary>Uses the SDK's shared HttpClient, with an optional client certificate and options.</summary>
         public CopyleaksAiVideoDetectionApi(X509Certificate2 clientCertificate = null, CopyleaksClientOptions options = null) : base(clientCertificate, options)
         {
             SetUpService();
@@ -46,15 +38,14 @@ namespace Copyleaks.SDK.V3.API
         }
 
         /// <summary>
-        /// Submit a video URL for AI-generated content detection. The request returns as soon as it is accepted
-        /// (201 Created). The result is posted to <see cref="CopyleaksAiVideoDetectionRequestModel.Webhooks"/> as a
-        /// <c>CopyleaksAiVideoDetectionResponseModel</c>.
+        /// Submit a video URL for AI-generated content detection. Returns once accepted (201); the result is posted to
+        /// <see cref="CopyleaksAiVideoDetectionRequestModel.Webhooks"/> as a <c>CopyleaksAiVideoDetectionResponseModel</c>.
         /// </summary>
-        /// <param name="scanId">A unique scan Id, 3 to 36 characters</param>
-        /// <param name="requestModel">The video URL, filename, model, webhook and options</param>
-        /// <param name="token">A copyleaks access token</param>
-        /// <param name="cancellationToken">Cancels the request</param>
-        /// <exception cref="CopyleaksHttpException"></exception>
+        /// <param name="scanId">Unique scan id, 3 to 36 characters.</param>
+        /// <param name="requestModel">Video URL, filename, model, webhook and options.</param>
+        /// <param name="token">Login token.</param>
+        /// <param name="cancellationToken">Cancels the request.</param>
+        /// <exception cref="CopyleaksHttpException">The server rejected the request.</exception>
         public async Task SubmitAsync(string scanId, CopyleaksAiVideoDetectionRequestModel requestModel, string token, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(scanId))

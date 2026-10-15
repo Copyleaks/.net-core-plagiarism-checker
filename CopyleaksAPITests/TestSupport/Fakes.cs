@@ -8,9 +8,7 @@ namespace CopyleaksAPITests.TestSupport
     {
         public const string Token = "test-token";
 
-        /// <summary>
-        /// Options with tiny retry delays, so retry tests run fast.
-        /// </summary>
+        /// <summary>Options with tiny retry delays, so retry tests run fast.</summary>
         public static CopyleaksClientOptions FastRetries(int maxRetries = 3) => new CopyleaksClientOptions
         {
             MaxRetries = maxRetries,

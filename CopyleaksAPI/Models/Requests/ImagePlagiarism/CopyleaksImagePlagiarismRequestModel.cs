@@ -1,8 +1,8 @@
 namespace Copyleaks.SDK.V3.API.Models.Requests.ImagePlagiarism
 {
     /// <summary>
-    /// The form fields of an Image Plagiarism Detection request. The image itself is passed to
-    /// <c>CopyleaksImagePlagiarismApi.SubmitAsync</c> as a Stream or a byte array and is uploaded as multipart/form-data.
+    /// Form fields of an Image Plagiarism Detection request. The image itself goes to
+    /// <c>CopyleaksImagePlagiarismApi.SubmitAsync</c> as a Stream or byte array (multipart/form-data).
     /// </summary>
     public class CopyleaksImagePlagiarismRequestModel
     {
@@ -17,20 +17,15 @@ namespace Copyleaks.SDK.V3.API.Models.Requests.ImagePlagiarism
         }
 
         /// <summary>
-        /// The image file name including its extension, at most 255 characters. Required.
-        /// Allowed extensions: .jpg, .jpeg, .png, .gif, .bmp, .webp, .ico.
+        /// Image file name with extension, at most 255 characters. Required.
+        /// Allowed: .jpg, .jpeg, .png, .gif, .bmp, .webp, .ico.
         /// </summary>
         public string Filename { get; set; }
 
-        /// <summary>
-        /// Use sandbox mode to test your integration without consuming credits. Returns mock results.
-        /// </summary>
+        /// <summary>Sandbox mode: mock results, no credits consumed.</summary>
         public bool Sandbox { get; set; } = false;
 
-        /// <summary>
-        /// A custom string that is echoed back in the response under DeveloperPayload.
-        /// Leave it unset (null) to leave it out of the request.
-        /// </summary>
+        /// <summary>Custom string echoed back in the response's DeveloperPayload. Null = not sent.</summary>
         public string DeveloperPayload { get; set; }
     }
 }

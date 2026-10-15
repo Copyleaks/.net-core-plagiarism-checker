@@ -6,9 +6,8 @@ using Newtonsoft.Json.Linq;
 namespace Copyleaks.SDK.V3.API.Helpers
 {
     /// <summary>
-    /// Reads a language list that is either an object of name to code (what the server returns)
-    /// or an array of codes (what older documentation shows) into a name to code dictionary.
-    /// For an array, the code is used as the key as well.
+    /// Reads a language list into a name-to-code dictionary: an object of name to code (what the server returns),
+    /// or an array of codes (what older documentation shows), where each code is also its key.
     /// </summary>
     internal sealed class LanguageMapConverter : JsonConverter<Dictionary<string, string>>
     {

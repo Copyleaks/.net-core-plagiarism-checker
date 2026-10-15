@@ -3,32 +3,22 @@ using System.Net.Http;
 
 namespace Copyleaks.SDK.V3.API.Helpers
 {
-    /// <summary>
-    /// Which failures of a call may be retried.
-    /// </summary>
+    /// <summary>Which failures of a call may be retried.</summary>
     internal enum eRetryMode
     {
-        /// <summary>
-        /// The call is safe to repeat: retry network errors, timeouts and HTTP 408, 429, 500, 502, 503 and 504.
-        /// </summary>
+        /// <summary>Safe to repeat: retry network errors, timeouts and HTTP 408, 429, 500, 502, 503, 504.</summary>
         Safe,
 
-        /// <summary>
-        /// The call is charged or triggers an action: retry only HTTP 429, which means the server rejected it without running it.
-        /// </summary>
+        /// <summary>Charged or triggers an action: retry only HTTP 429 (the server did not run it).</summary>
         RateLimitOnly,
 
-        /// <summary>
-        /// Never retry (for example, the request body is a stream that cannot be read twice).
-        /// </summary>
+        /// <summary>Never retry (for example, the request body is a stream that cannot be read twice).</summary>
         None,
     }
 
     internal static class RetryHelper
     {
-        /// <summary>
-        /// The Retry-After header of a response as a delay, or null when there is none.
-        /// </summary>
+        /// <summary>The Retry-After header of a response as a delay, or null when there is none.</summary>
         public static TimeSpan? GetRetryAfter(HttpResponseMessage response)
         {
             var retryAfter = response?.Headers?.RetryAfter;
@@ -55,9 +45,7 @@ namespace Copyleaks.SDK.V3.API.Helpers
             return statusCode == 408 || statusCode == 500 || statusCode == 502 || statusCode == 503 || statusCode == 504;
         }
 
-        /// <summary>
-        /// Exponential backoff with jitter: base * 2^attempt, capped at max, scaled by a random factor between 0.5 and 1.
-        /// </summary>
+        /// <summary>Exponential backoff: base * 2^attempt, capped at max, times a random factor from 0.5 to 1.</summary>
         public static TimeSpan Backoff(int attempt, TimeSpan baseDelay, TimeSpan maxDelay)
         {
             if (baseDelay <= TimeSpan.Zero)

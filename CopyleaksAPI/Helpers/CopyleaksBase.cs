@@ -1,28 +1,4 @@
-﻿/********************************************************************************
- The MIT License(MIT)
- 
- Copyright(c) 2016 Copyleaks LTD (https://copyleaks.com)
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
-********************************************************************************/
-
-using Copyleaks.SDK.V3.API.Exceptions;
+﻿using Copyleaks.SDK.V3.API.Exceptions;
 using Copyleaks.SDK.V3.API.Models.Constants;
 using System;
 using System.IO;
@@ -36,46 +12,30 @@ using System.Threading.Tasks;
 namespace Copyleaks.SDK.V3.API.Helpers
 {
     /// <summary>
-    /// An HTTP connection to Copyleaks API.
-    /// <para>
-    /// API objects are thread-safe and cheap to create. When you do not pass an <see cref="HttpClient"/>,
-    /// every API object uses one shared, pooled HttpClient, so you can create API objects freely.
-    /// In ASP.NET Core you can also register the API classes as typed clients with
+    /// Base of the API clients. They are thread-safe and cheap to create: without an <see cref="HttpClient"/> argument
+    /// they all share one pooled HttpClient. In ASP.NET Core they can also be typed clients:
     /// <c>services.AddHttpClient&lt;CopyleaksScansApi&gt;()</c>.
-    /// </para>
     /// </summary>
     public abstract class CopyleaksBase : IDisposable
     {
-        /// <summary>
-        /// The HttpClient used to send requests: the one passed to the constructor, or the shared client of the SDK.
-        /// </summary>
+        /// <summary>The HttpClient passed to the constructor, or the SDK's shared one.</summary>
         public HttpClient Client { get; private set; }
 
-        /// <summary>
-        /// The timeout and retry settings of this API object.
-        /// </summary>
+        /// <summary>Timeout and retry settings.</summary>
         public CopyleaksClientOptions Options { get; private set; }
 
         protected string ApiVersion { get; set; }
 
-        /// <summary>
-        /// A new HTTP connection to Copyleaks API that sends requests with your HttpClient.
-        /// The SDK never disposes a client you pass in.
-        /// </summary>
-        /// <param name="client">The HttpClient to use, for example one created by IHttpClientFactory</param>
-        /// <param name="options">Optional timeout and retry settings</param>
+        /// <summary>Uses your HttpClient (for example from IHttpClientFactory), which the SDK never disposes.</summary>
         public CopyleaksBase(HttpClient client, CopyleaksClientOptions options = null)
         {
             this.Client = client ?? throw new ArgumentNullException(nameof(client));
             Initialize(options);
         }
 
-        /// <summary>
-        /// A new HTTP connection to Copyleaks API that uses the shared HttpClient of the SDK.
-        /// </summary>
-        /// <param name="clientCertificate">Optional Client certificate to be checked against.
-        /// Configure you client's certificate at https://copyleaks.com/Manage </param>
-        /// <param name="options">Optional timeout and retry settings</param>
+        /// <summary>Uses the SDK's shared HttpClient.</summary>
+        /// <param name="clientCertificate">Optional client certificate; configure it at https://copyleaks.com/Manage</param>
+        /// <param name="options">Optional timeout and retry settings.</param>
         public CopyleaksBase(X509Certificate2 clientCertificate = null, CopyleaksClientOptions options = null)
         {
             this.Client = SharedHttpClients.Get(clientCertificate);
@@ -88,17 +48,13 @@ namespace Copyleaks.SDK.V3.API.Helpers
             this.ApiVersion = ConfigurationManager.Configuration["apiVersion"];
         }
 
-        /// <summary>
-        /// The API server address: <see cref="CopyleaksClientOptions.ApiEndpoint"/> when set, otherwise the configuration.
-        /// </summary>
+        /// <summary>API server: <see cref="CopyleaksClientOptions.ApiEndpoint"/>, else the configuration.</summary>
         private protected string ResolveApiEndpoint()
         {
             return WithTrailingSlash(this.Options.ApiEndpoint ?? ConfigurationManager.Configuration[CopyleaksConstants.ApiEndPoint]);
         }
 
-        /// <summary>
-        /// The identity server address: <see cref="CopyleaksClientOptions.IdentityEndpoint"/> when set, otherwise the configuration.
-        /// </summary>
+        /// <summary>Identity server: <see cref="CopyleaksClientOptions.IdentityEndpoint"/>, else the configuration.</summary>
         private protected string ResolveIdentityEndpoint()
         {
             return WithTrailingSlash(this.Options.IdentityEndpoint ?? ConfigurationManager.Configuration[CopyleaksConstants.IdEndPoint]);
@@ -111,17 +67,13 @@ namespace Copyleaks.SDK.V3.API.Helpers
             return endpoint + "/";
         }
 
-        /// <summary>
-        /// Escape a value that is used as a URL path segment, such as a scan id.
-        /// </summary>
+        /// <summary>Escape a value that is used as a URL path segment, such as a scan id.</summary>
         private protected static string PathSegment(string value)
         {
             return Uri.EscapeDataString(value ?? string.Empty);
         }
 
-        /// <summary>
-        /// Send a request with retries, per-attempt timeout and cancellation, and buffer the response body.
-        /// </summary>
+        /// <summary>Send with retries, per-attempt timeout and cancellation; buffers the response body.</summary>
         private protected Task<ApiResponse> SendAsync(
             HttpMethod method,
             string requestUri,
@@ -134,12 +86,10 @@ namespace Copyleaks.SDK.V3.API.Helpers
         }
 
         /// <summary>
-        /// Send a request with retries, per-attempt timeout and cancellation.
-        /// A new HttpRequestMessage (and a new content from <paramref name="createContent"/>) is built for every attempt.
-        /// Returns the last response, whatever its status code, with the number of the attempt that got it.
-        /// Throws the last network error or a TimeoutException when no attempt got a response.
-        /// With <see cref="HttpCompletionOption.ResponseHeadersRead"/> the body is not buffered, and the returned response
-        /// keeps the timeout of its attempt running, so reading the body with <see cref="ApiResponse.Token"/> is still bounded by it.
+        /// Send with retries, per-attempt timeout and cancellation; each attempt builds a new request and content.
+        /// Returns the last response, whatever its status, with its attempt number; throws the last network error or a
+        /// TimeoutException when no attempt got a response. With <see cref="HttpCompletionOption.ResponseHeadersRead"/>
+        /// the body is not buffered and the attempt timeout keeps running, bounding reads with <see cref="ApiResponse.Token"/>.
         /// </summary>
         private protected async Task<ApiResponse> SendAsync(
             HttpMethod method,
@@ -257,9 +207,7 @@ namespace Copyleaks.SDK.V3.API.Helpers
             return true;
         }
 
-        /// <summary>
-        /// Send a request and throw a <see cref="CopyleaksHttpException"/> when the response is not a success.
-        /// </summary>
+        /// <summary>Send a request; throw <see cref="CopyleaksHttpException"/> on a non-success response.</summary>
         private protected async Task SendAndEnsureSuccessAsync(
             HttpMethod method, string requestUri, string token, Func<HttpContent> createContent,
             eRetryMode retryMode, CancellationToken cancellationToken)
@@ -270,9 +218,7 @@ namespace Copyleaks.SDK.V3.API.Helpers
             }
         }
 
-        /// <summary>
-        /// Send a request and deserialize the JSON response.
-        /// </summary>
+        /// <summary>Send a request and deserialize the JSON response.</summary>
         private protected async Task<T> SendForJsonAsync<T>(
             HttpMethod method, string requestUri, string token, Func<HttpContent> createContent,
             eRetryMode retryMode, CancellationToken cancellationToken)
@@ -284,15 +230,10 @@ namespace Copyleaks.SDK.V3.API.Helpers
         }
 
         /// <summary>
-        /// Send a GET request and pass the body of a successful response to <paramref name="readBody"/> as it arrives,
-        /// without buffering it first. The per-attempt timeout keeps running while the body is read.
-        /// Retries cover the request until the response headers arrive. A failure while the body is read is not retried,
-        /// because part of the body may already have been consumed.
+        /// GET, then pass a successful body to <paramref name="readBody"/> as it arrives, with its Content-Length if sent.
+        /// The attempt timeout keeps running while it is read. Retries stop at the response headers: a failure while
+        /// reading the body is not retried, because part of it may already have been consumed.
         /// </summary>
-        /// <param name="requestUri">The download address</param>
-        /// <param name="token">Login Token</param>
-        /// <param name="readBody">Reads the body stream; gets the Content-Length when the server sent one</param>
-        /// <param name="cancellationToken">Cancels the request</param>
         private protected async Task DownloadAsync(
             string requestUri, string token, Func<Stream, long?, CancellationToken, Task> readBody, CancellationToken cancellationToken)
         {
@@ -316,18 +257,14 @@ namespace Copyleaks.SDK.V3.API.Helpers
             }
         }
 
-        /// <summary>
-        /// Throw an <see cref="ArgumentException"/> for an empty scan id, before it is used in a URL path.
-        /// </summary>
+        /// <summary>Throw <see cref="ArgumentException"/> for an empty scan id, before it goes into a URL path.</summary>
         private protected static void RequireScanId(string scanId)
         {
             if (string.IsNullOrEmpty(scanId))
                 throw new ArgumentException("ScanId is mandatory", nameof(scanId));
         }
 
-        /// <summary>
-        /// Send <paramref name="body"/> as JSON (serialized once, reused by every attempt) and ensure success.
-        /// </summary>
+        /// <summary>Send <paramref name="body"/> as JSON (serialized once for all attempts) and ensure success.</summary>
         private protected async Task SendJsonAndEnsureSuccessAsync(
             HttpMethod method, string requestUri, string token, object body, bool gzip,
             eRetryMode retryMode, CancellationToken cancellationToken)
@@ -338,9 +275,7 @@ namespace Copyleaks.SDK.V3.API.Helpers
             }
         }
 
-        /// <summary>
-        /// Send <paramref name="body"/> as JSON (serialized once, reused by every attempt) and deserialize the JSON response.
-        /// </summary>
+        /// <summary>Like <see cref="SendJsonAndEnsureSuccessAsync"/>, but deserializes the JSON response.</summary>
         private protected async Task<T> SendJsonForJsonAsync<T>(
             HttpMethod method, string requestUri, string token, object body, bool gzip,
             eRetryMode retryMode, CancellationToken cancellationToken)
@@ -352,8 +287,8 @@ namespace Copyleaks.SDK.V3.API.Helpers
         }
 
         /// <summary>
-        /// API objects do not own an HttpClient: the shared client of the SDK lives for the whole process,
-        /// and a client you pass in stays yours. Disposing an API object is therefore optional and never disposes a client.
+        /// Optional, and never disposes an HttpClient: the SDK's shared client lives for the whole process,
+        /// and one you pass in stays yours.
         /// </summary>
         public void Dispose()
         {

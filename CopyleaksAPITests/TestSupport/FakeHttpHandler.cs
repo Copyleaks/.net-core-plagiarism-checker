@@ -13,9 +13,7 @@ using Newtonsoft.Json.Linq;
 
 namespace CopyleaksAPITests.TestSupport
 {
-    /// <summary>
-    /// One request as the server would see it: method, URL, headers and the (decompressed) body.
-    /// </summary>
+    /// <summary>One request as the server would see it: method, URL, headers and the (decompressed) body.</summary>
     public sealed class RecordedRequest
     {
         public HttpMethod Method { get; set; }
@@ -25,9 +23,7 @@ namespace CopyleaksAPITests.TestSupport
         public long? ContentLength { get; set; }
         public byte[] RawBody { get; set; }
 
-        /// <summary>
-        /// The body after gzip decoding, when the request was gzip-encoded.
-        /// </summary>
+        /// <summary>The body after gzip decoding, when the request was gzip-encoded.</summary>
         public byte[] Body { get; set; }
 
         public string BodyText => Body == null ? null : Encoding.UTF8.GetString(Body);
@@ -99,9 +95,7 @@ namespace CopyleaksAPITests.TestSupport
             return Respond((request, ct) => Task.FromException<HttpResponseMessage>(exception));
         }
 
-        /// <summary>
-        /// Never answers until the request is cancelled.
-        /// </summary>
+        /// <summary>Never answers until the request is cancelled.</summary>
         public FakeHttpHandler Hang()
         {
             return Respond(async (request, ct) =>
@@ -152,9 +146,7 @@ namespace CopyleaksAPITests.TestSupport
         }
     }
 
-    /// <summary>
-    /// Parses a multipart/form-data body into its parts.
-    /// </summary>
+    /// <summary>Parses a multipart/form-data body into its parts.</summary>
     public sealed class FormPart
     {
         public string Name { get; set; }
