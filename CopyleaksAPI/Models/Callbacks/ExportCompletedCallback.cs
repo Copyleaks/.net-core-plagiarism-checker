@@ -3,9 +3,7 @@ using System.Collections.Generic;
 
 namespace Copyleaks.SDK.V3.API.Models.Callbacks
 {
-	/// <summary>
-	/// Callback payload that will be sent from Copyleaks' api once an export request is done 
-	/// </summary>
+	/// <summary>Payload of the webhook sent when an export completes.</summary>
 	public class ExportCompletedCallback
 	{
 		[JsonProperty("completed")]
@@ -18,16 +16,14 @@ namespace Copyleaks.SDK.V3.API.Models.Callbacks
 		public string DeveloperPayload { get; set; }
 	}
 
-	/// <summary>
-	/// Represents a summary of a single export task
-	/// </summary>
+	/// <summary>Summary of one export task.</summary>
 	public class ExportRow
 	{
 		[JsonProperty("endpoint")]
 		public string Endpoint { get; set; }
 
 		[JsonProperty("httpStatusCode")]
-		public uint HttpStatusCode { get; set; }
+		public uint? HttpStatusCode { get; set; }
 
 		[JsonProperty("isHealthy")]
 		public bool IsHealthy { get; set; }

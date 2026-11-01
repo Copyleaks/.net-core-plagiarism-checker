@@ -4,6 +4,12 @@
     <TargetFramework>net8.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
+
+    <!--
+      Tests in the "Live" category call the real Copyleaks API and need real credentials,
+      so a plain dotnet test run skips them. To run them, pass the filter TestCategory=Live to dotnet test.
+    -->
+    <VSTestTestCaseFilter Condition="'$(VSTestTestCaseFilter)' == ''">TestCategory!=Live</VSTestTestCaseFilter>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,6 +17,7 @@
     <PackageReference Include="MSTest.TestAdapter" Version="3.8.2" />
     <PackageReference Include="MSTest.TestFramework" Version="3.8.2" />
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.2" />
   </ItemGroup>
 
   <ItemGroup>

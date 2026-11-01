@@ -10,7 +10,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace CopyleaksAPITests
 {
+    /// <summary>Live API tests: set real credentials below, then run dotnet test --filter TestCategory=Live.</summary>
     [TestClass]
+    [TestCategory("Live")]
     public class ImageDetectionTests
     {
         public const string USER_EMAIL = "<EMAIL>";

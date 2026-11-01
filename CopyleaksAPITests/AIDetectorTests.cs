@@ -8,7 +8,9 @@ using Copyleaks.SDK.V3.API.Models.Requests.AIDetection;
 
 namespace CopyleaksAPITests
 {
+    /// <summary>Live API tests: set real credentials below, then run dotnet test --filter TestCategory=Live.</summary>
     [TestClass]
+    [TestCategory("Live")]
     public class AIDetectorTests
     {
         public const string USER_EMAIL = "<EMAIL>";
