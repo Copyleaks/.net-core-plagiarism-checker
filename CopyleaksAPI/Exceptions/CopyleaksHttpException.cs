@@ -1,9 +1,13 @@
 ﻿using Copyleaks.SDK.V3.API.Helpers;
+using Copyleaks.SDK.V3.API.Models.Responses.Webhooks.HelperModels.ErrorModels;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Copyleaks.SDK.V3.API.Exceptions
@@ -17,7 +21,10 @@ namespace Copyleaks.SDK.V3.API.Exceptions
         /// <summary>Raw response body; also the exception message.</summary>
         public string ResponseBody { get; private set; }
 
-        /// <summary>error.type of the error response, for example "invalid_request_error"; null when not sent.</summary>
+        /// <summary>
+        /// error.type of the error response, for example "invalid_request_error" (see <see cref="Models.Constants.CopyleaksErrorTypes"/>);
+        /// null when not sent.
+        /// </summary>
         public string ErrorType { get; private set; }
 
         /// <summary>error.id, a machine-readable identifier such as "insufficient_credits"; null when not sent.</summary>
@@ -25,6 +32,15 @@ namespace Copyleaks.SDK.V3.API.Exceptions
 
         /// <summary>Numeric error.code; null when not sent.</summary>
         public int? ErrorCode { get; private set; }
+
+        /// <summary>error.message, a human-readable description of the error; null when not sent.</summary>
+        public string ErrorMessage { get; private set; }
+
+        /// <summary>error.url, a link to the documentation of the error; null when not sent.</summary>
+        public string ErrorUrl { get; private set; }
+
+        /// <summary>error.details, the request parameters that caused the error; empty (never null) when not sent.</summary>
+        public IReadOnlyList<ErrorDetail> ErrorDetails { get; private set; } = Array.Empty<ErrorDetail>();
 
         /// <summary>How long the server asked to wait before trying again (Retry-After header), when sent.</summary>
         public TimeSpan? RetryAfter { get; private set; }
@@ -113,15 +129,27 @@ namespace Copyleaks.SDK.V3.API.Exceptions
                 return;
             try
             {
-                JToken error = JObject.Parse(body)["error"];
+                JToken error = ParseObject(body)?["error"];
                 if (error is JObject envelope)
                 {
-                    ErrorType = envelope.Value<string>("type");
-                    ErrorId = envelope.Value<string>("id");
+                    ErrorType = StringOrNull(envelope["type"]);
+                    ErrorId = StringOrNull(envelope["id"]);
                     JToken code = envelope["code"];
                     if (code != null && (code.Type == JTokenType.Integer || code.Type == JTokenType.String) &&
                         int.TryParse(code.ToString(), out int parsed))
                         ErrorCode = parsed;
+                    ErrorMessage = StringOrNull(envelope["message"]);
+                    ErrorUrl = StringOrNull(envelope["url"]);
+                    if (envelope["details"] is JArray details)
+                    {
+                        var list = new List<ErrorDetail>();
+                        foreach (JToken item in details)
+                        {
+                            if (item is JObject detail)
+                                list.Add(new ErrorDetail { Param = StringOrNull(detail["param"]), Message = StringOrNull(detail["message"]) });
+                        }
+                        ErrorDetails = list.AsReadOnly();
+                    }
                 }
             }
             catch (Exception)
@@ -129,5 +157,21 @@ namespace Copyleaks.SDK.V3.API.Exceptions
                 // Not a JSON error envelope. The raw body is still in ResponseBody and Message.
             }
         }
+
+        // Like JObject.Parse, but keeps date-like strings as strings.
+        private static JObject ParseObject(string body)
+        {
+            using (var reader = new JsonTextReader(new StringReader(body)) { DateParseHandling = DateParseHandling.None })
+            {
+                JObject root = JObject.Load(reader);
+                // As in JObject.Parse, the reader throws on content after the object (comments excepted).
+                while (reader.Read())
+                {
+                }
+                return root;
+            }
+        }
+
+        private static string StringOrNull(JToken token) => token?.Type == JTokenType.String ? (string)token : null;
     }
 }

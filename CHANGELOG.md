@@ -2,6 +2,17 @@
 
 All notable changes to the Copyleaks .NET SDK (NuGet package `Copyleaks`) are listed here.
 
+## Unreleased
+
+### Added
+
+- `CopyleaksHttpException` now also has `ErrorMessage`, `ErrorUrl` and `ErrorDetails` (the request parameters that caused the error, as `ErrorDetail` items with `Param` and `Message`), parsed from the `error` object of the response. `ErrorDetails` is empty, never null, when the response has none. A field that is missing or has the wrong JSON type is null.
+- `CopyleaksErrorTypes` has the documented values of `ErrorType`: `INVALID_REQUEST_ERROR`, `AUTHENTICATION_ERROR`, `PAYMENT_ERROR` and `API_ERROR`.
+
+### Changed
+
+- `ErrorType` and `ErrorId` are now set only when the response sends them as JSON strings, and a malformed field no longer stops the other fields from being read. Responses in the documented format are not affected.
+
 ## 5.0.0
 
 This is a major release. It makes the HTTP layer reliable (one shared connection pool, real retries, timeouts and cancellation), adds the endpoints and fields that were missing, and fixes several models. A few changes need small code updates; see the upgrade notes at the end.
