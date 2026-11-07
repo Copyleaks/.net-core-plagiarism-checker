@@ -82,7 +82,16 @@ var scans = new CopyleaksScansApi(options: options);
 * Calls that are safe to repeat (GET requests, login, start, delete, and submits to a fixed scan id) are retried on network errors, timeouts and HTTP 408, 429, 500, 502, 503 and 504.
 * Calls that are charged per call or trigger an action (AI Text Detection, Grammar Checker, Text Moderation, AI Image Detection, Image Plagiarism Detection, export and resend webhook) are retried only on HTTP 429.
 * The SDK honors the `Retry-After` header. When it asks for a longer wait than `MaxRetryDelay`, the SDK returns the error instead of waiting.
-* A request that runs out of time throws `TimeoutException`. An error response throws `CopyleaksHttpException`, with `HttpErrorCode`, `ResponseBody`, `ErrorType`, `ErrorId`, `ErrorCode`, `RetryAfter` and `Attempt` (the 1-based attempt that got the error).
+* A request that runs out of time throws `TimeoutException`. An error response throws `CopyleaksHttpException`, with `HttpErrorCode`, `ResponseBody`, `RetryAfter`, `Attempt` (the 1-based attempt that got the error) and the fields of the response's `error` object: `ErrorType` (see `CopyleaksErrorTypes`), `ErrorId`, `ErrorCode`, `ErrorMessage`, `ErrorUrl` and `ErrorDetails`:
+
+```csharp
+catch (CopyleaksHttpException ex) when (ex.ErrorType == CopyleaksErrorTypes.INVALID_REQUEST_ERROR)
+{
+    foreach (var detail in ex.ErrorDetails)
+        Console.WriteLine($"{detail.Param}: {detail.Message}");
+}
+```
+
 * An attempt can time out after the server accepted it. The retry of such a submit then fails with 409 Conflict. If you use a new scan id for every submit, a 409 with `Attempt` greater than 1 means an earlier attempt was accepted, so treat the call as successful:
 
 ```csharp
