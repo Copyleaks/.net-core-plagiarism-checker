@@ -44,7 +44,7 @@ namespace CopyleaksAPITests
 
             var request = handler.Single;
             string fileVersion = typeof(CopyleaksScansApi).Assembly.GetCustomAttribute<AssemblyFileVersionAttribute>().Version;
-            Assert.AreEqual("5.0.0", fileVersion);
+            Assert.AreEqual("5.1.0", fileVersion);
             Assert.AreEqual($"copyleaks-core-sdk/{fileVersion}", request.Header("User-Agent"));
             Assert.AreEqual($"Bearer {Fakes.Token}", request.Header("Authorization"));
             Assert.IsNull(request.Header("Keep-Alive"));

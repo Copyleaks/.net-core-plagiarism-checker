@@ -2,7 +2,7 @@
 
 All notable changes to the Copyleaks .NET SDK (NuGet package `Copyleaks`) are listed here.
 
-## Unreleased
+## 5.1.0
 
 ### Added
 

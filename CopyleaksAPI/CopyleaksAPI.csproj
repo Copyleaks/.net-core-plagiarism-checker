@@ -18,9 +18,9 @@
     <RepositoryUrl>https://github.com/Copyleaks/.net-core-plagiarism-checker</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>plagiarism copyright copyrights Copyleaks infringement checker detector ai-text-detection ai-image-detection ai-video-detection image-plagiarism grammar-checker text-moderation</PackageTags>
-    <Version>5.0.0</Version>
-    <AssemblyVersion>5.0.0</AssemblyVersion>
-    <FileVersion>5.0.0</FileVersion>
+    <Version>5.1.0</Version>
+    <AssemblyVersion>5.1.0</AssemblyVersion>
+    <FileVersion>5.1.0</FileVersion>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- Not every public member has an XML comment yet. -->
     <NoWarn>$(NoWarn);CS1591</NoWarn>
